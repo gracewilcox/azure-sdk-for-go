@@ -101,13 +101,14 @@ var _ azcore.TokenCredential = (*DefaultAzureCredential)(nil)
 
 func defaultAzureCredentialConstructorErrorHandler(numberOfSuccessfulCredentials int, errorMessages []string) (err error) {
 	errorMessage := strings.Join(errorMessages, "\n\t")
+	troubleshootMessage := " to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#default-az-cred"
 
 	if numberOfSuccessfulCredentials == 0 {
-		return errors.New(errorMessage)
+		return errors.New(errorMessage + troubleshootMessage)
 	}
 
 	if len(errorMessages) != 0 {
-		log.Writef(EventAuthentication, "NewDefaultAzureCredential failed to initialize some credentials:\n\t%s", errorMessage)
+		log.Writef(EventAuthentication, "NewDefaultAzureCredential failed to initialize some credentials:\n\t%s", errorMessage+troubleshootMessage)
 	}
 
 	return nil

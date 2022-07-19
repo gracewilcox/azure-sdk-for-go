@@ -41,7 +41,7 @@ func TestDefaultAzureCredential_ConstructorErrorHandler(t *testing.T) {
 		t.Fatalf("Expected an error, but received none.")
 	}
 	expectedError := `<credential-name>: <error-message>
-	<credential-name>: <error-message>`
+	<credential-name>: <error-message> to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#default-az-cred`
 	if err.Error() != expectedError {
 		t.Fatalf("Did not create an appropriate error message.\n\nReceived:\n%s\n\nExpected:\n%s", err.Error(), expectedError)
 	}
@@ -58,7 +58,7 @@ func TestDefaultAzureCredential_ConstructorErrorHandler(t *testing.T) {
 
 	expectedLogs := `NewDefaultAzureCredential failed to initialize some credentials:
 	<credential-name>: <error-message>
-	<credential-name>: <error-message>`
+	<credential-name>: <error-message> to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#default-az-cred`
 	if len(logMessages) == 0 {
 		t.Fatal("error handler logged no messages")
 	}

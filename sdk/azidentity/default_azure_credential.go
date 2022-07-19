@@ -101,7 +101,7 @@ var _ azcore.TokenCredential = (*DefaultAzureCredential)(nil)
 
 func defaultAzureCredentialConstructorErrorHandler(numberOfSuccessfulCredentials int, errorMessages []string) (err error) {
 	errorMessage := strings.Join(errorMessages, "\n\t")
-	troubleshootMessage := " to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#default-az-cred"
+	troubleshootMessage := " to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#default-az"
 
 	if numberOfSuccessfulCredentials == 0 {
 		return errors.New(errorMessage + troubleshootMessage)

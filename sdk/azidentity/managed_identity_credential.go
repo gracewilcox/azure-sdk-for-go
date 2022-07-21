@@ -96,7 +96,7 @@ func (c *ManagedIdentityCredential) GetToken(ctx context.Context, opts policy.To
 	scopes := []string{strings.TrimSuffix(opts.Scopes[0], defaultSuffix)}
 	tk, err := c.client.authenticate(ctx, c.id, scopes)
 	if err != nil {
-		return azcore.AccessToken{}, err
+		return azcore.AccessToken{}, fmt.Errorf("%w\n%s", err, "to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#managed-id")
 	}
 	logGetTokenSuccess(c, opts)
 	return tk, err

@@ -61,18 +61,16 @@ type EnvironmentCredential struct {
 
 // NewEnvironmentCredential creates an EnvironmentCredential. Pass nil to accept default options.
 func NewEnvironmentCredential(options *EnvironmentCredentialOptions) (*EnvironmentCredential, error) {
-	troubleshootURL := " to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#"
-
 	if options == nil {
 		options = &EnvironmentCredentialOptions{}
 	}
 	tenantID := os.Getenv("AZURE_TENANT_ID")
 	if tenantID == "" {
-		return nil, errors.New("missing environment variable AZURE_TENANT_ID" + troubleshootURL + "env")
+		return nil, errors.New("missing environment variable AZURE_TENANT_ID")
 	}
 	clientID := os.Getenv(azureClientID)
 	if clientID == "" {
-		return nil, errors.New("missing environment variable " + azureClientID + troubleshootURL + "env")
+		return nil, errors.New("missing environment variable " + azureClientID)
 	}
 	if clientSecret := os.Getenv("AZURE_CLIENT_SECRET"); clientSecret != "" {
 		log.Write(EventAuthentication, "EnvironmentCredential will authenticate with ClientSecretCredential")
@@ -113,13 +111,13 @@ func NewEnvironmentCredential(options *EnvironmentCredentialOptions) (*Environme
 			o := &UsernamePasswordCredentialOptions{ClientOptions: options.ClientOptions}
 			cred, err := NewUsernamePasswordCredential(tenantID, clientID, username, password, o)
 			if err != nil {
-				return nil, fmt.Errorf("%w"+troubleshootURL+"username-password", err)
+				return nil, err
 			}
 			return &EnvironmentCredential{cred: cred}, nil
 		}
-		return nil, errors.New("no value for AZURE_PASSWORD" + troubleshootURL + "username-password")
+		return nil, errors.New("no value for AZURE_PASSWORD")
 	}
-	return nil, errors.New("incomplete environment variable configuration. Only AZURE_TENANT_ID and AZURE_CLIENT_ID are set" + troubleshootURL + "env")
+	return nil, errors.New("incomplete environment variable configuration. Only AZURE_TENANT_ID and AZURE_CLIENT_ID are set")
 }
 
 // GetToken requests an access token from Azure Active Directory. This method is called automatically by Azure SDK clients.

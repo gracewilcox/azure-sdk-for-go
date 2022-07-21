@@ -73,7 +73,7 @@ func (c *AzureCLICredential) GetToken(ctx context.Context, opts policy.TokenRequ
 	scope := strings.TrimSuffix(opts.Scopes[0], defaultSuffix)
 	at, err := c.authenticate(ctx, scope)
 	if err != nil {
-		return azcore.AccessToken{}, err
+		return azcore.AccessToken{}, fmt.Errorf("%w\n%s", err, "to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#azure-cli")
 	}
 	logGetTokenSuccess(c, opts)
 	return at, nil

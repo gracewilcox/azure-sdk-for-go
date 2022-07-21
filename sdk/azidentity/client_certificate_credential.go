@@ -15,6 +15,7 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -96,7 +97,7 @@ func (c *ClientCertificateCredential) GetToken(ctx context.Context, opts policy.
 
 	ar, err = c.client.AcquireTokenByCredential(ctx, opts.Scopes)
 	if err != nil {
-		return azcore.AccessToken{}, newAuthenticationFailedErrorFromMSALError(credNameCert, err)
+		return azcore.AccessToken{}, fmt.Errorf("%w\n%s", newAuthenticationFailedErrorFromMSALError(credNameCert, err), "to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#client-cert")
 	}
 	logGetTokenSuccess(c, opts)
 	return azcore.AccessToken{Token: ar.AccessToken, ExpiresOn: ar.ExpiresOn.UTC()}, err

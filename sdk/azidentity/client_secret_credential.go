@@ -9,6 +9,7 @@ package azidentity
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -69,7 +70,7 @@ func (c *ClientSecretCredential) GetToken(ctx context.Context, opts policy.Token
 
 	ar, err = c.client.AcquireTokenByCredential(ctx, opts.Scopes)
 	if err != nil {
-		return azcore.AccessToken{}, newAuthenticationFailedErrorFromMSALError(credNameSecret, err)
+		return azcore.AccessToken{}, fmt.Errorf("%w\n%s", newAuthenticationFailedErrorFromMSALError(credNameSecret, err), "to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#client-secret")
 	}
 	logGetTokenSuccess(c, opts)
 	return azcore.AccessToken{Token: ar.AccessToken, ExpiresOn: ar.ExpiresOn.UTC()}, err

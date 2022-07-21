@@ -9,6 +9,7 @@ package azidentity
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
@@ -69,7 +70,7 @@ func (c *UsernamePasswordCredential) GetToken(ctx context.Context, opts policy.T
 	}
 	ar, err = c.client.AcquireTokenByUsernamePassword(ctx, opts.Scopes, c.username, c.password)
 	if err != nil {
-		return azcore.AccessToken{}, newAuthenticationFailedErrorFromMSALError(credNameUserPassword, err)
+		return azcore.AccessToken{}, fmt.Errorf("%w\n%s", newAuthenticationFailedErrorFromMSALError(credNameUserPassword, err), "to troubleshoot, visit https://aka.ms/azsdk/go/identity/troubleshoot#username-password")
 	}
 	c.account = ar.Account
 	logGetTokenSuccess(c, opts)

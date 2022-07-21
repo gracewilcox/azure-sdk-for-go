@@ -50,6 +50,7 @@
 ### Other Changes
 * `GetToken()` returns an error when the caller specifies no scope
 * Updated to the latest versions of `golang.org/x/crypto`, `azcore` and `internal`
+* Updated certain errors to include a link to TROUBLESHOOTING.md
 
 ## 0.14.0 (2022-04-05)
 

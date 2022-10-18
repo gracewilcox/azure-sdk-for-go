@@ -9,6 +9,7 @@ package azquery_test
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -61,7 +62,11 @@ func TestMain(m *testing.M) {
 	if recording.GetRecordMode() == recording.PlaybackMode {
 		credential = &FakeCredential{}
 	} else {
-		credential, err = azidentity.NewDefaultAzureCredential(nil)
+		tenantID := lookupEnvVar("AZSECRETS_TENANT_ID")
+		clientID := lookupEnvVar("AZSECRETS_CLIENT_ID")
+		secret := lookupEnvVar("AZSECRETS_CLIENT_SECRET")
+		credential, err = azidentity.NewClientSecretCredential(tenantID, clientID, secret, nil)
+		//credential, err = azidentity.NewDefaultAzureCredential(nil)
 		if err != nil {
 			panic(err)
 		}
@@ -113,6 +118,14 @@ func startMetricsTest(t *testing.T) *azquery.MetricsClient {
 	require.NoError(t, err)
 	opts := &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport}}
 	return azquery.NewMetricsClient(credential, opts)
+}
+
+func lookupEnvVar(s string) string {
+	ret, ok := os.LookupEnv(s)
+	if !ok {
+		panic(fmt.Sprintf("Could not find env var: '%s'", s))
+	}
+	return ret
 }
 
 type FakeCredential struct{}

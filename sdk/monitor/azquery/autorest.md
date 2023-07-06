@@ -13,6 +13,7 @@ input-file:
     - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/stable/2018-01-01/metricDefinitions_API.json
     - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/stable/2018-01-01/metrics_API.json
     - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/preview/2017-12-01-preview/metricNamespaces_API.json
+    - https://github.com/srnagar/azure-rest-api-specs/blob/154cb5c6d5bdd2b183ea8d9d1b7e5bbd0caa625b/specification/monitor/data-plane/Microsoft.Insights/preview/2023-05-01-preview/metricBatch.json
 license-header: MICROSOFT_MIT_NO_VERSION
 module: github.com/Azure/azure-sdk-for-go/sdk/monitor/azquery
 openapi-type: "data-plane"
@@ -21,6 +22,10 @@ override-client-name: LogsClient
 security: "AADToken"
 use: "@autorest/go@4.0.0-preview.46"
 version: "^3.0.0"
+rawjson-as-bytes: true
+
+modelerfour: 
+  lenient-model-deduplication: true
 
 directive:
   # delete extra endpoints
@@ -73,6 +78,9 @@ directive:
   - rename-operation:
       from: MetricNamespaces_List
       to: Metrics_ListNamespaces
+  - rename-operation:
+      from: Metrics_Batch
+      to: MonitorMetrics_QueryBatch
 
   # rename some metrics fields
   - from: swagger-document
@@ -198,7 +206,9 @@ directive:
   - from: models.go
     where: $
     transform: return $.replace(/Aggregation \*string/g, "Aggregation []*AggregationType");
-  - from: metrics_client.go
+  - from: 
+      - metrics_client.go
+      - monitormetrics_client.go
     where: $
     transform: return $.replace(/\*options.Aggregation/g, "aggregationTypeToString(options.Aggregation)");
   - from: swagger-document

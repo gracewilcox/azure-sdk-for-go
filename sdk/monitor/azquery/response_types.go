@@ -38,3 +38,8 @@ type MetricsClientListNamespacesResponse struct {
 type MetricsClientQueryResourceResponse struct {
 	Response
 }
+
+// MonitorMetricsClientQueryBatchResponse contains the response from method MonitorMetricsClient.QueryBatch.
+type MonitorMetricsClientQueryBatchResponse struct {
+	MetricResultsResponse
+}

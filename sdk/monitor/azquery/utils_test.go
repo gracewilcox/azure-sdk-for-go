@@ -8,10 +8,8 @@ package azquery_test
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -40,27 +38,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	if recording.GetRecordMode() == recording.LiveMode || recording.GetRecordMode() == recording.RecordingMode {
-		workspaceID, workspaceID2, resourceURI = os.Getenv("WORKSPACE_ID"), os.Getenv("WORKSPACE_ID2"), os.Getenv("RESOURCE_URI")
-	}
-	if workspaceID == "" {
-		if recording.GetRecordMode() != recording.PlaybackMode {
-			panic("no value for WORKSPACE_ID")
-		}
-		workspaceID = fakeWorkspaceID
-	}
-	if workspaceID2 == "" {
-		if recording.GetRecordMode() != recording.PlaybackMode {
-			panic("no value for WORKSPACE_ID2")
-		}
-		workspaceID2 = fakeWorkspaceID2
-	}
-	if resourceURI == "" {
-		if recording.GetRecordMode() != recording.PlaybackMode {
-			panic("no value for RESOURCE_URI")
-		}
-		resourceURI = fakeResourceURI
-	}
 	err := recording.ResetProxy(nil)
 	if err != nil {
 		panic(err)
@@ -86,26 +63,10 @@ func TestMain(m *testing.M) {
 		}
 
 	}
-	if recording.GetRecordMode() == recording.RecordingMode {
-		err := recording.AddGeneralRegexSanitizer(fakeWorkspaceID, workspaceID, nil)
-		if err != nil {
-			panic(err)
-		}
-		err = recording.AddGeneralRegexSanitizer(fakeWorkspaceID2, workspaceID2, nil)
-		if err != nil {
-			panic(err)
-		}
-		err = recording.AddGeneralRegexSanitizer(fakeResourceURI, resourceURI, nil)
-		if err != nil {
-			panic(err)
-		}
-		defer func() {
-			err := recording.ResetProxy(nil)
-			if err != nil {
-				panic(err)
-			}
-		}()
-	}
+	workspaceID = getEnvVar("WORKSPACE_ID", fakeWorkspaceID)
+	workspaceID2 = getEnvVar("WORKSPACE_ID2", fakeWorkspaceID2)
+	resourceURI = getEnvVar("RESOURCE_URI", fakeResourceURI)
+
 	code := m.Run()
 	os.Exit(code)
 }
@@ -131,29 +92,50 @@ func startLogsTest(t *testing.T) *azquery.LogsClient {
 	return client
 }
 
-func startMetricsTest(t *testing.T) *azquery.MetricsClient {
-	var opts *azquery.MetricsClientOptions
-	if recording.GetRecordMode() == recording.LiveMode {
-		transport := &http.Client{
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{
-					Renegotiation: tls.RenegotiateOnceAsClient,
-				},
-			},
+// func startMetricsTest(t *testing.T) *azquery.MetricsClient {
+// 	var opts *azquery.MetricsClientOptions
+// 	if recording.GetRecordMode() == recording.LiveMode {
+// 		transport := &http.Client{
+// 			Transport: &http.Transport{
+// 				TLSClientConfig: &tls.Config{
+// 					Renegotiation: tls.RenegotiateOnceAsClient,
+// 				},
+// 			},
+// 		}
+// 		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport, Cloud: clientCloud}}
+// 	} else {
+// 		startRecording(t)
+// 		transport, err := recording.NewRecordingHTTPClient(t, nil)
+// 		require.NoError(t, err)
+// 		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport}}
+// 	}
+
+// 	client, err := azquery.NewMetricsClient(credential, opts)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	return client
+// }
+
+func getEnvVar(lookupValue string, fakeValue string) string {
+	// get value
+	envVar := fakeValue
+	if recording.GetRecordMode() == recording.LiveMode || recording.GetRecordMode() == recording.RecordingMode {
+		envVar = os.Getenv(lookupValue)
+		if envVar == "" {
+			panic("no value for " + lookupValue)
 		}
-		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport, Cloud: clientCloud}}
-	} else {
-		startRecording(t)
-		transport, err := recording.NewRecordingHTTPClient(t, nil)
-		require.NoError(t, err)
-		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport}}
 	}
 
-	client, err := azquery.NewMetricsClient(credential, opts)
-	if err != nil {
-		panic(err)
+	// sanitize value
+	if recording.GetRecordMode() == recording.RecordingMode {
+		err := recording.AddGeneralRegexSanitizer(fakeValue, envVar, nil)
+		if err != nil {
+			panic(err)
+		}
 	}
-	return client
+
+	return envVar
 }
 
 func lookupEnvVar(s string) string {

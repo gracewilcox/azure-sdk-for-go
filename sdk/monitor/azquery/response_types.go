@@ -31,3 +31,15 @@ type MetricsBatchClientQueryBatchResponse struct {
 	// The metrics result for a resource.
 	MetricResultsResponse
 }
+
+// MetricsClientListDefinitionsResponse contains the response from method MetricsClient.NewListDefinitionsPager.
+type MetricsClientListDefinitionsResponse struct {
+	// Represents collection of metric definitions.
+	MetricDefinitionCollection
+}
+
+// MetricsClientQueryResourceResponse contains the response from method MetricsClient.QueryResource.
+type MetricsClientQueryResourceResponse struct {
+	// The response to a metrics query.
+	Response
+}

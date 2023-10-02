@@ -33,13 +33,13 @@ type MetricsBatchClient struct {
 //   - baseURL - The regional endpoint to use, for example https://eastus.metrics.monitor.azure.com. The region should match the
 //     region of the requested resources. For global resources, the region should be 'global'.
 //   - subscriptionID - The subscription identifier for the resources in this batch.
-//   - metricnamespace - Metric namespace that contains the requested metric names.
-//   - metricnames - The names of the metrics (comma separated) to retrieve.
+//   - metricNamespace - Metric namespace that contains the requested metric names.
+//   - metricNames - The names of the metrics (comma separated) to retrieve.
 //   - resourceIDs - The comma separated list of resource IDs to query metrics for.
 //   - options - MetricsBatchClientQueryBatchOptions contains the optional parameters for the MetricsBatchClient.QueryBatch method.
-func (client *MetricsBatchClient) QueryBatch(ctx context.Context, baseURL string, subscriptionID string, metricnamespace string, metricnames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (MetricsBatchClientQueryBatchResponse, error) {
+func (client *MetricsBatchClient) QueryBatch(ctx context.Context, baseURL string, subscriptionID string, metricNamespace string, metricNames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (MetricsBatchClientQueryBatchResponse, error) {
 	var err error
-	req, err := client.queryBatchCreateRequest(ctx, baseURL, subscriptionID, metricnamespace, metricnames, resourceIDs, options)
+	req, err := client.queryBatchCreateRequest(ctx, baseURL, subscriptionID, metricNamespace, metricNames, resourceIDs, options)
 	if err != nil {
 		return MetricsBatchClientQueryBatchResponse{}, err
 	}
@@ -56,7 +56,7 @@ func (client *MetricsBatchClient) QueryBatch(ctx context.Context, baseURL string
 }
 
 // queryBatchCreateRequest creates the QueryBatch request.
-func (client *MetricsBatchClient) queryBatchCreateRequest(ctx context.Context, baseURL string, subscriptionID string, metricnamespace string, metricnames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (*policy.Request, error) {
+func (client *MetricsBatchClient) queryBatchCreateRequest(ctx context.Context, baseURL string, subscriptionID string, metricNamespace string, metricNames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (*policy.Request, error) {
 	host := "{baseUrl}"
 	host = strings.ReplaceAll(host, "{baseUrl}", baseURL)
 	urlPath := "/subscriptions/{subscriptionId}/metrics:getBatch"
@@ -78,16 +78,16 @@ func (client *MetricsBatchClient) queryBatchCreateRequest(ctx context.Context, b
 	if options != nil && options.Interval != nil {
 		reqQP.Set("interval", *options.Interval)
 	}
-	reqQP.Set("metricnamespace", metricnamespace)
-	reqQP.Set("metricnames", strings.Join(metricnames, ","))
+	reqQP.Set("metricnamespace", metricNamespace)
+	reqQP.Set("metricnames", strings.Join(metricNames, ","))
 	if options != nil && options.Aggregation != nil {
 		reqQP.Set("aggregation", *options.Aggregation)
 	}
 	if options != nil && options.Top != nil {
 		reqQP.Set("top", strconv.FormatInt(int64(*options.Top), 10))
 	}
-	if options != nil && options.Orderby != nil {
-		reqQP.Set("orderby", *options.Orderby)
+	if options != nil && options.OrderBy != nil {
+		reqQP.Set("orderby", *options.OrderBy)
 	}
 	if options != nil && options.Filter != nil {
 		reqQP.Set("filter", *options.Filter)

@@ -165,11 +165,11 @@ directive:
 
 ### Metrics
 
-<!-- ```yaml
+```yaml
 input-file:
     - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/stable/2018-01-01/metricDefinitions_API.json
     - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/stable/2018-01-01/metrics_API.json
-    - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/preview/2017-12-01-preview/metricNamespaces_API.json
+    # - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/preview/2017-12-01-preview/metricNamespaces_API.json
 output-folder: ../azquery
 title: MonitorBatchMetricsClient
 description: Azure Monitor Batch Metrics Go Client
@@ -206,16 +206,13 @@ directive:
     transform: $["x-ms-client-name"] = "OrderBy"
 
   # change type of MetricsClientQueryResourceOptions.Aggregation from *string to []*AggregationType
-  - from: models.go
-    where: $
-    transform: return $.replace(/Aggregation \*string/g, "Aggregation []*AggregationType");
   - from: metrics_client.go
     where: $
     transform: return $.replace(/\*options.Aggregation/g, "aggregationTypeToString(options.Aggregation)");
-  - from: swagger-document
-    where: $.parameters.AggregationsParameter
-    transform: $["description"] = "The list of aggregation types to retrieve"
-``` -->
+  - from: options.go
+    where: $
+    transform: return $.replace(/to retrieve.\n	Aggregation \*string/g, "to retrieve.\n Aggregation []*AggregationType");
+```
 
 ### Metrics Batch
 

@@ -36,6 +36,33 @@ type AdditionalInfoErrorResponseErrorAdditionalInfoItem struct {
 	Type *string
 }
 
+// BatchMetric - The result data of a query.
+type BatchMetric struct {
+	// REQUIRED; Description of this metric
+	DisplayDescription *string
+
+	// REQUIRED; The metric Id.
+	ID *string
+
+	// REQUIRED; The name and the display name of the metric, i.e. it is localizable string.
+	Name *LocalizableString
+
+	// REQUIRED; The time series returned when a data query is performed.
+	Timeseries []*TimeSeriesElement
+
+	// REQUIRED; The resource type of the metric resource.
+	Type *string
+
+	// REQUIRED; The unit of the metric.
+	Unit *MetricUnit
+
+	// 'Success' or the error details on query failures for this metric.
+	ErrorCode *string
+
+	// Error message encountered querying this specific metric.
+	ErrorMessage *string
+}
+
 // BatchQueryRequest - An single request in a batch.
 type BatchQueryRequest struct {
 	// REQUIRED; The Analytics query. Learn more about the Analytics query syntax [https://azure.microsoft.com/documentation/articles/app-insights-analytics-reference/]
@@ -119,47 +146,105 @@ type Column struct {
 
 // LocalizableString - The localizable string class.
 type LocalizableString struct {
-	// REQUIRED; The invariant value.
+	// REQUIRED; the invariant value.
 	Value *string
 
-	// The display name.
+	// the locale specific value.
 	LocalizedValue *string
 }
 
 // MetadataValue - Represents a metric metadata value.
 type MetadataValue struct {
-	// The name of the metadata.
+	// the name of the metadata.
 	Name *LocalizableString
 
-	// The value of the metadata.
+	// the value of the metadata.
 	Value *string
 }
 
 // Metric - The result data of a query.
 type Metric struct {
-	// REQUIRED; Description of this metric
-	DisplayDescription *string
-
-	// REQUIRED; The metric Id.
+	// REQUIRED; the metric Id.
 	ID *string
 
-	// REQUIRED; The name and the display name of the metric, i.e. it is localizable string.
+	// REQUIRED; the name and the display name of the metric, i.e. it is localizable string.
 	Name *LocalizableString
 
-	// REQUIRED; The time series returned when a data query is performed.
-	Timeseries []*TimeSeriesElement
+	// REQUIRED; the time series returned when a data query is performed.
+	TimeSeries []*TimeSeriesElement
 
-	// REQUIRED; The resource type of the metric resource.
+	// REQUIRED; the resource type of the metric resource.
 	Type *string
 
 	// REQUIRED; The unit of the metric.
 	Unit *MetricUnit
+
+	// Detailed description of this metric.
+	DisplayDescription *string
 
 	// 'Success' or the error details on query failures for this metric.
 	ErrorCode *string
 
 	// Error message encountered querying this specific metric.
 	ErrorMessage *string
+}
+
+// MetricAvailability - Metric availability specifies the time grain (aggregation interval or frequency) and the retention
+// period for that time grain.
+type MetricAvailability struct {
+	// the retention period for the metric at the specified timegrain. Expressed as a duration 'PT1M', 'P1D', etc.
+	Retention *string
+
+	// the time grain specifies the aggregation interval for the metric. Expressed as a duration 'PT1M', 'P1D', etc.
+	TimeGrain *string
+}
+
+// MetricDefinition - Metric definition class specifies the metadata for a metric.
+type MetricDefinition struct {
+	// Custom category name for this metric.
+	Category *string
+
+	// the name and the display name of the dimension, i.e. it is a localizable string.
+	Dimensions []*LocalizableString
+
+	// Detailed description of this metric.
+	DisplayDescription *string
+
+	// the resource identifier of the metric definition.
+	ID *string
+
+	// Flag to indicate whether the dimension is required.
+	IsDimensionRequired *bool
+
+	// the collection of what aggregation intervals are available to be queried.
+	MetricAvailabilities []*MetricAvailability
+
+	// The class of the metric.
+	MetricClass *MetricClass
+
+	// the name and the display name of the metric, i.e. it is a localizable string.
+	Name *LocalizableString
+
+	// the namespace the metric belongs to.
+	Namespace *string
+
+	// the primary aggregation type value defining how to use the values for display.
+	PrimaryAggregationType *AggregationType
+
+	// the resource identifier of the resource that emitted the metric.
+	ResourceID *string
+
+	// the collection of what aggregation types are supported.
+	SupportedAggregationTypes []*AggregationType
+
+	// The unit of the metric.
+	Unit *MetricUnit
+}
+
+// MetricDefinitionCollection - Represents collection of metric definitions.
+type MetricDefinitionCollection struct {
+	// REQUIRED; the values for the metric definitions.
+	Value []*MetricDefinition
 }
 
 // MetricResultsResponse - The metrics result for a resource.
@@ -176,7 +261,7 @@ type MetricResultsResponseValuesItem struct {
 	Starttime *string
 
 	// REQUIRED; The value of the collection.
-	Value []*Metric
+	Value []*BatchMetric
 
 	// The interval (window size) for which the metric data was returned in. Follows the IS8601/RFC3339 duration format (e.g.
 	// 'P1D' for 1 day). This may be adjusted in the future and returned back from what
@@ -195,23 +280,23 @@ type MetricResultsResponseValuesItem struct {
 
 // MetricValue - Represents a metric value.
 type MetricValue struct {
-	// REQUIRED; The timestamp for the metric value in ISO 8601 format.
+	// REQUIRED; the timestamp for the metric value in ISO 8601 format.
 	TimeStamp *time.Time
 
-	// The average value in the time range.
+	// the average value in the time range.
 	Average *float64
 
-	// The number of samples in the time range. Can be used to determine the number of values that contributed to the average
+	// the number of samples in the time range. Can be used to determine the number of values that contributed to the average
 	// value.
 	Count *float64
 
-	// The greatest value in the time range.
+	// the greatest value in the time range.
 	Maximum *float64
 
-	// The least value in the time range.
+	// the least value in the time range.
 	Minimum *float64
 
-	// The sum of all of the values in the time range.
+	// the sum of all of the values in the time range.
 	Total *float64
 }
 
@@ -219,6 +304,31 @@ type MetricValue struct {
 type ResourceIDList struct {
 	// The list of resource IDs to query metrics for.
 	Resourceids []*string
+}
+
+// Response - The response to a metrics query.
+type Response struct {
+	// REQUIRED; The timespan for which the data was retrieved. Its value consists of two datetimes concatenated, separated by
+	// '/'. This may be adjusted in the future and returned back from what was originally
+	// requested.
+	Timespan *TimeInterval
+
+	// REQUIRED; the value of the collection.
+	Value []*Metric
+
+	// The integer value representing the relative cost of the query.
+	Cost *int32
+
+	// The interval (window size) for which the metric data was returned in. This may be adjusted in the future and returned back
+	// from what was originally requested. This is not present if a metadata request
+	// was made.
+	Interval *string
+
+	// The namespace of the metrics being queried
+	Namespace *string
+
+	// The region of the resource being queried for metrics.
+	ResourceRegion *string
 }
 
 // Results - Contains the tables, columns & rows resulting from a query.
@@ -253,6 +363,6 @@ type TimeSeriesElement struct {
 	// An array of data points representing the metric values. This is only returned if a result type of data is specified.
 	Data []*MetricValue
 
-	// The metadata values returned if filter was specified in the call.
-	Metadatavalues []*MetadataValue
+	// the metadata values returned if $filter was specified in the call.
+	MetadataValues []*MetadataValue
 }

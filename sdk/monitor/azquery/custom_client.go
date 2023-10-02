@@ -187,10 +187,10 @@ func NewBatchQueryRequest(workspaceID string, query string, timespan TimeInterva
 
 // aggregationTypeToString converts []*AggregationType to string, so the values can be sent
 // in MetricsClient.QueryResource
-// func aggregationTypeToString(aggregations []*AggregationType) string {
-// 	var s []string
-// 	for _, aggregation := range aggregations {
-// 		s = append(s, string(*aggregation))
-// 	}
-// 	return strings.Join(s, ",")
-// }
+func aggregationTypeToString(aggregations []*AggregationType) string {
+	var s []string
+	for _, aggregation := range aggregations {
+		s = append(s, string(*aggregation))
+	}
+	return strings.Join(s, ",")
+}

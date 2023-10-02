@@ -8,8 +8,10 @@ package azquery_test
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -92,30 +94,30 @@ func startLogsTest(t *testing.T) *azquery.LogsClient {
 	return client
 }
 
-// func startMetricsTest(t *testing.T) *azquery.MetricsClient {
-// 	var opts *azquery.MetricsClientOptions
-// 	if recording.GetRecordMode() == recording.LiveMode {
-// 		transport := &http.Client{
-// 			Transport: &http.Transport{
-// 				TLSClientConfig: &tls.Config{
-// 					Renegotiation: tls.RenegotiateOnceAsClient,
-// 				},
-// 			},
-// 		}
-// 		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport, Cloud: clientCloud}}
-// 	} else {
-// 		startRecording(t)
-// 		transport, err := recording.NewRecordingHTTPClient(t, nil)
-// 		require.NoError(t, err)
-// 		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport}}
-// 	}
+func startMetricsTest(t *testing.T) *azquery.MetricsClient {
+	var opts *azquery.MetricsClientOptions
+	if recording.GetRecordMode() == recording.LiveMode {
+		transport := &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					Renegotiation: tls.RenegotiateOnceAsClient,
+				},
+			},
+		}
+		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport, Cloud: clientCloud}}
+	} else {
+		startRecording(t)
+		transport, err := recording.NewRecordingHTTPClient(t, nil)
+		require.NoError(t, err)
+		opts = &azquery.MetricsClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport}}
+	}
 
-// 	client, err := azquery.NewMetricsClient(credential, opts)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return client
-// }
+	client, err := azquery.NewMetricsClient(credential, opts)
+	if err != nil {
+		panic(err)
+	}
+	return client
+}
 
 func getEnvVar(lookupValue string, fakeValue string) string {
 	// get value

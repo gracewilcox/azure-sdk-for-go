@@ -247,6 +247,36 @@ type MetricDefinitionCollection struct {
 	Value []*MetricDefinition
 }
 
+// MetricNamespace - Metric namespace class specifies the metadata for a metric namespace.
+type MetricNamespace struct {
+	// Kind of namespace
+	Classification *NamespaceClassification
+
+	// The ID of the metric namespace.
+	ID *string
+
+	// The escaped name of the namespace.
+	Name *string
+
+	// Properties which include the fully qualified namespace name.
+	Properties *MetricNamespaceName
+
+	// The type of the namespace.
+	Type *string
+}
+
+// MetricNamespaceCollection - Represents collection of metric namespaces.
+type MetricNamespaceCollection struct {
+	// REQUIRED; The values for the metric namespaces.
+	Value []*MetricNamespace
+}
+
+// MetricNamespaceName - The fully qualified metric namespace name.
+type MetricNamespaceName struct {
+	// The metric namespace name.
+	MetricNamespaceName *string
+}
+
 // MetricResultsResponse - The metrics result for a resource.
 type MetricResultsResponse struct {
 	// The collection of metric data responses per resource, per metric.

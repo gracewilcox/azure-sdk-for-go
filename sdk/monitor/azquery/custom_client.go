@@ -54,25 +54,25 @@ func NewLogsClient(credential azcore.TokenCredential, options *LogsClientOptions
 }
 
 // NewMetricsClient creates a client that accesses Azure Monitor metrics data.
-// func NewMetricsClient(credential azcore.TokenCredential, options *MetricsClientOptions) (*MetricsClient, error) {
-// 	if options == nil {
-// 		options = &MetricsClientOptions{}
-// 	}
-// 	if reflect.ValueOf(options.Cloud).IsZero() {
-// 		options.Cloud = cloud.AzurePublic
-// 	}
-// 	c, ok := options.Cloud.Services[ServiceNameMetrics]
-// 	if !ok || c.Audience == "" || c.Endpoint == "" {
-// 		return nil, errors.New("provided Cloud field is missing Azure Monitor Metrics configuration")
-// 	}
+func NewMetricsClient(credential azcore.TokenCredential, options *MetricsClientOptions) (*MetricsClient, error) {
+	if options == nil {
+		options = &MetricsClientOptions{}
+	}
+	if reflect.ValueOf(options.Cloud).IsZero() {
+		options.Cloud = cloud.AzurePublic
+	}
+	c, ok := options.Cloud.Services[ServiceNameMetrics]
+	if !ok || c.Audience == "" || c.Endpoint == "" {
+		return nil, errors.New("provided Cloud field is missing Azure Monitor Metrics configuration")
+	}
 
-// 	authPolicy := runtime.NewBearerTokenPolicy(credential, []string{c.Audience + "/.default"}, nil)
-// 	azcoreClient, err := azcore.NewClient("azquery.MetricsClient", version, runtime.PipelineOptions{PerRetry: []policy.Policy{authPolicy}}, &options.ClientOptions)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &MetricsClient{host: c.Endpoint, internal: azcoreClient}, nil
-// }
+	authPolicy := runtime.NewBearerTokenPolicy(credential, []string{c.Audience + "/.default"}, nil)
+	azcoreClient, err := azcore.NewClient("azquery.MetricsClient", version, runtime.PipelineOptions{PerRetry: []policy.Policy{authPolicy}}, &options.ClientOptions)
+	if err != nil {
+		return nil, err
+	}
+	return &MetricsClient{host: c.Endpoint, internal: azcoreClient}, nil
+}
 
 // ErrorInfo - The code and message for an error.
 type ErrorInfo struct {

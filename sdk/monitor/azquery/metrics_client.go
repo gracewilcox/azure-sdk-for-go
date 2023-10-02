@@ -80,6 +80,61 @@ func (client *MetricsClient) listDefinitionsHandleResponse(resp *http.Response) 
 	return result, nil
 }
 
+// NewListNamespacesPager - Lists the metric namespaces for the resource.
+//
+// Generated from API version 2017-12-01-preview
+//   - resourceURI - The identifier of the resource.
+//   - options - MetricsClientListNamespacesOptions contains the optional parameters for the MetricsClient.NewListNamespacesPager
+//     method.
+func (client *MetricsClient) NewListNamespacesPager(resourceURI string, options *MetricsClientListNamespacesOptions) *runtime.Pager[MetricsClientListNamespacesResponse] {
+	return runtime.NewPager(runtime.PagingHandler[MetricsClientListNamespacesResponse]{
+		More: func(page MetricsClientListNamespacesResponse) bool {
+			return false
+		},
+		Fetcher: func(ctx context.Context, page *MetricsClientListNamespacesResponse) (MetricsClientListNamespacesResponse, error) {
+			req, err := client.listNamespacesCreateRequest(ctx, resourceURI, options)
+			if err != nil {
+				return MetricsClientListNamespacesResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return MetricsClientListNamespacesResponse{}, err
+			}
+			if !runtime.HasStatusCode(resp, http.StatusOK) {
+				return MetricsClientListNamespacesResponse{}, runtime.NewResponseError(resp)
+			}
+			return client.listNamespacesHandleResponse(resp)
+		},
+	})
+}
+
+// listNamespacesCreateRequest creates the ListNamespaces request.
+func (client *MetricsClient) listNamespacesCreateRequest(ctx context.Context, resourceURI string, options *MetricsClientListNamespacesOptions) (*policy.Request, error) {
+	urlPath := "/{resourceUri}/providers/microsoft.insights/metricNamespaces"
+	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.host, urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", "2017-12-01-preview")
+	if options != nil && options.StartTime != nil {
+		reqQP.Set("startTime", *options.StartTime)
+	}
+	req.Raw().URL.RawQuery = reqQP.Encode()
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// listNamespacesHandleResponse handles the ListNamespaces response.
+func (client *MetricsClient) listNamespacesHandleResponse(resp *http.Response) (MetricsClientListNamespacesResponse, error) {
+	result := MetricsClientListNamespacesResponse{}
+	if err := runtime.UnmarshalAsJSON(resp, &result.MetricNamespaceCollection); err != nil {
+		return MetricsClientListNamespacesResponse{}, err
+	}
+	return result, nil
+}
+
 // QueryResource - Lists the metric values for a resource.
 // If the operation fails it returns an *azcore.ResponseError type.
 //

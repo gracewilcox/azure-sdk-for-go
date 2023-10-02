@@ -38,6 +38,12 @@ type MetricsClientListDefinitionsResponse struct {
 	MetricDefinitionCollection
 }
 
+// MetricsClientListNamespacesResponse contains the response from method MetricsClient.NewListNamespacesPager.
+type MetricsClientListNamespacesResponse struct {
+	// Represents collection of metric namespaces.
+	MetricNamespaceCollection
+}
+
 // MetricsClientQueryResourceResponse contains the response from method MetricsClient.QueryResource.
 type MetricsClientQueryResourceResponse struct {
 	// The response to a metrics query.

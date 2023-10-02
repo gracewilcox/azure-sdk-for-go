@@ -155,7 +155,9 @@ directive:
     transform: return $.replace(/Rows \[\]\[\]byte/, "Rows []Row");
 
   # change type of timespan from *string to *TimeInterval
-  - from: models.go
+  - from: 
+      - options.go
+      - models.go
     where: $
     transform: return $.replace(/Timespan \*string/g, "Timespan *TimeInterval");
   - from: metrics_client.go
@@ -169,7 +171,7 @@ directive:
 input-file:
     - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/stable/2018-01-01/metricDefinitions_API.json
     - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/stable/2018-01-01/metrics_API.json
-    # - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/preview/2017-12-01-preview/metricNamespaces_API.json
+    - https://github.com/Azure/azure-rest-api-specs/blob/dba6ed1f03bda88ac6884c0a883246446cc72495/specification/monitor/resource-manager/Microsoft.Insights/preview/2017-12-01-preview/metricNamespaces_API.json
 output-folder: ../azquery
 title: MonitorBatchMetricsClient
 description: Azure Monitor Batch Metrics Go Client

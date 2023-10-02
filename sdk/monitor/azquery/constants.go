@@ -152,6 +152,24 @@ func PossibleMetricUnitValues() []MetricUnit {
 	}
 }
 
+// NamespaceClassification - Kind of namespace
+type NamespaceClassification string
+
+const (
+	NamespaceClassificationCustom   NamespaceClassification = "Custom"
+	NamespaceClassificationPlatform NamespaceClassification = "Platform"
+	NamespaceClassificationQos      NamespaceClassification = "Qos"
+)
+
+// PossibleNamespaceClassificationValues returns the possible values for the NamespaceClassification const type.
+func PossibleNamespaceClassificationValues() []NamespaceClassification {
+	return []NamespaceClassification{
+		NamespaceClassificationCustom,
+		NamespaceClassificationPlatform,
+		NamespaceClassificationQos,
+	}
+}
+
 // ResultType - Reduces the set of data collected. The syntax allowed depends on the operation. See the operation's description for details.
 type ResultType string
 

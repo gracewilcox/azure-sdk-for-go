@@ -70,6 +70,12 @@ type MetricsClientListDefinitionsOptions struct {
 	MetricNamespace *string
 }
 
+// MetricsClientListNamespacesOptions contains the optional parameters for the MetricsClient.NewListNamespacesPager method.
+type MetricsClientListNamespacesOptions struct {
+	// The ISO 8601 conform Date start time from which to query for metric namespaces.
+	StartTime *string
+}
+
 // MetricsClientQueryResourceOptions contains the optional parameters for the MetricsClient.QueryResource method.
 type MetricsClientQueryResourceOptions struct {
 	// The list of aggregation types (comma separated) to retrieve.
@@ -105,7 +111,7 @@ type MetricsClientQueryResourceOptions struct {
 	ResultType *ResultType
 
 	// The timespan of the query. It is a string with the following format 'startDateTimeISO/endDateTimeISO'.
-	Timespan *string
+	Timespan *TimeInterval
 
 	// The maximum number of records to retrieve. Valid only if $filter is specified. Defaults to 10.
 	Top *int32

@@ -18,7 +18,7 @@ import (
 
 var logsClient azquery.LogsClient
 
-// var metricsClient azquery.MetricsClient
+var metricsClient azquery.MetricsClient
 var kustoQuery1 string
 var kustoQuery2 string
 var kustoQuery3 string
@@ -43,18 +43,31 @@ func ExampleNewLogsClient() {
 	_ = client
 }
 
-// func ExampleNewMetricsClient() {
-// 	cred, err := azidentity.NewDefaultAzureCredential(nil)
-// 	if err != nil {
-// 		//TODO: handle error
-// 	}
+func ExampleNewMetricsClient() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		//TODO: handle error
+	}
 
-// 	client, err := azquery.NewMetricsClient(cred, nil)
-// 	if err != nil {
-// 		//TODO: handle error
-// 	}
-// 	_ = client
-// }
+	client, err := azquery.NewMetricsClient(cred, nil)
+	if err != nil {
+		//TODO: handle error
+	}
+	_ = client
+}
+
+func ExampleNewMetricsBatchClient() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		//TODO: handle error
+	}
+
+	client, err := azquery.NewMetricsClient(cred, nil)
+	if err != nil {
+		//TODO: handle error
+	}
+	_ = client
+}
 
 func ExampleLogsClient_QueryWorkspace() {
 	// QueryWorkspace allows users to query log data.
@@ -215,67 +228,67 @@ func ExampleLogsClient_QueryBatch() {
 	}
 }
 
-// func ExampleMetricsClient_QueryResource() {
-// 	// QueryResource is used to query metrics on an Azure resource.
-// 	// For each requested metric, a set of aggregated values is returned inside the `TimeSeries` collection.
+func ExampleMetricsClient_QueryResource() {
+	// QueryResource is used to query metrics on an Azure resource.
+	// For each requested metric, a set of aggregated values is returned inside the `TimeSeries` collection.
 
-// 	// resource ID is required to query metrics. To find the resource ID:
-// 	// 1. Navigate to your resource's page in the Azure portal.
-// 	// 2. From the **Overview** blade, select the **JSON View** link.
-// 	// 3. In the resulting JSON, copy the value of the `id` property.
-// 	resourceURI := "subscriptions/182c901a-129a-4f5d-86e4-afdsb294590a2/resourceGroups/test-log/providers/microsoft.insights/components/f1-bill/providers/microsoft.insights/metricdefinitions"
+	// resource ID is required to query metrics. To find the resource ID:
+	// 1. Navigate to your resource's page in the Azure portal.
+	// 2. From the **Overview** blade, select the **JSON View** link.
+	// 3. In the resulting JSON, copy the value of the `id` property.
+	resourceURI := "subscriptions/182c901a-129a-4f5d-86e4-afdsb294590a2/resourceGroups/test-log/providers/microsoft.insights/components/f1-bill/providers/microsoft.insights/metricdefinitions"
 
-// 	res, err := metricsClient.QueryResource(context.TODO(), resourceURI,
-// 		&azquery.MetricsClientQueryResourceOptions{
-// 			Timespan:        to.Ptr(azquery.NewTimeInterval(time.Date(2022, 12, 25, 0, 0, 0, 0, time.UTC), time.Date(2022, 12, 25, 12, 0, 0, 0, time.UTC))),
-// 			Interval:        to.Ptr("PT1M"),
-// 			MetricNames:     nil,
-// 			Aggregation:     to.SliceOfPtrs(azquery.AggregationTypeAverage, azquery.AggregationTypeCount),
-// 			Top:             to.Ptr[int32](3),
-// 			OrderBy:         to.Ptr("Average asc"),
-// 			Filter:          to.Ptr("BlobType eq '*'"),
-// 			ResultType:      nil,
-// 			MetricNamespace: to.Ptr("Microsoft.Storage/storageAccounts/blobServices"),
-// 		})
-// 	if err != nil {
-// 		//TODO: handle error
-// 	}
+	res, err := metricsClient.QueryResource(context.TODO(), resourceURI,
+		&azquery.MetricsClientQueryResourceOptions{
+			Timespan:        to.Ptr(azquery.NewTimeInterval(time.Date(2022, 12, 25, 0, 0, 0, 0, time.UTC), time.Date(2022, 12, 25, 12, 0, 0, 0, time.UTC))),
+			Interval:        to.Ptr("PT1M"),
+			MetricNames:     nil,
+			Aggregation:     to.SliceOfPtrs(azquery.AggregationTypeAverage, azquery.AggregationTypeCount),
+			Top:             to.Ptr[int32](3),
+			OrderBy:         to.Ptr("Average asc"),
+			Filter:          to.Ptr("BlobType eq '*'"),
+			ResultType:      nil,
+			MetricNamespace: to.Ptr("Microsoft.Storage/storageAccounts/blobServices"),
+		})
+	if err != nil {
+		//TODO: handle error
+	}
 
-// 	// Print out metric name and the time stamps of each metric data point
-// 	for _, metric := range res.Value {
-// 		fmt.Println(*metric.Name.Value)
-// 		for _, timeSeriesElement := range metric.TimeSeries {
-// 			for _, metricValue := range timeSeriesElement.Data {
-// 				fmt.Println(metricValue.TimeStamp)
-// 			}
-// 		}
-// 	}
-// }
+	// Print out metric name and the time stamps of each metric data point
+	for _, metric := range res.Value {
+		fmt.Println(*metric.Name.Value)
+		for _, timeSeriesElement := range metric.TimeSeries {
+			for _, metricValue := range timeSeriesElement.Data {
+				fmt.Println(metricValue.TimeStamp)
+			}
+		}
+	}
+}
 
-// func ExampleMetricsClient_NewListDefinitionsPager() {
-// 	pager := metricsClient.NewListDefinitionsPager(resourceURI, &azquery.MetricsClientListDefinitionsOptions{MetricNamespace: to.Ptr("microsoft.insights/components")})
-// 	for pager.More() {
-// 		nextResult, err := pager.NextPage(context.TODO())
-// 		if err != nil {
-// 			//TODO: handle error
-// 		}
-// 		for _, v := range nextResult.Value {
-// 			// TODO: use page item
-// 			_ = v
-// 		}
-// 	}
-// }
+func ExampleMetricsClient_NewListDefinitionsPager() {
+	pager := metricsClient.NewListDefinitionsPager(resourceURI, &azquery.MetricsClientListDefinitionsOptions{MetricNamespace: to.Ptr("microsoft.insights/components")})
+	for pager.More() {
+		nextResult, err := pager.NextPage(context.TODO())
+		if err != nil {
+			//TODO: handle error
+		}
+		for _, v := range nextResult.Value {
+			// TODO: use page item
+			_ = v
+		}
+	}
+}
 
-// func ExampleMetricsClient_NewListNamespacesPager() {
-// 	pager := metricsClient.NewListNamespacesPager(resourceURI, &azquery.MetricsClientListNamespacesOptions{StartTime: to.Ptr("2020-08-31T15:53:00Z")})
-// 	for pager.More() {
-// 		nextResult, err := pager.NextPage(context.TODO())
-// 		if err != nil {
-// 			//TODO: handle error
-// 		}
-// 		for _, v := range nextResult.Value {
-// 			// TODO: use page item
-// 			_ = v
-// 		}
-// 	}
-// }
+func ExampleMetricsClient_NewListNamespacesPager() {
+	pager := metricsClient.NewListNamespacesPager(resourceURI, &azquery.MetricsClientListNamespacesOptions{StartTime: to.Ptr("2020-08-31T15:53:00Z")})
+	for pager.More() {
+		nextResult, err := pager.NextPage(context.TODO())
+		if err != nil {
+			//TODO: handle error
+		}
+		for _, v := range nextResult.Value {
+			// TODO: use page item
+			_ = v
+		}
+	}
+}

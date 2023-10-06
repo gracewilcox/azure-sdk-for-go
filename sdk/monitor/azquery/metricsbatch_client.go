@@ -24,22 +24,21 @@ import (
 // Don't use this type directly, use a constructor function instead.
 type MetricsBatchClient struct {
 	internal *azcore.Client
+	endpoint string
 }
 
 // QueryBatch - Lists the metric values for multiple resources.
 // If the operation fails it returns an *azcore.ResponseError type.
 //
 // Generated from API version 2023-05-01-preview
-//   - baseURL - The regional endpoint to use, for example https://eastus.metrics.monitor.azure.com. The region should match the
-//     region of the requested resources. For global resources, the region should be 'global'.
 //   - subscriptionID - The subscription identifier for the resources in this batch.
 //   - metricNamespace - Metric namespace that contains the requested metric names.
 //   - metricNames - The names of the metrics (comma separated) to retrieve.
 //   - resourceIDs - The comma separated list of resource IDs to query metrics for.
 //   - options - MetricsBatchClientQueryBatchOptions contains the optional parameters for the MetricsBatchClient.QueryBatch method.
-func (client *MetricsBatchClient) QueryBatch(ctx context.Context, baseURL string, subscriptionID string, metricNamespace string, metricNames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (MetricsBatchClientQueryBatchResponse, error) {
+func (client *MetricsBatchClient) QueryBatch(ctx context.Context, subscriptionID string, metricNamespace string, metricNames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (MetricsBatchClientQueryBatchResponse, error) {
 	var err error
-	req, err := client.queryBatchCreateRequest(ctx, baseURL, subscriptionID, metricNamespace, metricNames, resourceIDs, options)
+	req, err := client.queryBatchCreateRequest(ctx, subscriptionID, metricNamespace, metricNames, resourceIDs, options)
 	if err != nil {
 		return MetricsBatchClientQueryBatchResponse{}, err
 	}
@@ -56,15 +55,13 @@ func (client *MetricsBatchClient) QueryBatch(ctx context.Context, baseURL string
 }
 
 // queryBatchCreateRequest creates the QueryBatch request.
-func (client *MetricsBatchClient) queryBatchCreateRequest(ctx context.Context, baseURL string, subscriptionID string, metricNamespace string, metricNames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (*policy.Request, error) {
-	host := "{baseUrl}"
-	host = strings.ReplaceAll(host, "{baseUrl}", baseURL)
+func (client *MetricsBatchClient) queryBatchCreateRequest(ctx context.Context, subscriptionID string, metricNamespace string, metricNames []string, resourceIDs ResourceIDList, options *MetricsBatchClientQueryBatchOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/metrics:getBatch"
 	if subscriptionID == "" {
 		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.endpoint, urlPath))
 	if err != nil {
 		return nil, err
 	}

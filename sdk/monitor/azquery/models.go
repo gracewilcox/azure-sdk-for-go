@@ -10,32 +10,6 @@ package azquery
 
 import "time"
 
-// AdditionalInfoErrorResponse - The response to a metrics query that results in a bad request, with optional additional information.
-type AdditionalInfoErrorResponse struct {
-	// REQUIRED; Top level error object that contains all relevant information.
-	Error *AdditionalInfoErrorResponseError
-}
-
-// AdditionalInfoErrorResponseError - Top level error object that contains all relevant information.
-type AdditionalInfoErrorResponseError struct {
-	// REQUIRED; Error code
-	Code *string
-
-	// REQUIRED; Error message indicating why the operation failed.
-	Message *string
-
-	// Additional information about the error
-	AdditionalInfo []*AdditionalInfoErrorResponseErrorAdditionalInfoItem
-}
-
-type AdditionalInfoErrorResponseErrorAdditionalInfoItem struct {
-	// Additional information related to the error.
-	Info *string
-
-	// The type of the info property (e.g. string).
-	Type *string
-}
-
 // BatchMetric - The result data of a query.
 type BatchMetric struct {
 	// REQUIRED; Description of this metric

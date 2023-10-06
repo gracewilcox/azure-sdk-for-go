@@ -226,7 +226,23 @@ title: MonitorBatchMetricsClient
 description: Azure Monitor Batch Metrics Go Client
 
 directive:
+  # make base URL a parameter of the client constructor
+  - from: swagger-document
+    where: $["x-ms-parameterized-host"]
+    transform: $.parameters[0]["x-ms-parameter-location"] = "client"
+
   - rename-operation:
         from: Metrics_Batch
         to: MetricsBatch_QueryBatch
+
+  # remove unused error models
+  - from: models.go
+    where: $
+    transform: return $.replace(/(?:\/\/.*\s)+type (?:AdditionalInfoErrorResponse).+\{(?:\s.+\s)+\}\s/g, "");
+  - from: models.go
+    where: $
+    transform: return $.replace(/type (?:AdditionalInfoErrorResponseErrorAdditionalInfoItem).+\{(?:\s.+\s)+\}\s/g, "");
+  - from: models_serde.go
+    where: $
+    transform: return $.replace(/(?:\/\/.*\s)+func \(\w \*?(?:AdditionalInfoErrorResponse|AdditionalInfoErrorResponseError|AdditionalInfoErrorResponseErrorAdditionalInfoItem)\).*\{\s(?:.+\s)+\}\s/g, "");
 ```

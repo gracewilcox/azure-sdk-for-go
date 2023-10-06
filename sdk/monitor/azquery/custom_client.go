@@ -32,6 +32,11 @@ type LogsClientOptions struct {
 	azcore.ClientOptions
 }
 
+// MetricsBatchClientOptions contains optional settings for MetricsBatchClient.
+type MetricsBatchClientOptions struct {
+	azcore.ClientOptions
+}
+
 // NewLogsClient creates a client that accesses Azure Monitor logs data.
 func NewLogsClient(credential azcore.TokenCredential, options *LogsClientOptions) (*LogsClient, error) {
 	if options == nil {
@@ -72,6 +77,27 @@ func NewMetricsClient(credential azcore.TokenCredential, options *MetricsClientO
 		return nil, err
 	}
 	return &MetricsClient{host: c.Endpoint, internal: azcoreClient}, nil
+}
+
+// NewMetricsBatchClient creates a client that accesses Azure Monitor metrics data.
+func NewMetricsBatchClient(baseURL string, credential azcore.TokenCredential, options *MetricsBatchClientOptions) (*MetricsBatchClient, error) {
+	if options == nil {
+		options = &MetricsBatchClientOptions{}
+	}
+	if reflect.ValueOf(options.Cloud).IsZero() {
+		options.Cloud = cloud.AzurePublic
+	}
+	c, ok := options.Cloud.Services[ServiceNameMetricsBatch]
+	if !ok || c.Audience == "" {
+		return nil, errors.New("provided Cloud field is missing Azure Monitor Metrics configuration")
+	}
+
+	authPolicy := runtime.NewBearerTokenPolicy(credential, []string{c.Audience + "/.default"}, nil)
+	azcoreClient, err := azcore.NewClient("azquery.MetricsBatchClient", version, runtime.PipelineOptions{PerRetry: []policy.Policy{authPolicy}}, &options.ClientOptions)
+	if err != nil {
+		return nil, err
+	}
+	return &MetricsBatchClient{endpoint: baseURL, internal: azcoreClient}, nil
 }
 
 // ErrorInfo - The code and message for an error.

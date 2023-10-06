@@ -10,8 +10,9 @@ import "github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 
 // Cloud Service Names for Monitor Query Logs and Metrics, used to identify the respective cloud.ServiceConfiguration
 const (
-	ServiceNameLogs    cloud.ServiceName = "azqueryLogs"
-	ServiceNameMetrics cloud.ServiceName = "azqueryMetrics"
+	ServiceNameLogs         cloud.ServiceName = "azqueryLogs"
+	ServiceNameMetrics      cloud.ServiceName = "azqueryMetrics"
+	ServiceNameMetricsBatch cloud.ServiceName = "azqueryMetricsBatch"
 )
 
 func init() {
@@ -38,5 +39,14 @@ func init() {
 	cloud.AzurePublic.Services[ServiceNameMetrics] = cloud.ServiceConfiguration{
 		Audience: "https://management.azure.com",
 		Endpoint: "https://management.azure.com",
+	}
+	cloud.AzureChina.Services[ServiceNameMetricsBatch] = cloud.ServiceConfiguration{
+		Audience: "https://monitor.azure.cn/",
+	}
+	cloud.AzureGovernment.Services[ServiceNameMetrics] = cloud.ServiceConfiguration{
+		Audience: "https://monitor.azure.us/",
+	}
+	cloud.AzurePublic.Services[ServiceNameMetrics] = cloud.ServiceConfiguration{
+		Audience: "https://monitor.azure.com/",
 	}
 }

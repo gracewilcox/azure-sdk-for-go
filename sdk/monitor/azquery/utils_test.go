@@ -30,6 +30,7 @@ import (
 const fakeWorkspaceID = "32d1e136-gg81-4b0a-b647-260cdc471f68"
 const fakeWorkspaceID2 = "asdjkfj8k20-gg81-4b0a-9fu2-260c09fn1f68"
 const fakeResourceURI = "/subscriptions/faa080af-c1d8-40ad-9cce-e1a451va7b87/resourceGroups/rg-example/providers/Microsoft.AppConfiguration/configurationStores/example"
+const fakeBaseURL = ""
 
 var (
 	credential   azcore.TokenCredential
@@ -37,6 +38,7 @@ var (
 	workspaceID2 string
 	resourceURI  string
 	clientCloud  cloud.Configuration
+	baseURL      string
 )
 
 func TestMain(m *testing.M) {
@@ -113,6 +115,18 @@ func startMetricsTest(t *testing.T) *azquery.MetricsClient {
 	}
 
 	client, err := azquery.NewMetricsClient(credential, opts)
+	if err != nil {
+		panic(err)
+	}
+	return client
+}
+
+func startMetricsBatchTest(t *testing.T) *azquery.MetricsBatchClient {
+	startRecording(t)
+	transport, err := recording.NewRecordingHTTPClient(t, nil)
+	require.NoError(t, err)
+	opts := &azquery.MetricsBatchClientOptions{ClientOptions: azcore.ClientOptions{Transport: transport, Cloud: clientCloud}}
+	client, err := azquery.NewMetricsBatchClient(baseURL, credential, opts)
 	if err != nil {
 		panic(err)
 	}

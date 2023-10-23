@@ -12,7 +12,7 @@ output-folder: ../rbac
 override-client-name: Client
 security: "AADToken"
 security-scopes: "https://vault.azure.net/.default"
-use: "@autorest/go@4.0.0-preview.46"
+use: "@autorest/go@4.0.0-preview.57"
 version: "^3.0.0"
 
 directive:
@@ -21,11 +21,6 @@ directive:
   - from: swagger-document
     where: $["x-ms-parameterized-host"]
     transform: $.parameters[0]["x-ms-parameter-location"] = "client"
-
-  # delete generated client constructor
-  - from: client.go
-    where: $
-    transform: return $.replace(/(?:\/\/.*\s)+func NewClient.+\{\s(?:.+\s)+\}\s/, "");
 
     # rename role definition and role assignment operations so they will generate as one access control client
   - rename-operation:
@@ -81,6 +76,7 @@ directive:
   - from:
       - client.go
       - models.go
+      - options.go
       - response_types.go
     where: $
     transform: return $.replace(/Client(\w+)((?:Options|Response))/g, "$1$2");

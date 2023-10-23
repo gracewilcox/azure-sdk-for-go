@@ -8,20 +8,20 @@
 
 package backup
 
-// ClientBeginFullBackupOptions contains the optional parameters for the Client.BeginFullBackup method.
-type ClientBeginFullBackupOptions struct {
+// BeginFullBackupOptions contains the optional parameters for the Client.BeginFullBackup method.
+type BeginFullBackupOptions struct {
 	// Resumes the LRO from the provided token.
 	ResumeToken string
 }
 
-// ClientBeginFullRestoreOptions contains the optional parameters for the Client.BeginFullRestore method.
-type ClientBeginFullRestoreOptions struct {
+// BeginFullRestoreOptions contains the optional parameters for the Client.BeginFullRestore method.
+type BeginFullRestoreOptions struct {
 	// Resumes the LRO from the provided token.
 	ResumeToken string
 }
 
-// ClientBeginSelectiveKeyRestoreOptions contains the optional parameters for the Client.BeginSelectiveKeyRestore method.
-type ClientBeginSelectiveKeyRestoreOptions struct {
+// BeginSelectiveKeyRestoreOptions contains the optional parameters for the Client.BeginSelectiveKeyRestore method.
+type BeginSelectiveKeyRestoreOptions struct {
 	// Resumes the LRO from the provided token.
 	ResumeToken string
 }

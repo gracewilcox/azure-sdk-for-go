@@ -1,14 +1,16 @@
 ## Release History
 
-### 1.0.2 (Unreleased)
+### 1.1.0-beta.1 (Unreleased)
 
 #### Features Added
+* Can now use Managed Identity instead of a SAS token to access the blob storage resource when performing backup and restore operations.
 
 #### Breaking Changes
 
 #### Bugs Fixed
 
 #### Other Changes
+* Upgraded dependencies
 
 ### 1.0.1 (2023-08-24)
 
@@ -22,7 +24,7 @@
 
 ### 0.3.0 (2023-06-08)
 
-### Breatking Changes
+### Breaking Changes
 * Renamed `SASTokenParameter` to `SASTokenParameters`
 * Renamed `RestoreOperationParameters.SasTokenParameters` to `RestoreOperationParameters.SASTokenParameters`
 

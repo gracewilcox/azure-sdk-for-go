@@ -16,33 +16,42 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 )
 
+// AZURE-REMOVE
 // AccessToken represents an Azure service bearer access token with expiry information.
 type AccessToken = exported.AccessToken
 
+// AZURE-KEEP
 // TokenCredential represents a credential capable of providing an OAuth token.
 type TokenCredential = exported.TokenCredential
 
+// AZURE-REMOVE
 // KeyCredential contains an authentication key used to authenticate to an Azure service.
 type KeyCredential = exported.KeyCredential
 
+// AZURE-REMOVE
 // NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
 //   - key is the authentication key
 func NewKeyCredential(key string) *KeyCredential {
 	return exported.NewKeyCredential(key)
 }
 
+// AZURE-REMOVE
 // SASCredential contains a shared access signature used to authenticate to an Azure service.
 type SASCredential = exported.SASCredential
 
+// AZURE-REMOVE
 // NewSASCredential creates a new instance of [SASCredential] with the specified values.
 //   - sas is the shared access signature
 func NewSASCredential(sas string) *SASCredential {
 	return exported.NewSASCredential(sas)
 }
 
+// AZURE-KEEP
+// JEFF, look up typ of
 // holds sentinel values used to send nulls
 var nullables map[reflect.Type]interface{} = map[reflect.Type]interface{}{}
 
+// AZURE-KEEP
 // NullValue is used to send an explicit 'null' within a request.
 // This is typically used in JSON-MERGE-PATCH operations to delete a value.
 func NullValue[T any]() T {

@@ -5,7 +5,10 @@
 // Licensed under the MIT License.
 
 // Package log provides functionality for configuring logging facilities.
+// AZURE-MAYBE contains LRO as an option, maybe have to refactor??
 package log
+
+// JEFF- maybe add slog?
 
 import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"

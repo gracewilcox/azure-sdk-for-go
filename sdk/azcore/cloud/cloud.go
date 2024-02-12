@@ -6,6 +6,7 @@
 
 package cloud
 
+// AZURE-REMOVE
 var (
 	// AzureChina contains configuration for Azure China.
 	AzureChina = Configuration{
@@ -21,12 +22,15 @@ var (
 	}
 )
 
+// AZURE-REMOVE
 // ServiceName identifies a cloud service.
 type ServiceName string
 
+// AZURE-REMOVE
 // ResourceManager is a global constant identifying Azure Resource Manager.
 const ResourceManager ServiceName = "resourceManager"
 
+// AZURE-REMOVE
 // ServiceConfiguration configures a specific cloud service such as Azure Resource Manager.
 type ServiceConfiguration struct {
 	// Audience is the audience the client will request for its access tokens.
@@ -35,6 +39,7 @@ type ServiceConfiguration struct {
 	Endpoint string
 }
 
+// AZURE-REMOVE
 // Configuration configures a cloud.
 type Configuration struct {
 	// ActiveDirectoryAuthorityHost is the base URL of the cloud's Azure Active Directory.

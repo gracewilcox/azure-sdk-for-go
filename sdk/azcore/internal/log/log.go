@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// AZURE-KEEP but remove EventLRO
 // This is an internal helper package to combine the complete logging APIs.
 package log
 
@@ -18,7 +19,7 @@ const (
 	EventRequest     = azlog.EventRequest
 	EventResponse    = azlog.EventResponse
 	EventRetryPolicy = azlog.EventRetryPolicy
-	EventLRO         = azlog.EventLRO
+	EventLRO         = azlog.EventLRO // REMOVE
 )
 
 func Write(cls log.Event, msg string) {

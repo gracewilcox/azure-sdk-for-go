@@ -23,6 +23,7 @@ import (
 
 // getTokenTypeName creates a type name from the type parameter T.
 func getTokenTypeName[T any]() (string, error) {
+	// JEFF remove all of shared.TypeOfT
 	tt := shared.TypeOfT[T]()
 	var n string
 	if tt.Kind() == reflect.Pointer {

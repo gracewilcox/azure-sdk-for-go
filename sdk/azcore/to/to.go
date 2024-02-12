@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// AZURE-KEEP
 package to
 
 // Ptr returns a pointer to the provided value.

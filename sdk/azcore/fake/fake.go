@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// AZURE-KEEP remove pollers/LROs
 // Package fake provides the building blocks for fake servers.
 // This includes fakes for authentication, API responses, and more.
 package fake

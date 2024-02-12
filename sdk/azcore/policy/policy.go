@@ -28,6 +28,8 @@ type Transporter = exported.Transporter
 // Don't use this type directly, use runtime.NewRequest() instead.
 type Request = exported.Request
 
+// JEFF knows fix, I'll think of one fix. TODO brainstorm
+// AZURE-MAYBE cloud.Configuration? will probably have to make separate for typespec core
 // ClientOptions contains optional settings for a client's pipeline.
 // Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
 // Zero-value fields will have their specified default values applied during use.

@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// AZURE-KEEP
 package shared
 
 import (
@@ -105,6 +106,7 @@ func RetryAfter(resp *http.Response) time.Duration {
 	return 0
 }
 
+// JEFF get rid of it, see where it's used (reflect.TypeFor function added)
 // TypeOfT returns the type of the generic type param.
 func TypeOfT[T any]() reflect.Type {
 	// you can't, at present, obtain the type of

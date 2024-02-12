@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// AZURE-MAYBE have to refactor out the azure specific stuff
 package shared
 
 const (

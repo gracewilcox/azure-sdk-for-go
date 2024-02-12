@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// AZURE_KEEP
 package exported
 
 import (
@@ -95,6 +96,7 @@ func extractErrorCodeXML(body []byte) string {
 	return res[1]
 }
 
+// JEFF todo, brainstorm ResponseError, can't have ErrorCode
 // ResponseError is returned when a request is made to a service and
 // the service returns a non-success HTTP status code.
 // Use errors.As() to access this type in the error chain.

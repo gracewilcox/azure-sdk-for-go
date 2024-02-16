@@ -4,18 +4,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package tracing_test
+package tracing
 
 import (
 	"context"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/stretchr/testify/require"
 )
 
 func TestProviderZeroValues(t *testing.T) {
-	pr := tracing.Provider{}
+	pr := Provider{}
 	tr := pr.NewTracer("name", "version")
 	require.Zero(t, tr)
 	require.False(t, tr.Enabled())
@@ -25,8 +24,8 @@ func TestProviderZeroValues(t *testing.T) {
 	require.Zero(t, sp)
 	sp.AddEvent("event")
 	sp.End()
-	sp.SetAttributes(tracing.Attribute{})
-	sp.SetStatus(tracing.SpanStatusError, "boom")
+	sp.SetAttributes(Attribute{})
+	sp.SetStatus(SpanStatusError, "boom")
 	spCtx := tr.SpanFromContext(ctx)
 	require.Zero(t, spCtx)
 }
@@ -38,18 +37,18 @@ func TestProvider(t *testing.T) {
 	var setStatusCalled bool
 	var spanFromContextCalled bool
 
-	pr := tracing.NewProvider(func(name, version string) tracing.Tracer {
-		return tracing.NewTracer(func(context.Context, string, *tracing.SpanOptions) (context.Context, tracing.Span) {
-			return nil, tracing.NewSpan(tracing.SpanImpl{
-				AddEvent:      func(string, ...tracing.Attribute) { addEventCalled = true },
+	pr := NewProvider(func(name, version string) Tracer {
+		return NewTracer(func(context.Context, string, *SpanOptions) (context.Context, Span) {
+			return nil, NewSpan(SpanImpl{
+				AddEvent:      func(string, ...Attribute) { addEventCalled = true },
 				End:           func() { endCalled = true },
-				SetAttributes: func(...tracing.Attribute) { setAttributesCalled = true },
-				SetStatus:     func(tracing.SpanStatus, string) { setStatusCalled = true },
+				SetAttributes: func(...Attribute) { setAttributesCalled = true },
+				SetStatus:     func(SpanStatus, string) { setStatusCalled = true },
 			})
-		}, &tracing.TracerOptions{
-			SpanFromContext: func(context.Context) tracing.Span {
+		}, &TracerOptions{
+			SpanFromContext: func(context.Context) Span {
 				spanFromContextCalled = true
-				return tracing.Span{}
+				return Span{}
 			},
 		})
 	}, nil)
@@ -58,7 +57,10 @@ func TestProvider(t *testing.T) {
 	require.True(t, tr.Enabled())
 	sp := tr.SpanFromContext(context.Background())
 	require.Zero(t, sp)
-	tr.SetAttributes(tracing.Attribute{Key: "some", Value: "attribute"})
+	tr.SetAttributes(Attribute{Key: "some", Value: "attribute"})
+	require.Len(t, tr.attrs, 1)
+	require.EqualValues(t, tr.attrs[0].Key, "some")
+	require.EqualValues(t, tr.attrs[0].Value, "attribute")
 
 	ctx, sp := tr.Start(context.Background(), "name", nil)
 	require.NotEqual(t, context.Background(), ctx)
@@ -67,7 +69,7 @@ func TestProvider(t *testing.T) {
 	sp.AddEvent("event")
 	sp.End()
 	sp.SetAttributes()
-	sp.SetStatus(tracing.SpanStatusError, "desc")
+	sp.SetStatus(SpanStatusError, "desc")
 	require.True(t, addEventCalled)
 	require.True(t, endCalled)
 	require.True(t, setAttributesCalled)

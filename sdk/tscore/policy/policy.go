@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
@@ -32,13 +31,6 @@ type Request = exported.Request
 // Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
 // Zero-value fields will have their specified default values applied during use.
 type ClientOptions struct {
-	// APIVersion overrides the default version requested of the service.
-	// Set with caution as this package version has not been tested with arbitrary service versions.
-	APIVersion string
-
-	// Cloud specifies a cloud for the client. The default is Azure Public Cloud.
-	Cloud cloud.Configuration
-
 	// Logging configures the built-in logging policy.
 	Logging LogOptions
 

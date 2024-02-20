@@ -18,7 +18,6 @@ const (
 	EventRequest     = azlog.EventRequest
 	EventResponse    = azlog.EventResponse
 	EventRetryPolicy = azlog.EventRetryPolicy
-	EventLRO         = azlog.EventLRO
 )
 
 func Write(cls log.Event, msg string) {

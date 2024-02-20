@@ -11,10 +11,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 )
 
 // NewResponseError creates a new *ResponseError from the provided HTTP response.
@@ -25,74 +23,7 @@ func NewResponseError(resp *http.Response) error {
 		RawResponse: resp,
 	}
 
-	// prefer the error code in the response header
-	if ec := resp.Header.Get(shared.HeaderXMSErrorCode); ec != "" {
-		respErr.ErrorCode = ec
-		return respErr
-	}
-
-	// if we didn't get x-ms-error-code, check in the response body
-	body, err := exported.Payload(resp, nil)
-	if err != nil {
-		return err
-	}
-
-	if len(body) > 0 {
-		if code := extractErrorCodeJSON(body); code != "" {
-			respErr.ErrorCode = code
-		} else if code := extractErrorCodeXML(body); code != "" {
-			respErr.ErrorCode = code
-		}
-	}
-
 	return respErr
-}
-
-func extractErrorCodeJSON(body []byte) string {
-	var rawObj map[string]interface{}
-	if err := json.Unmarshal(body, &rawObj); err != nil {
-		// not a JSON object
-		return ""
-	}
-
-	// check if this is a wrapped error, i.e. { "error": { ... } }
-	// if so then unwrap it
-	if wrapped, ok := rawObj["error"]; ok {
-		unwrapped, ok := wrapped.(map[string]interface{})
-		if !ok {
-			return ""
-		}
-		rawObj = unwrapped
-	} else if wrapped, ok := rawObj["odata.error"]; ok {
-		// check if this a wrapped odata error, i.e. { "odata.error": { ... } }
-		unwrapped, ok := wrapped.(map[string]any)
-		if !ok {
-			return ""
-		}
-		rawObj = unwrapped
-	}
-
-	// now check for the error code
-	code, ok := rawObj["code"]
-	if !ok {
-		return ""
-	}
-	codeStr, ok := code.(string)
-	if !ok {
-		return ""
-	}
-	return codeStr
-}
-
-func extractErrorCodeXML(body []byte) string {
-	// regular expression is much easier than dealing with the XML parser
-	rx := regexp.MustCompile(`<(?:\w+:)?[c|C]ode>\s*(\w+)\s*<\/(?:\w+:)?[c|C]ode>`)
-	res := rx.FindStringSubmatch(string(body))
-	if len(res) != 2 {
-		return ""
-	}
-	// first submatch is the entire thing, second one is the captured error code
-	return res[1]
 }
 
 // ResponseError is returned when a request is made to a service and
@@ -100,9 +31,6 @@ func extractErrorCodeXML(body []byte) string {
 // Use errors.As() to access this type in the error chain.
 // Exported as tscore.ResponseError.
 type ResponseError struct {
-	// ErrorCode is the error code returned by the resource provider if available.
-	ErrorCode string
-
 	// StatusCode is the HTTP status code as defined in https://pkg.go.dev/net/http#pkg-constants.
 	StatusCode int
 
@@ -127,11 +55,6 @@ func (e *ResponseError) Error() string {
 	} else {
 		fmt.Fprintln(msg, "Missing RawResponse")
 		fmt.Fprintln(msg, separator)
-	}
-	if e.ErrorCode != "" {
-		fmt.Fprintf(msg, "ERROR CODE: %s\n", e.ErrorCode)
-	} else {
-		fmt.Fprintln(msg, "ERROR CODE UNAVAILABLE")
 	}
 	if e.RawResponse != nil {
 		fmt.Fprintln(msg, separator)

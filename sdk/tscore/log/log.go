@@ -25,10 +25,6 @@ const (
 
 	// EventRetryPolicy entries contain information specific to the retry policy in use.
 	EventRetryPolicy Event = "Retry"
-
-	// EventLRO entries contain information specific to long-running operations.
-	// This includes information like polling location, operation state, and sleep intervals.
-	EventLRO Event = "LongRunningOperation"
 )
 
 // SetEvents is used to control which events are written to

@@ -18,43 +18,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewResponseErrorNoBodyNoErrorCode(t *testing.T) {
-	fakeURL, err := url.Parse("https://fakeurl.com/the/path?qp=removed")
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = NewResponseError(&http.Response{
-		Status:     "the system is down",
-		StatusCode: http.StatusInternalServerError,
-		Body:       http.NoBody,
-		Request: &http.Request{
-			Method: http.MethodGet,
-			URL:    fakeURL,
-		},
-	})
-	re, ok := err.(*ResponseError)
-	if !ok {
-		t.Fatalf("unexpected error type %T", err)
-	}
-	if re.ErrorCode != "" {
-		t.Fatal("expected empty error code")
-	}
-	if c := re.StatusCode; c != http.StatusInternalServerError {
-		t.Fatalf("unexpected status code %d", c)
-	}
-	const want = `GET https://fakeurl.com/the/path
---------------------------------------------------------------------------------
-RESPONSE 500: the system is down
-ERROR CODE UNAVAILABLE
---------------------------------------------------------------------------------
-Response contained no body
---------------------------------------------------------------------------------
-`
-	if got := re.Error(); got != want {
-		t.Fatalf("\ngot:\n%s\nwant:\n%s\n", got, want)
-	}
-}
-
 func TestNewResponseErrorNoBody(t *testing.T) {
 	fakeURL, err := url.Parse("https://fakeurl.com/the/path?qp=removed")
 	if err != nil {
@@ -76,9 +39,6 @@ func TestNewResponseErrorNoBody(t *testing.T) {
 	re, ok := err.(*ResponseError)
 	if !ok {
 		t.Fatalf("unexpected error type %T", err)
-	}
-	if ec := re.ErrorCode; ec != errorCode {
-		t.Fatalf("unexpected error code %s", ec)
 	}
 	if c := re.StatusCode; c != http.StatusInternalServerError {
 		t.Fatalf("unexpected status code %d", c)
@@ -421,34 +381,6 @@ ERROR CODE UNAVAILABLE
 `
 	if got := re.Error(); got != want {
 		t.Fatalf("\ngot:\n%s\nwant:\n%s\n", got, want)
-	}
-}
-
-func TestExtractErrorCodeFromJSON(t *testing.T) {
-	errorBody := []byte(`{"odata.error": {
-		"code": "ResourceNotFound",
-		"message": {
-		  "lang": "en-us",
-		  "value": "The specified resource does not exist.\nRequestID:b2437f3b-ca2d-47a1-95a7-92f73a768a1c\n"
-		}
-	  }
-	}`)
-	code := extractErrorCodeJSON(errorBody)
-	if code != "ResourceNotFound" {
-		t.Fatalf("expected %s got %s", "ResourceNotFound", code)
-	}
-
-	errorBody = []byte(`{"error": {
-		"code": "ResourceNotFound",
-		"message": {
-		  "lang": "en-us",
-		  "value": "The specified resource does not exist.\nRequestID:b2437f3b-ca2d-47a1-95a7-92f73a768a1c\n"
-		}
-	  }
-	}`)
-	code = extractErrorCodeJSON(errorBody)
-	if code != "ResourceNotFound" {
-		t.Fatalf("expected %s got %s", "ResourceNotFound", code)
 	}
 }
 

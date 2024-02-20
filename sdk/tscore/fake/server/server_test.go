@@ -251,28 +251,6 @@ func TestErrorResponderHelpers(t *testing.T) {
 	require.ErrorIs(t, GetError(errResp, nil), io.EOF)
 }
 
-func TestPagerResponderHelpers(t *testing.T) {
-	pagerResp := fake.PagerResponder[widget]{}
-	require.False(t, PagerResponderMore(&pagerResp))
-	resp, err := PagerResponderNext(&pagerResp, nil)
-	require.Error(t, err)
-	require.Nil(t, resp)
-	PagerResponderInjectNextLinks(&pagerResp, nil, func(page *widget, createLink func() string) {})
-}
-
-func TestPollerResponderHelpers(t *testing.T) {
-	pollerResp := fake.PollerResponder[widget]{}
-	require.False(t, PollerResponderMore(&pollerResp))
-	resp, err := PollerResponderNext(&pollerResp, nil)
-	require.Error(t, err)
-	require.Nil(t, resp)
-}
-
-func TestSanitizePagerPollerPath(t *testing.T) {
-	const untouched = "/this/path/wont/change"
-	require.EqualValues(t, untouched, SanitizePagerPollerPath(untouched))
-}
-
 type readFailer struct {
 	wrapped io.ReadCloser
 }

@@ -71,9 +71,6 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	// we put the includeResponsePolicy at the very beginning so that the raw response
 	// is populated with the final response (some policies might mutate the response)
 	policies := []policy.Policy{exported.PolicyFunc(includeResponsePolicy)}
-	if cp.APIVersion != "" {
-		policies = append(policies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
-	}
 	if !cp.Telemetry.Disabled {
 		policies = append(policies, NewTelemetryPolicy(module, version, &cp.Telemetry))
 	}

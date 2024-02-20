@@ -18,7 +18,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/fake"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/fake/internal/exported"
 	azexported "github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
-	fakepoller "github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/pollers/fake"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 )
 
@@ -189,43 +188,4 @@ func GetResponseContent[T any](r fake.Responder[T]) ResponseContent {
 // This function is called by the fake server internals.
 func GetError(e fake.ErrorResponder, req *http.Request) error {
 	return exported.ErrorResponder(e).GetError(req)
-}
-
-// PagerResponderNext returns the next response in the sequence (a T or an error).
-// This function is called by the fake server internals.
-func PagerResponderNext[T any](p *fake.PagerResponder[T], req *http.Request) (*http.Response, error) {
-	return (*exported.PagerResponder[T])(p).Next(req)
-}
-
-// PagerResponderMore returns true if there are more responses for consumption.
-// This function is called by the fake server internals.
-func PagerResponderMore[T any](p *fake.PagerResponder[T]) bool {
-	return (*exported.PagerResponder[T])(p).More()
-}
-
-// PagerResponderInjectNextLinks is used to populate the nextLink field.
-// The inject callback is executed for every T in the sequence except for the last one.
-// This function is called by the fake server internals.
-func PagerResponderInjectNextLinks[T any](p *fake.PagerResponder[T], req *http.Request, inject func(page *T, createLink func() string)) {
-	(*exported.PagerResponder[T])(p).InjectNextLinks(req, inject)
-}
-
-// PollerResponderMore returns true if there are more responses for consumption.
-// This function is called by the fake server internals.
-func PollerResponderMore[T any](p *fake.PollerResponder[T]) bool {
-	return (*exported.PollerResponder[T])(p).More()
-}
-
-// PollerResponderNext returns the next response in the sequence (a *http.Response or an error).
-// This function is called by the fake server internals.
-func PollerResponderNext[T any](p *fake.PollerResponder[T], req *http.Request) (*http.Response, error) {
-	return (*exported.PollerResponder[T])(p).Next(req)
-}
-
-// SanitizePagerPollerPath removes any fake-appended suffix from a URL's path.
-// This function is called by the fake server internals.
-func SanitizePagerPollerPath(path string) string {
-	path = exported.SanitizePagerPath(path)
-	path = fakepoller.SanitizePollerPath(path)
-	return path
 }

@@ -14,8 +14,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
-	azexported "github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 )
 
 // Payload reads and returns the response body or an error.
@@ -105,5 +104,5 @@ func removeBOM(resp *http.Response) error {
 
 // DecodeByteArray will base-64 decode the provided string into v.
 func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
-	return azexported.DecodeByteArray(s, v, format)
+	return exported.DecodeByteArray(s, v, format)
 }

@@ -15,9 +15,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/stretchr/testify/require"

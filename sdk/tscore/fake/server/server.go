@@ -14,9 +14,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/fake"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/fake/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
 	azexported "github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 )

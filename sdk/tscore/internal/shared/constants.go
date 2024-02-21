@@ -25,12 +25,12 @@ const (
 
 const BearerTokenPrefix = "Bearer "
 
-const TracingNamespaceAttrName = "az.namespace"
+const TracingNamespaceAttrName = "namespace"
 
 const (
 	// Module is the name of the calling module used in telemetry data.
 	Module = "tscore"
 
 	// Version is the semantic version (see http://semver.org) of this module.
-	Version = "v1.9.3"
+	Version = "v0.1.0"
 )

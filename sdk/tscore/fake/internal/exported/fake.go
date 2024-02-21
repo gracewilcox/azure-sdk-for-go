@@ -13,8 +13,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 )

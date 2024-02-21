@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/temporal"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/temporal"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 

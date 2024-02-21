@@ -12,9 +12,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/fake/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 

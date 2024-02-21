@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/uuid"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/uuid"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/to"
 )
 

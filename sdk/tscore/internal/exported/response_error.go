@@ -11,8 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
 )
 
 // NewResponseError creates a new *ResponseError from the provided HTTP response.
@@ -58,7 +56,7 @@ func (e *ResponseError) Error() string {
 	}
 	if e.RawResponse != nil {
 		fmt.Fprintln(msg, separator)
-		body, err := exported.Payload(e.RawResponse, nil)
+		body, err := Payload(e.RawResponse, nil)
 		if err != nil {
 			// this really shouldn't fail at this point as the response
 			// body is already cached (it was read in NewResponseError)

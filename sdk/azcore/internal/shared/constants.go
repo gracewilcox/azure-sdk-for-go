@@ -7,6 +7,7 @@
 package shared
 
 const (
+	// KEEP
 	ContentTypeAppJSON   = "application/json"
 	ContentTypeAppXML    = "application/xml"
 	ContentTypeTextPlain = "text/plain"
@@ -31,10 +32,13 @@ const (
 	HeaderXMSRetryAfterMS        = "x-ms-retry-after-ms"    // REMOVE
 )
 
+// KEEP
 const BearerTokenPrefix = "Bearer "
 
+// KEEP but rename
 const TracingNamespaceAttrName = "az.namespace"
 
+// KEEP but rename
 const (
 	// Module is the name of the calling module used in telemetry data.
 	Module = "azcore"

@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 

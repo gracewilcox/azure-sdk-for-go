@@ -11,11 +11,13 @@ import (
 	"context"
 )
 
+// KEEP
 // ProviderOptions contains the optional values when creating a Provider.
 type ProviderOptions struct {
 	// for future expansion
 }
 
+// KEEP
 // NewProvider creates a new Provider with the specified values.
 //   - newTracerFn is the underlying implementation for creating Tracer instances
 //   - options contains optional values; pass nil to accept the default value
@@ -25,12 +27,14 @@ func NewProvider(newTracerFn func(name, version string) Tracer, options *Provide
 	}
 }
 
+// KEEP
 // Provider is the factory that creates Tracer instances.
 // It defaults to a no-op provider.
 type Provider struct {
 	newTracerFn func(name, version string) Tracer
 }
 
+// KEEP
 // NewTracer creates a new Tracer for the specified module name and version.
 //   - module - the fully qualified name of the module
 //   - version - the version of the module
@@ -43,12 +47,14 @@ func (p Provider) NewTracer(module, version string) (tracer Tracer) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// KEEP
 // TracerOptions contains the optional values when creating a Tracer.
 type TracerOptions struct {
 	// SpanFromContext contains the implementation for the Tracer.SpanFromContext method.
 	SpanFromContext func(context.Context) Span
 }
 
+// KEEP
 // NewTracer creates a Tracer with the specified values.
 //   - newSpanFn is the underlying implementation for creating Span instances
 //   - options contains optional values; pass nil to accept the default value
@@ -62,6 +68,7 @@ func NewTracer(newSpanFn func(ctx context.Context, spanName string, options *Spa
 	}
 }
 
+// KEEP
 // Tracer is the factory that creates Span instances.
 type Tracer struct {
 	attrs             []Attribute
@@ -106,6 +113,7 @@ func (t Tracer) SpanFromContext(ctx context.Context) Span {
 	return Span{}
 }
 
+// KEEP
 // SpanOptions contains optional settings for creating a span.
 type SpanOptions struct {
 	// Kind indicates the kind of Span.
@@ -117,6 +125,7 @@ type SpanOptions struct {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// KEEP
 // SpanImpl abstracts the underlying implementation for Span,
 // allowing it to work with various tracing implementations.
 // Any zero-values will have their default, no-op behavior.
@@ -134,6 +143,7 @@ type SpanImpl struct {
 	SetStatus func(SpanStatus, string)
 }
 
+// KEEP
 // NewSpan creates a Span with the specified implementation.
 func NewSpan(impl SpanImpl) Span {
 	return Span{
@@ -141,6 +151,7 @@ func NewSpan(impl SpanImpl) Span {
 	}
 }
 
+// KEEP
 // Span is a single unit of a trace.  A trace can contain multiple spans.
 // A zero-value Span provides a no-op implementation.
 type Span struct {
@@ -179,6 +190,7 @@ func (s Span) SetStatus(code SpanStatus, desc string) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// KEEP
 // Attribute is a key-value pair.
 type Attribute struct {
 	// Key is the name of the attribute.

@@ -67,8 +67,6 @@ func TestHTTPTracePolicy(t *testing.T) {
 	req, err = exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL()+"?foo=redactme&visibleqp=bar")
 	require.NoError(t, err)
 	req.Raw().Header.Add(shared.HeaderUserAgent, "my-user-agent")
-	req.Raw().Header.Add(shared.HeaderXMSClientRequestID, "my-client-request")
-	srv.AppendResponse(mock.WithHeader(shared.HeaderXMSRequestID, "request-id"))
 	_, err = pl.Do(req)
 	require.NoError(t, err)
 	require.EqualValues(t, tracing.SpanStatusUnset, spanStatus)

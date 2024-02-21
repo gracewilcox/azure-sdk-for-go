@@ -56,9 +56,6 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 		if ua := req.Raw().Header.Get(shared.HeaderUserAgent); ua != "" {
 			attributes = append(attributes, tracing.Attribute{Key: attrHTTPUserAgent, Value: ua})
 		}
-		if reqID := req.Raw().Header.Get(shared.HeaderXMSClientRequestID); reqID != "" {
-			attributes = append(attributes, tracing.Attribute{Key: attrAZClientReqID, Value: reqID})
-		}
 
 		ctx := req.Raw().Context()
 		ctx, span := tracer.Start(ctx, "HTTP "+req.Raw().Method, &tracing.SpanOptions{
@@ -71,9 +68,6 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 				span.SetAttributes(tracing.Attribute{Key: attrHTTPStatusCode, Value: resp.StatusCode})
 				if resp.StatusCode > 399 {
 					span.SetStatus(tracing.SpanStatusError, resp.Status)
-				}
-				if reqID := resp.Header.Get(shared.HeaderXMSRequestID); reqID != "" {
-					span.SetAttributes(tracing.Attribute{Key: attrAZServiceReqID, Value: reqID})
 				}
 			} else if err != nil {
 				var urlErr *url.Error

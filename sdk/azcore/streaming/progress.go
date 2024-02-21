@@ -12,6 +12,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 )
 
+// KEEP
 type progress struct {
 	rc     io.ReadCloser
 	rsc    io.ReadSeekCloser
@@ -19,6 +20,7 @@ type progress struct {
 	offset int64
 }
 
+// KEEP
 // NopCloser returns a ReadSeekCloser with a no-op close method wrapping the provided io.ReadSeeker.
 // In addition to adding a Close method to an io.ReadSeeker, this can also be used to wrap an
 // io.ReadSeekCloser with a no-op Close method to allow explicit control of when the io.ReedSeekCloser
@@ -27,6 +29,7 @@ func NopCloser(rs io.ReadSeeker) io.ReadSeekCloser {
 	return exported.NopCloser(rs)
 }
 
+// KEEP
 // NewRequestProgress adds progress reporting to an HTTP request's body stream.
 func NewRequestProgress(body io.ReadSeekCloser, pr func(bytesTransferred int64)) io.ReadSeekCloser {
 	return &progress{
@@ -37,6 +40,7 @@ func NewRequestProgress(body io.ReadSeekCloser, pr func(bytesTransferred int64))
 	}
 }
 
+// KEEP
 // NewResponseProgress adds progress reporting to an HTTP response's body stream.
 func NewResponseProgress(body io.ReadCloser, pr func(bytesTransferred int64)) io.ReadCloser {
 	return &progress{

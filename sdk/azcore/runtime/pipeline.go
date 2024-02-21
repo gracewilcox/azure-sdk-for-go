@@ -11,6 +11,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
+// KEEP- remove APIVersion? double check with Jeff
 // PipelineOptions contains Pipeline options for SDK developers
 type PipelineOptions struct {
 	// AllowedHeaders is the slice of headers to log with their values intact.
@@ -38,12 +39,14 @@ type PipelineOptions struct {
 	Tracing TracingOptions
 }
 
+// KEEP
 // TracingOptions contains tracing options for SDK developers.
 type TracingOptions struct {
 	// Namespace contains the value to use for the az.namespace span attribute.
 	Namespace string
 }
 
+// KEEP
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
 type Pipeline = exported.Pipeline

@@ -11,6 +11,7 @@ import (
 	"net/http"
 )
 
+// KEEP
 // Policy represents an extensibility point for the Pipeline that can mutate the specified
 // Request and react to the received Response.
 // Exported as policy.Policy.
@@ -21,6 +22,7 @@ type Policy interface {
 	Do(req *Request) (*http.Response, error)
 }
 
+// KEEP
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
 // Exported as runtime.Pipeline.
@@ -28,6 +30,7 @@ type Pipeline struct {
 	policies []Policy
 }
 
+// KEEP
 // Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
 // Exported as policy.Transporter.
 type Transporter interface {
@@ -35,6 +38,7 @@ type Transporter interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
+// KEEP
 // used to adapt a TransportPolicy to a Policy
 type transportPolicy struct {
 	trans Transporter
@@ -55,6 +59,7 @@ func (tp transportPolicy) Do(req *Request) (*http.Response, error) {
 	return resp, nil
 }
 
+// KEEP
 // NewPipeline creates a new Pipeline object from the specified Policies.
 // Not directly exported, but used as part of runtime.NewPipeline().
 func NewPipeline(transport Transporter, policies ...Policy) Pipeline {

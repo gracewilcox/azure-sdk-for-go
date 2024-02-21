@@ -22,13 +22,16 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 )
 
+// KEEP
 // ResponseContent is used when building the *http.Response.
 // This type is used by the fake server internals.
 type ResponseContent = exported.ResponseContent
 
+// KEEP
 // ResponseOptions contains the optional values for NewResponse().
 type ResponseOptions = exported.ResponseOptions
 
+// KEEP
 // NewResponse returns a *http.Response.
 // This function is called by the fake server internals.
 func NewResponse(content ResponseContent, req *http.Request, opts *ResponseOptions) (*http.Response, error) {
@@ -47,6 +50,7 @@ func NewResponse(content ResponseContent, req *http.Request, opts *ResponseOptio
 	return resp, nil
 }
 
+// KEEP
 // MarshalResponseAsByteArray base-64 encodes the body with the specified format and returns it in a *http.Response.
 // This function is called by the fake server internals.
 func MarshalResponseAsByteArray(content ResponseContent, body []byte, format azexported.Base64Encoding, req *http.Request) (*http.Response, error) {
@@ -60,6 +64,7 @@ func MarshalResponseAsByteArray(content ResponseContent, body []byte, format aze
 	return resp, nil
 }
 
+// KEEP
 // MarshalResponseAsJSON converts the body into JSON and returns it in a *http.Response.
 // This function is called by the fake server internals.
 func MarshalResponseAsJSON(content ResponseContent, v any, req *http.Request) (*http.Response, error) {
@@ -75,6 +80,7 @@ func MarshalResponseAsJSON(content ResponseContent, v any, req *http.Request) (*
 	return resp, nil
 }
 
+// KEEP
 // MarshalResponseAsText converts the body into text and returns it in a *http.Response.
 // This function is called by the fake server internals.
 func MarshalResponseAsText(content ResponseContent, body *string, req *http.Request) (*http.Response, error) {
@@ -90,6 +96,7 @@ func MarshalResponseAsText(content ResponseContent, body *string, req *http.Requ
 	return resp, nil
 }
 
+// KEEP
 // MarshalResponseAsXML converts the body into XML and returns it in a *http.Response.
 // This function is called by the fake server internals.
 func MarshalResponseAsXML(content ResponseContent, v any, req *http.Request) (*http.Response, error) {
@@ -105,6 +112,7 @@ func MarshalResponseAsXML(content ResponseContent, v any, req *http.Request) (*h
 	return resp, nil
 }
 
+// KEEP
 // UnmarshalRequestAsByteArray base-64 decodes the body in the specified format.
 // This function is called by the fake server internals.
 func UnmarshalRequestAsByteArray(req *http.Request, format azexported.Base64Encoding) ([]byte, error) {
@@ -123,6 +131,7 @@ func UnmarshalRequestAsByteArray(req *http.Request, format azexported.Base64Enco
 	return val, nil
 }
 
+// KEEP
 // UnmarshalRequestAsJSON unmarshalls the request body into an instance of T.
 // This function is called by the fake server internals.
 func UnmarshalRequestAsJSON[T any](req *http.Request) (T, error) {
@@ -141,6 +150,7 @@ func UnmarshalRequestAsJSON[T any](req *http.Request) (T, error) {
 	return tt, err
 }
 
+// KEEP
 // UnmarshalRequestAsText unmarshalls the request body into a string.
 // This function is called by the fake server internals.
 func UnmarshalRequestAsText(req *http.Request) (string, error) {
@@ -155,6 +165,7 @@ func UnmarshalRequestAsText(req *http.Request) (string, error) {
 	return string(body), nil
 }
 
+// KEEP
 // UnmarshalRequestAsXML unmarshalls the request body into an instance of T.
 // This function is called by the fake server internals.
 func UnmarshalRequestAsXML[T any](req *http.Request) (T, error) {
@@ -173,30 +184,35 @@ func UnmarshalRequestAsXML[T any](req *http.Request) (T, error) {
 	return tt, err
 }
 
+// KEEP
 // GetResponse returns the response associated with the Responder.
 // This function is called by the fake server internals.
 func GetResponse[T any](r fake.Responder[T]) T {
 	return exported.Responder[T](r).GetResponse()
 }
 
+// KEEP
 // GetResponseContent returns the ResponseContent associated with the Responder.
 // This function is called by the fake server internals.
 func GetResponseContent[T any](r fake.Responder[T]) ResponseContent {
 	return exported.Responder[T](r).GetResponseContent()
 }
 
+// KEEP
 // GetError returns the error for this responder.
 // This function is called by the fake server internals.
 func GetError(e fake.ErrorResponder, req *http.Request) error {
 	return exported.ErrorResponder(e).GetError(req)
 }
 
+// REMOVE
 // PagerResponderNext returns the next response in the sequence (a T or an error).
 // This function is called by the fake server internals.
 func PagerResponderNext[T any](p *fake.PagerResponder[T], req *http.Request) (*http.Response, error) {
 	return (*exported.PagerResponder[T])(p).Next(req)
 }
 
+// REMOVE
 // PagerResponderMore returns true if there are more responses for consumption.
 // This function is called by the fake server internals.
 func PagerResponderMore[T any](p *fake.PagerResponder[T]) bool {
@@ -222,6 +238,7 @@ func PollerResponderNext[T any](p *fake.PollerResponder[T], req *http.Request) (
 	return (*exported.PollerResponder[T])(p).Next(req)
 }
 
+// REMOVE
 // SanitizePagerPollerPath removes any fake-appended suffix from a URL's path.
 // This function is called by the fake server internals.
 func SanitizePagerPollerPath(path string) string {

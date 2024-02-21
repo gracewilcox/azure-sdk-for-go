@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// KEEP
 // ETag is a property used for optimistic concurrency during updates
 // ETag is a validator based on https://tools.ietf.org/html/rfc7232#section-2.3.2
 // An ETag can be empty ("").

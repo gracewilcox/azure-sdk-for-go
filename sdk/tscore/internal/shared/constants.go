@@ -13,21 +13,14 @@ const (
 )
 
 const (
-	HeaderAuthorization          = "Authorization"
-	HeaderAuxiliaryAuthorization = "x-ms-authorization-auxiliary"
-	HeaderAzureAsync             = "Azure-AsyncOperation"
-	HeaderContentLength          = "Content-Length"
-	HeaderContentType            = "Content-Type"
-	HeaderLocation               = "Location"
-	HeaderOperationLocation      = "Operation-Location"
-	HeaderRetryAfter             = "Retry-After"
-	HeaderRetryAfterMS           = "Retry-After-Ms"
-	HeaderUserAgent              = "User-Agent"
-	HeaderWWWAuthenticate        = "WWW-Authenticate"
-	HeaderXMSClientRequestID     = "x-ms-client-request-id"
-	HeaderXMSRequestID           = "x-ms-request-id"
-	HeaderXMSErrorCode           = "x-ms-error-code"
-	HeaderXMSRetryAfterMS        = "x-ms-retry-after-ms"
+	HeaderAuthorization     = "Authorization"
+	HeaderContentLength     = "Content-Length"
+	HeaderContentType       = "Content-Type"
+	HeaderLocation          = "Location"
+	HeaderOperationLocation = "Operation-Location"
+	HeaderRetryAfter        = "Retry-After"
+	HeaderUserAgent         = "User-Agent"
+	HeaderWWWAuthenticate   = "WWW-Authenticate"
 )
 
 const BearerTokenPrefix = "Bearer "

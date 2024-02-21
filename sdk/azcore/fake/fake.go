@@ -18,6 +18,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 )
 
+// KEEP
 // TokenCredential is a fake credential that implements the azcore.TokenCredential interface.
 type TokenCredential struct {
 	err error
@@ -39,6 +40,7 @@ func (t *TokenCredential) GetToken(ctx context.Context, opts policy.TokenRequest
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// KEEP
 // Responder represents a scalar response.
 type Responder[T any] exported.Responder[T]
 
@@ -50,11 +52,13 @@ func (r *Responder[T]) SetResponse(httpStatus int, resp T, o *SetResponseOptions
 	(*exported.Responder[T])(r).SetResponse(httpStatus, resp, o)
 }
 
+// KEEP
 // SetResponseOptions contains the optional values for Responder[T].SetResponse.
 type SetResponseOptions = exported.SetResponseOptions
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// KEEP
 // ErrorResponder represents a scalar error response.
 type ErrorResponder exported.ErrorResponder
 
@@ -73,6 +77,7 @@ func (e *ErrorResponder) SetResponseError(httpStatus int, errorCode string) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// REMOVE
 // PagerResponder represents a sequence of paged responses.
 // Responses are consumed in the order in which they were added.
 // If no pages or errors have been added, calls to Pager[T].NextPage
@@ -98,11 +103,13 @@ func (p *PagerResponder[T]) AddResponseError(httpStatus int, errorCode string) {
 	(*exported.PagerResponder[T])(p).AddResponseError(httpStatus, errorCode)
 }
 
+// REMOVE
 // AddPageOptions contains the optional values for PagerResponder[T].AddPage.
 type AddPageOptions = exported.AddPageOptions
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// REMOVE
 // PollerResponder represents a sequence of responses for a long-running operation.
 // Any non-terminal responses are consumed in the order in which they were added.
 // The terminal response, success or error, is always the final response.
@@ -132,8 +139,10 @@ func (p *PollerResponder[T]) SetTerminalError(httpStatus int, errorCode string) 
 	(*exported.PollerResponder[T])(p).SetTerminalError(httpStatus, errorCode)
 }
 
+// REMOVE
 // AddNonTerminalResponseOptions contains the optional values for PollerResponder[T].AddNonTerminalResponse.
 type AddNonTerminalResponseOptions = exported.AddNonTerminalResponseOptions
 
+// REMOVE
 // SetTerminalResponseOptions contains the optional values for PollerResponder[T].SetTerminalResponse.
 type SetTerminalResponseOptions = exported.SetTerminalResponseOptions

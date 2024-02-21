@@ -15,6 +15,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 )
 
+// KEEP
 // bodyDownloadPolicy creates a policy object that downloads the response's body to a []byte.
 func bodyDownloadPolicy(req *policy.Request) (*http.Response, error) {
 	resp, err := req.Next()
@@ -35,15 +36,18 @@ func bodyDownloadPolicy(req *policy.Request) (*http.Response, error) {
 	return resp, err
 }
 
+// KEEP
 // bodyDownloadPolicyOpValues is the struct containing the per-operation values
 type bodyDownloadPolicyOpValues struct {
 	Skip bool
 }
 
+// KEEP
 type bodyDownloadError struct {
 	err error
 }
 
+// KEEP
 func newBodyDownloadError(err error, req *policy.Request) error {
 	// on failure, only retry the request for idempotent operations.
 	// we currently identify them as DELETE, GET, and PUT requests.

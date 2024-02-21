@@ -10,6 +10,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
+// KEEP
 // KeyCredentialPolicy authorizes requests with a [azcore.KeyCredential].
 type KeyCredentialPolicy struct {
 	cred   *exported.KeyCredential
@@ -17,12 +18,14 @@ type KeyCredentialPolicy struct {
 	prefix string
 }
 
+// KEEP
 // KeyCredentialPolicyOptions contains the optional values configuring [KeyCredentialPolicy].
 type KeyCredentialPolicyOptions struct {
 	// Prefix is used if the key requires a prefix before it's inserted into the HTTP request.
 	Prefix string
 }
 
+// KEEP
 // NewKeyCredentialPolicy creates a new instance of [KeyCredentialPolicy].
 //   - cred is the [azcore.KeyCredential] used to authenticate with the service
 //   - header is the name of the HTTP request header in which the key is placed

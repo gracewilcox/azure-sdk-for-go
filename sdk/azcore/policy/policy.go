@@ -17,17 +17,21 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 )
 
+// KEEP
 // Policy represents an extensibility point for the Pipeline that can mutate the specified
 // Request and react to the received Response.
 type Policy = exported.Policy
 
+// KEEP
 // Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
 type Transporter = exported.Transporter
 
+// KEEP
 // Request is an abstraction over the creation of an HTTP request as it passes through the pipeline.
 // Don't use this type directly, use runtime.NewRequest() instead.
 type Request = exported.Request
 
+// KEEP- remove APIVersion and Cloud
 // ClientOptions contains optional settings for a client's pipeline.
 // Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
 // Zero-value fields will have their specified default values applied during use.
@@ -64,6 +68,7 @@ type ClientOptions struct {
 	PerRetryPolicies []Policy
 }
 
+// KEEP
 // LogOptions configures the logging policy's behavior.
 type LogOptions struct {
 	// IncludeBody indicates if request and response bodies should be included in logging.
@@ -81,6 +86,7 @@ type LogOptions struct {
 	AllowedQueryParams []string
 }
 
+// KEEP
 // RetryOptions configures the retry policy's behavior.
 // Zero-value fields will have their specified default values applied during use.
 // This allows for modification of a subset of fields.
@@ -128,6 +134,7 @@ type RetryOptions struct {
 	ShouldRetry func(*http.Response, error) bool
 }
 
+// KEEP- double check on User-Agent
 // TelemetryOptions configures the telemetry policy's behavior.
 type TelemetryOptions struct {
 	// ApplicationID is an application-specific identification string to add to the User-Agent.
@@ -138,9 +145,11 @@ type TelemetryOptions struct {
 	Disabled bool
 }
 
+// KEEP- but might remove may of the fields???
 // TokenRequestOptions contain specific parameter that may be used by credentials types when attempting to get a token.
 type TokenRequestOptions = exported.TokenRequestOptions
 
+// KEEP
 // BearerTokenOptions configures the bearer token policy's behavior.
 type BearerTokenOptions struct {
 	// AuthorizationHandler allows SDK developers to run client-specific logic when BearerTokenPolicy must authorize a request.
@@ -149,6 +158,7 @@ type BearerTokenOptions struct {
 	AuthorizationHandler AuthorizationHandler
 }
 
+// KEEP
 // AuthorizationHandler allows SDK developers to insert custom logic that runs when BearerTokenPolicy must authorize a request.
 type AuthorizationHandler struct {
 	// OnRequest is called each time the policy receives a request. Its func parameter authorizes the request with a token
@@ -167,12 +177,14 @@ type AuthorizationHandler struct {
 	OnChallenge func(*Request, *http.Response, func(TokenRequestOptions) error) error
 }
 
+// KEEP
 // WithCaptureResponse applies the HTTP response retrieval annotation to the parent context.
 // The resp parameter will contain the HTTP response after the request has completed.
 func WithCaptureResponse(parent context.Context, resp **http.Response) context.Context {
 	return context.WithValue(parent, shared.CtxWithCaptureResponse{}, resp)
 }
 
+// KEEP
 // WithHTTPHeader adds the specified http.Header to the parent context.
 // Use this to specify custom HTTP headers at the API-call level.
 // Any overlapping headers will have their values replaced with the values specified here.
@@ -180,6 +192,7 @@ func WithHTTPHeader(parent context.Context, header http.Header) context.Context 
 	return context.WithValue(parent, shared.CtxWithHTTPHeaderKey{}, header)
 }
 
+// KEEP
 // WithRetryOptions adds the specified RetryOptions to the parent context.
 // Use this to specify custom RetryOptions at the API-call level.
 func WithRetryOptions(parent context.Context, options RetryOptions) context.Context {

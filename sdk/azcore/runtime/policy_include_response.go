@@ -14,6 +14,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
+// KEEP
 // includeResponsePolicy creates a policy that retrieves the raw HTTP response upon request
 func includeResponsePolicy(req *policy.Request) (*http.Response, error) {
 	resp, err := req.Next()
@@ -27,6 +28,7 @@ func includeResponsePolicy(req *policy.Request) (*http.Response, error) {
 	return resp, err
 }
 
+// REMOVE
 // WithCaptureResponse applies the HTTP response retrieval annotation to the parent context.
 // The resp parameter will contain the HTTP response after the request has completed.
 // Deprecated: use [policy.WithCaptureResponse] instead.

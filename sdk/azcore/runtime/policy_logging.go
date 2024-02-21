@@ -22,12 +22,14 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/diag"
 )
 
+// KEEP
 type logPolicy struct {
 	includeBody    bool
 	allowedHeaders map[string]struct{}
 	allowedQP      map[string]struct{}
 }
 
+// KEEP but remove x-ms headers
 // NewLogPolicy creates a request/response logging policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewLogPolicy(o *policy.LogOptions) policy.Policy {
@@ -75,6 +77,7 @@ func NewLogPolicy(o *policy.LogOptions) policy.Policy {
 	}
 }
 
+// KEEP
 // getAllowedQueryParams merges the default set of allowed query parameters
 // with a custom set (usually comes from client options).
 func getAllowedQueryParams(customAllowedQP []string) map[string]struct{} {
@@ -87,6 +90,7 @@ func getAllowedQueryParams(customAllowedQP []string) map[string]struct{} {
 	return allowedQP
 }
 
+// KEEP
 // logPolicyOpValues is the struct containing the per-operation values
 type logPolicyOpValues struct {
 	try   int32
@@ -146,8 +150,10 @@ func (p *logPolicy) Do(req *policy.Request) (*http.Response, error) {
 	return response, err
 }
 
+// KEEP
 const redactedValue = "REDACTED"
 
+// KEEP
 // getSanitizedURL returns a sanitized string for the provided url.URL
 func getSanitizedURL(u url.URL, allowedQueryParams map[string]struct{}) string {
 	// redact applicable query params
@@ -201,6 +207,7 @@ func (p *logPolicy) writeHeader(b *bytes.Buffer, header http.Header) {
 	}
 }
 
+// KEEP
 // returns true if the request/response body should be logged.
 // this is determined by looking at the content-type header value.
 func shouldLogBody(b *bytes.Buffer, contentType string) bool {
@@ -214,6 +221,7 @@ func shouldLogBody(b *bytes.Buffer, contentType string) bool {
 	return false
 }
 
+// KEEP
 // writes to a buffer, used for logging purposes
 func writeReqBody(req *policy.Request, b *bytes.Buffer) error {
 	if req.Raw().Body == nil {
@@ -235,6 +243,7 @@ func writeReqBody(req *policy.Request, b *bytes.Buffer) error {
 	return nil
 }
 
+// KEEP
 // writes to a buffer, used for logging purposes
 func writeRespBody(resp *http.Response, b *bytes.Buffer) error {
 	ct := resp.Header.Get(shared.HeaderContentType)
@@ -257,6 +266,7 @@ func writeRespBody(resp *http.Response, b *bytes.Buffer) error {
 	return nil
 }
 
+// KEEP
 func logBody(b *bytes.Buffer, body []byte) {
 	fmt.Fprintln(b, "   --------------------------------------------------------------------------------")
 	fmt.Fprintln(b, string(body))

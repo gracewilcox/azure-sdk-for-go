@@ -14,7 +14,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,7 +24,6 @@ func TestNewResponseErrorNoBody(t *testing.T) {
 	}
 	respHeader := http.Header{}
 	const errorCode = "ErrorTooManyCheats"
-	respHeader.Set(shared.HeaderXMSErrorCode, errorCode)
 	err = NewResponseError(&http.Response{
 		Status:     "the system is down",
 		StatusCode: http.StatusInternalServerError,
@@ -99,7 +97,6 @@ func TestNewResponseErrorPreferErrorCodeHeader(t *testing.T) {
 		t.Fatal(err)
 	}
 	respHeader := http.Header{}
-	respHeader.Set(shared.HeaderXMSErrorCode, "ErrorTooManyCheats")
 	err = NewResponseError(&http.Response{
 		Status:     "the system is down",
 		StatusCode: http.StatusInternalServerError,
@@ -280,7 +277,6 @@ func TestNewResponseErrorErrorCodeHeaderXML(t *testing.T) {
 		t.Fatal(err)
 	}
 	respHeader := http.Header{}
-	respHeader.Set(shared.HeaderXMSErrorCode, "ContainerAlreadyExists")
 	err = NewResponseError(&http.Response{
 		Status:     "the system is down",
 		StatusCode: http.StatusInternalServerError,
@@ -317,7 +313,6 @@ func TestNewResponseErrorErrorCodeHeaderXMLWithNamespace(t *testing.T) {
 		t.Fatal(err)
 	}
 	respHeader := http.Header{}
-	respHeader.Set(shared.HeaderXMSErrorCode, "ContainerAlreadyExists")
 	err = NewResponseError(&http.Response{
 		Status:     "the system is down",
 		StatusCode: http.StatusInternalServerError,

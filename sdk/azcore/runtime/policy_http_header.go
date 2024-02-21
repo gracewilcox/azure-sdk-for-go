@@ -14,6 +14,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
+// KEEP
 // newHTTPHeaderPolicy creates a policy object that adds custom HTTP headers to a request
 func httpHeaderPolicy(req *policy.Request) (*http.Response, error) {
 	// check if any custom HTTP headers have been specified
@@ -31,6 +32,7 @@ func httpHeaderPolicy(req *policy.Request) (*http.Response, error) {
 	return req.Next()
 }
 
+// REMOVE
 // WithHTTPHeader adds the specified http.Header to the parent context.
 // Use this to specify custom HTTP headers at the API-call level.
 // Any overlapping headers will have their values replaced with the values specified here.

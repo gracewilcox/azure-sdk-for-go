@@ -11,26 +11,32 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
 )
 
+// KEEP
 // Event is used to group entries.  Each group can be toggled on or off.
 type Event = log.Event
 
 const (
+	// KEEP
 	// EventRequest entries contain information about HTTP requests.
 	// This includes information like the URL, query parameters, and headers.
 	EventRequest Event = "Request"
 
+	// KEEP
 	// EventResponse entries contain information about HTTP responses.
 	// This includes information like the HTTP status code, headers, and request URL.
 	EventResponse Event = "Response"
 
+	// KEEP
 	// EventRetryPolicy entries contain information specific to the retry policy in use.
 	EventRetryPolicy Event = "Retry"
 
+	// REMOVE
 	// EventLRO entries contain information specific to long-running operations.
 	// This includes information like polling location, operation state, and sleep intervals.
 	EventLRO Event = "LongRunningOperation"
 )
 
+// KEEP
 // SetEvents is used to control which events are written to
 // the log.  By default all log events are writen.
 // NOTE: this is not goroutine safe and should be called before using SDK clients.
@@ -38,6 +44,7 @@ func SetEvents(cls ...Event) {
 	log.SetEvents(cls...)
 }
 
+// KEEP
 // SetListener will set the Logger to write to the specified Listener.
 // NOTE: this is not goroutine safe and should be called before using SDK clients.
 func SetListener(lst func(Event, string)) {

@@ -18,10 +18,12 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
+// KEEP
 type telemetryPolicy struct {
 	telemetryValue string
 }
 
+// KEEP
 // NewTelemetryPolicy creates a telemetry policy object that adds telemetry information to outgoing HTTP requests.
 // The format is [<application_id> ]azsdk-go-<mod>/<ver> <platform_info>.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
@@ -54,10 +56,12 @@ func NewTelemetryPolicy(mod, ver string, o *policy.TelemetryOptions) policy.Poli
 	return &tp
 }
 
+// KEEP
 func formatTelemetry(comp, ver string) string {
 	return fmt.Sprintf("azsdk-go-%s/%s", comp, ver)
 }
 
+// KEEP
 func (p telemetryPolicy) Do(req *policy.Request) (*http.Response, error) {
 	if p.telemetryValue == "" {
 		return req.Next()
@@ -70,6 +74,7 @@ func (p telemetryPolicy) Do(req *policy.Request) (*http.Response, error) {
 	return req.Next()
 }
 
+// KEEP
 // NOTE: the ONLY function that should write to this variable is this func
 var platformInfo = func() string {
 	operatingSystem := runtime.GOOS // Default OS string

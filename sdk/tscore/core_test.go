@@ -223,7 +223,3 @@ func TestClientWithClientName(t *testing.T) {
 func TestNewKeyCredential(t *testing.T) {
 	require.NotNil(t, NewKeyCredential("foo"))
 }
-
-func TestNewSASCredential(t *testing.T) {
-	require.NotNil(t, NewSASCredential("foo"))
-}

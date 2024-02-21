@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// REMOVE entire pollers folder
 package pollers
 
 // FinalStateVia is the enumerated type for the possible final-state-via values.

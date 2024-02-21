@@ -16,20 +16,24 @@ import (
 	"time"
 )
 
+// KEEP
 type nopCloser struct {
 	io.ReadSeeker
 }
 
+// KEEP
 func (n nopCloser) Close() error {
 	return nil
 }
 
+// KEEP
 // NopCloser returns a ReadSeekCloser with a no-op close method wrapping the provided io.ReadSeeker.
 // Exported as streaming.NopCloser().
 func NopCloser(rs io.ReadSeeker) io.ReadSeekCloser {
 	return nopCloser{rs}
 }
 
+// KEEP
 // HasStatusCode returns true if the Response's status code is one of the specified values.
 // Exported as runtime.HasStatusCode().
 func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
@@ -44,6 +48,7 @@ func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
 	return false
 }
 
+// KEEP just remove "Azure service note"
 // AccessToken represents an Azure service bearer access token with expiry information.
 // Exported as azcore.AccessToken.
 type AccessToken struct {
@@ -51,6 +56,7 @@ type AccessToken struct {
 	ExpiresOn time.Time
 }
 
+// KEEP- removing EnableCAE, keep the others??
 // TokenRequestOptions contain specific parameter that may be used by credentials types when attempting to get a token.
 // Exported as policy.TokenRequestOptions.
 type TokenRequestOptions struct {
@@ -73,6 +79,7 @@ type TokenRequestOptions struct {
 	TenantID string
 }
 
+// KEEP
 // TokenCredential represents a credential capable of providing an OAuth token.
 // Exported as azcore.TokenCredential.
 type TokenCredential interface {
@@ -80,6 +87,7 @@ type TokenCredential interface {
 	GetToken(ctx context.Context, options TokenRequestOptions) (AccessToken, error)
 }
 
+// KEEP
 // DecodeByteArray will base-64 decode the provided string into v.
 // Exported as runtime.DecodeByteArray()
 func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
@@ -112,12 +120,14 @@ func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
 	}
 }
 
+// KEEP
 // KeyCredential contains an authentication key used to authenticate to an Azure service.
 // Exported as azcore.KeyCredential.
 type KeyCredential struct {
 	cred *keyCredential
 }
 
+// KEEP
 // NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
 //   - key is the authentication key
 func NewKeyCredential(key string) *KeyCredential {
@@ -129,12 +139,14 @@ func (k *KeyCredential) Update(key string) {
 	k.cred.Update(key)
 }
 
+// REMOVE
 // SASCredential contains a shared access signature used to authenticate to an Azure service.
 // Exported as azcore.SASCredential.
 type SASCredential struct {
 	cred *keyCredential
 }
 
+// REMOVE
 // NewSASCredential creates a new instance of [SASCredential] with the specified values.
 //   - sas is the shared access signature
 func NewSASCredential(sas string) *SASCredential {
@@ -146,20 +158,24 @@ func (k *SASCredential) Update(sas string) {
 	k.cred.Update(sas)
 }
 
+// KEEP
 // KeyCredentialGet returns the key for cred.
 func KeyCredentialGet(cred *KeyCredential) string {
 	return cred.cred.Get()
 }
 
+// REMOVE
 // SASCredentialGet returns the shared access sig for cred.
 func SASCredentialGet(cred *SASCredential) string {
 	return cred.cred.Get()
 }
 
+// KEEP
 type keyCredential struct {
 	key atomic.Value // string
 }
 
+// KEEP
 func newKeyCredential(key string) *keyCredential {
 	keyCred := keyCredential{}
 	keyCred.key.Store(key)

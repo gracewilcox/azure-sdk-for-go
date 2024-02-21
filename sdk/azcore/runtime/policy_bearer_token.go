@@ -16,6 +16,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/temporal"
 )
 
+// KEEP
 // BearerTokenPolicy authorizes requests with bearer tokens acquired from a TokenCredential.
 type BearerTokenPolicy struct {
 	// mainResource is the resource to be retreived using the tenant specified in the credential
@@ -42,6 +43,7 @@ func acquire(state acquiringResourceState) (newResource exported.AccessToken, ne
 	return tk, tk.ExpiresOn, nil
 }
 
+// KEEP
 // NewBearerTokenPolicy creates a policy object that authorizes requests with bearer tokens.
 // cred: an azcore.TokenCredential implementation such as a credential object from azidentity
 // scopes: the list of permission scopes required for the token.

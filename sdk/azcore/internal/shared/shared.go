@@ -19,21 +19,27 @@ import (
 // NOTE: when adding a new context key type, it likely needs to be
 // added to the deny-list of key types in ContextWithDeniedValues
 
+// KEEP
 // CtxWithHTTPHeaderKey is used as a context key for adding/retrieving http.Header.
 type CtxWithHTTPHeaderKey struct{}
 
+// KEEP
 // CtxWithRetryOptionsKey is used as a context key for adding/retrieving RetryOptions.
 type CtxWithRetryOptionsKey struct{}
 
+// KEEP
 // CtxWithCaptureResponse is used as a context key for retrieving the raw response.
 type CtxWithCaptureResponse struct{}
 
+// KEEP
 // CtxWithTracingTracer is used as a context key for adding/retrieving tracing.Tracer.
 type CtxWithTracingTracer struct{}
 
+// KEEP- double check API name
 // CtxAPINameKey is used as a context key for adding/retrieving the API name.
 type CtxAPINameKey struct{}
 
+// KEEP
 // Delay waits for the duration to elapse or the context to be cancelled.
 func Delay(ctx context.Context, delay time.Duration) error {
 	select {
@@ -44,6 +50,7 @@ func Delay(ctx context.Context, delay time.Duration) error {
 	}
 }
 
+// KEEP, but removing retry-after-ms, x-ms-retry-after-ms; removing rety data list
 // RetryAfter returns non-zero if the response contains one of the headers with a "retry after" value.
 // Headers are checked in the following order: retry-after-ms, x-ms-retry-after-ms, retry-after
 func RetryAfter(resp *http.Response) time.Duration {

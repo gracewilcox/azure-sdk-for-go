@@ -26,6 +26,7 @@ const (
 	defaultMaxRetries = 3
 )
 
+// KEEP- are we still keeping the default MaxRetryDelay as 60 seconds
 func setDefaults(o *policy.RetryOptions) {
 	if o.MaxRetries == 0 {
 		o.MaxRetries = defaultMaxRetries
@@ -58,6 +59,7 @@ func setDefaults(o *policy.RetryOptions) {
 	}
 }
 
+// KEEP
 func calcDelay(o policy.RetryOptions, try int32) time.Duration { // try is >=1; never 0
 	delay := time.Duration((1<<try)-1) * o.RetryDelay
 
@@ -69,6 +71,7 @@ func calcDelay(o policy.RetryOptions, try int32) time.Duration { // try is >=1; 
 	return delay
 }
 
+// KEEP
 // NewRetryPolicy creates a policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {
@@ -79,6 +82,7 @@ func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {
 	return p
 }
 
+// KEEP
 type retryPolicy struct {
 	options policy.RetryOptions
 }
@@ -199,6 +203,7 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 	}
 }
 
+// REMOVE
 // WithRetryOptions adds the specified RetryOptions to the parent context.
 // Use this to specify custom RetryOptions at the API-call level.
 // Deprecated: use [policy.WithRetryOptions] instead.
@@ -208,6 +213,7 @@ func WithRetryOptions(parent context.Context, options policy.RetryOptions) conte
 
 // ********** The following type/methods implement the retryableRequestBody (a ReadSeekCloser)
 
+// KEEP
 // This struct is used when sending a body to the network
 type retryableRequestBody struct {
 	body io.ReadSeeker // Seeking is required to support retries
@@ -237,6 +243,7 @@ func (b *retryableRequestBody) realClose() error {
 
 // ********** The following type/methods implement the contextCancelReadCloser
 
+// KEEP
 // contextCancelReadCloser combines an io.ReadCloser with a cancel func.
 // it ensures the cancel func is invoked once the body has been read and closed.
 type contextCancelReadCloser struct {
@@ -244,10 +251,12 @@ type contextCancelReadCloser struct {
 	body io.ReadCloser
 }
 
+// KEEP
 func (rc *contextCancelReadCloser) Read(p []byte) (n int, err error) {
 	return rc.body.Read(p)
 }
 
+// KEEP
 func (rc *contextCancelReadCloser) Close() error {
 	err := rc.body.Close()
 	rc.cf()

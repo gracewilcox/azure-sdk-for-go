@@ -44,7 +44,7 @@ func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
 	return false
 }
 
-// AccessToken represents an Azure service bearer access token with expiry information.
+// AccessToken represents an bearer access token with expiry information.
 // Exported as tscore.AccessToken.
 type AccessToken struct {
 	Token     string
@@ -58,12 +58,6 @@ type TokenRequestOptions struct {
 	// service may return in a claims challenge following an authorization failure. If a service returned the
 	// claims value base64 encoded, it must be decoded before setting this field.
 	Claims string
-
-	// EnableCAE indicates whether to enable Continuous Access Evaluation (CAE) for the requested token. When true,
-	// azidentity credentials request CAE tokens for resource APIs supporting CAE. Clients are responsible for
-	// handling CAE challenges. If a client that doesn't handle CAE challenges receives a CAE token, it may end up
-	// in a loop retrying an API call with a token that has been revoked due to CAE.
-	EnableCAE bool
 
 	// Scopes contains the list of permission scopes required for the token.
 	Scopes []string
@@ -129,30 +123,8 @@ func (k *KeyCredential) Update(key string) {
 	k.cred.Update(key)
 }
 
-// SASCredential contains a shared access signature used to authenticate to an Azure service.
-// Exported as tscore.SASCredential.
-type SASCredential struct {
-	cred *keyCredential
-}
-
-// NewSASCredential creates a new instance of [SASCredential] with the specified values.
-//   - sas is the shared access signature
-func NewSASCredential(sas string) *SASCredential {
-	return &SASCredential{cred: newKeyCredential(sas)}
-}
-
-// Update replaces the existing shared access signature with the specified value.
-func (k *SASCredential) Update(sas string) {
-	k.cred.Update(sas)
-}
-
 // KeyCredentialGet returns the key for cred.
 func KeyCredentialGet(cred *KeyCredential) string {
-	return cred.cred.Get()
-}
-
-// SASCredentialGet returns the shared access sig for cred.
-func SASCredentialGet(cred *SASCredential) string {
 	return cred.cred.Get()
 }
 

@@ -14,21 +14,21 @@ const (
 
 const (
 	HeaderAuthorization          = "Authorization"
-	HeaderAuxiliaryAuthorization = "x-ms-authorization-auxiliary"
-	HeaderAzureAsync             = "Azure-AsyncOperation"
+	HeaderAuxiliaryAuthorization = "x-ms-authorization-auxiliary" // REMOVE
+	HeaderAzureAsync             = "Azure-AsyncOperation"         // REMOVE
 	HeaderContentLength          = "Content-Length"
 	HeaderContentType            = "Content-Type"
-	HeaderFakePollerStatus       = "Fake-Poller-Status"
+	HeaderFakePollerStatus       = "Fake-Poller-Status" // REMOVE
 	HeaderLocation               = "Location"
 	HeaderOperationLocation      = "Operation-Location"
 	HeaderRetryAfter             = "Retry-After"
-	HeaderRetryAfterMS           = "Retry-After-Ms"
+	HeaderRetryAfterMS           = "Retry-After-Ms" // REMOVE
 	HeaderUserAgent              = "User-Agent"
 	HeaderWWWAuthenticate        = "WWW-Authenticate"
-	HeaderXMSClientRequestID     = "x-ms-client-request-id"
-	HeaderXMSRequestID           = "x-ms-request-id"
-	HeaderXMSErrorCode           = "x-ms-error-code"
-	HeaderXMSRetryAfterMS        = "x-ms-retry-after-ms"
+	HeaderXMSClientRequestID     = "x-ms-client-request-id" // REMOVE
+	HeaderXMSRequestID           = "x-ms-request-id"        // REMOVE
+	HeaderXMSErrorCode           = "x-ms-error-code"        // REMOVE
+	HeaderXMSRetryAfterMS        = "x-ms-retry-after-ms"    // REMOVE
 )
 
 const BearerTokenPrefix = "Bearer "

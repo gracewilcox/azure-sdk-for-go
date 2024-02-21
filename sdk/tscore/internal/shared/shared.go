@@ -45,7 +45,7 @@ func Delay(ctx context.Context, delay time.Duration) error {
 }
 
 // RetryAfter returns non-zero if the response contains one of the headers with a "retry after" value.
-// Headers are checked in the following order: retry-after-ms, x-ms-retry-after-ms, retry-after
+// Headers are checked in the following order: retry-after
 func RetryAfter(resp *http.Response) time.Duration {
 	if resp == nil {
 		return 0
@@ -60,20 +60,8 @@ func RetryAfter(resp *http.Response) time.Duration {
 		custom func(string) time.Duration
 	}
 
-	nop := func(string) time.Duration { return 0 }
-
 	// the headers are listed in order of preference
 	retries := []retryData{
-		{
-			header: HeaderRetryAfterMS,
-			units:  time.Millisecond,
-			custom: nop,
-		},
-		{
-			header: HeaderXMSRetryAfterMS,
-			units:  time.Millisecond,
-			custom: nop,
-		},
 		{
 			header: HeaderRetryAfter,
 			units:  time.Second,

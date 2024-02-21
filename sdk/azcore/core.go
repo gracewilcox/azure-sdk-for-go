@@ -16,24 +16,30 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 )
 
+// KEEP
 // AccessToken represents an Azure service bearer access token with expiry information.
 type AccessToken = exported.AccessToken
 
+// KEEP
 // TokenCredential represents a credential capable of providing an OAuth token.
 type TokenCredential = exported.TokenCredential
 
+// KEEP
 // KeyCredential contains an authentication key used to authenticate to an Azure service.
 type KeyCredential = exported.KeyCredential
 
+// KEEP
 // NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
 //   - key is the authentication key
 func NewKeyCredential(key string) *KeyCredential {
 	return exported.NewKeyCredential(key)
 }
 
+// REMOVE
 // SASCredential contains a shared access signature used to authenticate to an Azure service.
 type SASCredential = exported.SASCredential
 
+// REMOVE
 // NewSASCredential creates a new instance of [SASCredential] with the specified values.
 //   - sas is the shared access signature
 func NewSASCredential(sas string) *SASCredential {
@@ -43,6 +49,7 @@ func NewSASCredential(sas string) *SASCredential {
 // holds sentinel values used to send nulls
 var nullables map[reflect.Type]interface{} = map[reflect.Type]interface{}{}
 
+// KEEP
 // NullValue is used to send an explicit 'null' within a request.
 // This is typically used in JSON-MERGE-PATCH operations to delete a value.
 func NullValue[T any]() T {
@@ -67,6 +74,7 @@ func NullValue[T any]() T {
 	return v.(T)
 }
 
+// KEEP
 // IsNullValue returns true if the field contains a null sentinel value.
 // This is used by custom marshallers to properly encode a null value.
 func IsNullValue[T any](v T) bool {
@@ -84,6 +92,7 @@ func IsNullValue[T any](v T) bool {
 	return false
 }
 
+// KEEP- remove API version and cloud
 // ClientOptions contains optional settings for a client's pipeline.
 // Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
 // Zero-value fields will have their specified default values applied during use.

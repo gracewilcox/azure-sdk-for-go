@@ -19,7 +19,7 @@ import (
 
 func TestIncludeResponse(t *testing.T) {
 	var respFromCtx *http.Response
-	ctx := WithCaptureResponse(context.Background(), &respFromCtx)
+	ctx := policy.WithCaptureResponse(context.Background(), &respFromCtx)
 	require.NotNil(t, ctx)
 	raw := ctx.Value(shared.CtxWithCaptureResponse{})
 	_, ok := raw.(**http.Response)
@@ -35,7 +35,7 @@ func TestIncludeResponsePolicy(t *testing.T) {
 	// include response policy is automatically added during pipeline construction
 	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
 	var respFromCtx *http.Response
-	ctxWithResp := WithCaptureResponse(context.Background(), &respFromCtx)
+	ctxWithResp := policy.WithCaptureResponse(context.Background(), &respFromCtx)
 	req, err := NewRequest(ctxWithResp, http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	resp, err := pl.Do(req)

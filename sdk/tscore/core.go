@@ -28,15 +28,6 @@ func NewKeyCredential(key string) *KeyCredential {
 	return exported.NewKeyCredential(key)
 }
 
-// SASCredential contains a shared access signature used to authenticate to an Azure service.
-type SASCredential = exported.SASCredential
-
-// NewSASCredential creates a new instance of [SASCredential] with the specified values.
-//   - sas is the shared access signature
-func NewSASCredential(sas string) *SASCredential {
-	return exported.NewSASCredential(sas)
-}
-
 // holds sentinel values used to send nulls
 var nullables map[reflect.Type]interface{} = map[reflect.Type]interface{}{}
 

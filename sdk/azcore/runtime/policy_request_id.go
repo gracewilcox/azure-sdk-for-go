@@ -14,13 +14,16 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/uuid"
 )
 
+// REMOVE
 type requestIDPolicy struct{}
 
+// REMOVE
 // NewRequestIDPolicy returns a policy that add the x-ms-client-request-id header
 func NewRequestIDPolicy() policy.Policy {
 	return &requestIDPolicy{}
 }
 
+// REMOVE
 func (r *requestIDPolicy) Do(req *policy.Request) (*http.Response, error) {
 	if req.Raw().Header.Get(shared.HeaderXMSClientRequestID) == "" {
 		id, err := uuid.New()

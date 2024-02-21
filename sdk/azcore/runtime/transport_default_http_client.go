@@ -15,8 +15,10 @@ import (
 	"golang.org/x/net/http2"
 )
 
+// KEEP
 var defaultHTTPClient *http.Client
 
+// KEEP
 func init() {
 	defaultTransport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,

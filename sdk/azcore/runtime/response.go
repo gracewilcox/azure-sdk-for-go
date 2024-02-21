@@ -18,6 +18,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
 )
 
+// KEEP
 // Payload reads and returns the response body or an error.
 // On a successful read, the response body is cached.
 // Subsequent reads will access the cached value.
@@ -25,11 +26,13 @@ func Payload(resp *http.Response) ([]byte, error) {
 	return exported.Payload(resp, nil)
 }
 
+// KEEP
 // HasStatusCode returns true if the Response's status code is one of the specified values.
 func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
 	return exported.HasStatusCode(resp, statusCodes...)
 }
 
+// KEEp
 // UnmarshalAsByteArray will base-64 decode the received payload and place the result into the value pointed to by v.
 func UnmarshalAsByteArray(resp *http.Response, v *[]byte, format Base64Encoding) error {
 	p, err := Payload(resp)
@@ -39,6 +42,7 @@ func UnmarshalAsByteArray(resp *http.Response, v *[]byte, format Base64Encoding)
 	return DecodeByteArray(string(p), v, format)
 }
 
+// KEEP
 // UnmarshalAsJSON calls json.Unmarshal() to unmarshal the received payload into the value pointed to by v.
 func UnmarshalAsJSON(resp *http.Response, v interface{}) error {
 	payload, err := Payload(resp)
@@ -60,6 +64,7 @@ func UnmarshalAsJSON(resp *http.Response, v interface{}) error {
 	return err
 }
 
+// KEEP
 // UnmarshalAsXML calls xml.Unmarshal() to unmarshal the received payload into the value pointed to by v.
 func UnmarshalAsXML(resp *http.Response, v interface{}) error {
 	payload, err := Payload(resp)
@@ -81,6 +86,7 @@ func UnmarshalAsXML(resp *http.Response, v interface{}) error {
 	return err
 }
 
+// KEEP
 // Drain reads the response body to completion then closes it.  The bytes read are discarded.
 func Drain(resp *http.Response) {
 	if resp != nil && resp.Body != nil {
@@ -89,6 +95,7 @@ func Drain(resp *http.Response) {
 	}
 }
 
+// KEEP
 // removeBOM removes any byte-order mark prefix from the payload if present.
 func removeBOM(resp *http.Response) error {
 	_, err := exported.Payload(resp, &exported.PayloadOptions{
@@ -103,6 +110,7 @@ func removeBOM(resp *http.Response) error {
 	return nil
 }
 
+// KEEP
 // DecodeByteArray will base-64 decode the provided string into v.
 func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
 	return azexported.DecodeByteArray(s, v, format)

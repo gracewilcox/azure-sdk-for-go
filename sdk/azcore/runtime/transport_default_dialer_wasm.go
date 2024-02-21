@@ -10,6 +10,7 @@ import (
 	"net"
 )
 
+// KEEP
 func defaultTransportDialContext(dialer *net.Dialer) func(context.Context, string, string) (net.Conn, error) {
 	return nil
 }

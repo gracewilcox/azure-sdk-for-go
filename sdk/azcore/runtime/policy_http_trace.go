@@ -26,23 +26,27 @@ const (
 	attrHTTPUserAgent  = "http.user_agent"
 	attrHTTPStatusCode = "http.status_code"
 
+	// REMOVE
 	attrAZClientReqID  = "az.client_request_id"
 	attrAZServiceReqID = "az.service_request_id"
 
 	attrNetPeerName = "net.peer.name"
 )
 
+// KEEP
 // newHTTPTracePolicy creates a new instance of the httpTracePolicy.
 //   - allowedQueryParams contains the user-specified query parameters that don't need to be redacted from the trace
 func newHTTPTracePolicy(allowedQueryParams []string) exported.Policy {
 	return &httpTracePolicy{allowedQP: getAllowedQueryParams(allowedQueryParams)}
 }
 
+// KEEP
 // httpTracePolicy is a policy that creates a trace for the HTTP request and its response
 type httpTracePolicy struct {
 	allowedQP map[string]struct{}
 }
 
+// KEEP- but remove XMSClientRequestID, XMSRequestID
 // Do implements the pipeline.Policy interfaces for the httpTracePolicy type.
 func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 	rawTracer := req.Raw().Context().Value(shared.CtxWithTracingTracer{})
@@ -56,6 +60,7 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 		if ua := req.Raw().Header.Get(shared.HeaderUserAgent); ua != "" {
 			attributes = append(attributes, tracing.Attribute{Key: attrHTTPUserAgent, Value: ua})
 		}
+		// REMOVE
 		if reqID := req.Raw().Header.Get(shared.HeaderXMSClientRequestID); reqID != "" {
 			attributes = append(attributes, tracing.Attribute{Key: attrAZClientReqID, Value: reqID})
 		}
@@ -94,11 +99,13 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 	return
 }
 
+// KEEP
 // StartSpanOptions contains the optional values for StartSpan.
 type StartSpanOptions struct {
 	// for future expansion
 }
 
+// KEEP
 // StartSpan starts a new tracing span.
 // You must call the returned func to terminate the span. Pass the applicable error
 // if the span will exit with an error condition.
@@ -139,5 +146,6 @@ func StartSpan(ctx context.Context, name string, tracer tracing.Tracer, options 
 	}
 }
 
+// KEEP
 // ctxActiveSpan is used as a context key for indicating a SDK client span is in progress.
 type ctxActiveSpan struct{}

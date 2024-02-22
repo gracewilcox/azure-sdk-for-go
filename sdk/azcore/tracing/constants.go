@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// KEEP
 package tracing
 
 // SpanKind represents the role of a Span inside a Trace. Often, this defines how a Span will be processed and visualized by various backends.

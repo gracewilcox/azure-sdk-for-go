@@ -35,7 +35,7 @@ type CtxWithCaptureResponse struct{}
 // CtxWithTracingTracer is used as a context key for adding/retrieving tracing.Tracer.
 type CtxWithTracingTracer struct{}
 
-// KEEP- double check API name
+// KEEP
 // CtxAPINameKey is used as a context key for adding/retrieving the API name.
 type CtxAPINameKey struct{}
 
@@ -50,7 +50,10 @@ func Delay(ctx context.Context, delay time.Duration) error {
 	}
 }
 
-// KEEP, but removing retry-after-ms, x-ms-retry-after-ms; removing rety data list
+// JEFF we gotta keep the headers
+// JEFF talk with Joel, can we just remove x-ms?, could we keep in tscore
+// JEFF probably will replicate retry policy, therefore retryAfter
+// KEEP, but removing retry-after-ms??, x-ms-retry-after-ms; removing rety data list
 // RetryAfter returns non-zero if the response contains one of the headers with a "retry after" value.
 // Headers are checked in the following order: retry-after-ms, x-ms-retry-after-ms, retry-after
 func RetryAfter(resp *http.Response) time.Duration {
@@ -112,6 +115,7 @@ func RetryAfter(resp *http.Response) time.Duration {
 	return 0
 }
 
+// KEEP
 // TypeOfT returns the type of the generic type param.
 func TypeOfT[T any]() reflect.Type {
 	// you can't, at present, obtain the type of
@@ -119,6 +123,7 @@ func TypeOfT[T any]() reflect.Type {
 	return reflect.TypeOf((*T)(nil)).Elem()
 }
 
+// KEEP
 // TransportFunc is a helper to use a first-class func to satisfy the Transporter interface.
 type TransportFunc func(*http.Request) (*http.Response, error)
 
@@ -127,6 +132,7 @@ func (pf TransportFunc) Do(req *http.Request) (*http.Response, error) {
 	return pf(req)
 }
 
+// KEEP
 // ValidateModVer verifies that moduleVersion is a valid semver 2.0 string.
 func ValidateModVer(moduleVersion string) error {
 	modVerRegx := regexp.MustCompile(`^v\d+\.\d+\.\d+(?:-[a-zA-Z0-9_.-]+)?$`)
@@ -136,6 +142,7 @@ func ValidateModVer(moduleVersion string) error {
 	return nil
 }
 
+// KEEP
 // ContextWithDeniedValues wraps an existing [context.Context], denying access to certain context values.
 // Pipeline policies that create new requests to be sent down their own pipeline MUST wrap the caller's
 // context with an instance of this type. This is to prevent context values from flowing across disjoint

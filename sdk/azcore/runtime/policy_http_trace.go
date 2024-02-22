@@ -47,6 +47,9 @@ type httpTracePolicy struct {
 }
 
 // KEEP- but remove XMSClientRequestID, XMSRequestID
+// JEFF fix so that the const are now options, will need to refactor
+// JEFF look closer at behavior changes, don't want to duplicate
+// JEFF make a list of brittle areas
 // Do implements the pipeline.Policy interfaces for the httpTracePolicy type.
 func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 	rawTracer := req.Raw().Context().Value(shared.CtxWithTracingTracer{})

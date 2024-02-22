@@ -22,10 +22,6 @@ type PipelineOptions struct {
 	// All query parameters not in the slice will have their values REDACTED.
 	AllowedQueryParameters []string
 
-	// APIVersion overrides the default version requested of the service.
-	// Set with caution as this package version has not been tested with arbitrary service versions.
-	APIVersion APIVersionOptions
-
 	// PerCall contains custom policies to inject into the pipeline.
 	// Each policy is executed once per request.
 	PerCall []policy.Policy
@@ -71,9 +67,6 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	// we put the includeResponsePolicy at the very beginning so that the raw response
 	// is populated with the final response (some policies might mutate the response)
 	policies := []policy.Policy{exported.PolicyFunc(includeResponsePolicy)}
-	if !cp.Telemetry.Disabled {
-		policies = append(policies, NewTelemetryPolicy(module, version, &cp.Telemetry))
-	}
 	policies = append(policies, plOpts.PerCall...)
 	policies = append(policies, cp.PerCallPolicies...)
 	policies = append(policies, NewRetryPolicy(&cp.Retry))

@@ -4,6 +4,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// JEFF- topic at scrum, let's talk about if we want privacy in tscore
+// JEFF we can have a different approach in tscore
+// JEFF maybe use slog
+// JEFF list to create: brittle areas and (if we broke, things we can do)
 package runtime
 
 import (
@@ -30,6 +34,8 @@ type logPolicy struct {
 }
 
 // KEEP but remove x-ms headers
+// JEFF remove allowed headers, more facade refactoring
+// JEFF add stuff to azcore client constructor
 // NewLogPolicy creates a request/response logging policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewLogPolicy(o *policy.LogOptions) policy.Policy {

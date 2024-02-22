@@ -145,10 +145,12 @@ type TelemetryOptions struct {
 	Disabled bool
 }
 
-// KEEP- but might remove may of the fields???
+// MAYBE- but might remove may of the fields???
+// JEFF we will talk to charles (all of us in the meeting)
 // TokenRequestOptions contain specific parameter that may be used by credentials types when attempting to get a token.
 type TokenRequestOptions = exported.TokenRequestOptions
 
+// MAYBE (talk with charles)
 // KEEP
 // BearerTokenOptions configures the bearer token policy's behavior.
 type BearerTokenOptions struct {
@@ -158,7 +160,7 @@ type BearerTokenOptions struct {
 	AuthorizationHandler AuthorizationHandler
 }
 
-// KEEP
+// MAYBE (talk to charles)
 // AuthorizationHandler allows SDK developers to insert custom logic that runs when BearerTokenPolicy must authorize a request.
 type AuthorizationHandler struct {
 	// OnRequest is called each time the policy receives a request. Its func parameter authorizes the request with a token

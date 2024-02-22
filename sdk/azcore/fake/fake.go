@@ -78,6 +78,7 @@ func (e *ErrorResponder) SetResponseError(httpStatus int, errorCode string) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // REMOVE
+// JEFF TALK WITH Joel that it still works
 // PagerResponder represents a sequence of paged responses.
 // Responses are consumed in the order in which they were added.
 // If no pages or errors have been added, calls to Pager[T].NextPage

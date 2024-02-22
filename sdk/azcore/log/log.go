@@ -12,6 +12,7 @@ import (
 )
 
 // KEEP
+// JEFF try to clean up
 // Event is used to group entries.  Each group can be toggled on or off.
 type Event = log.Event
 

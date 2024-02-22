@@ -26,7 +26,8 @@ const (
 	defaultMaxRetries = 3
 )
 
-// KEEP- are we still keeping the default MaxRetryDelay as 60 seconds
+// KEEP
+// JEFF, status codes should move into facade, should talk as team
 func setDefaults(o *policy.RetryOptions) {
 	if o.MaxRetries == 0 {
 		o.MaxRetries = defaultMaxRetries

@@ -46,6 +46,7 @@ func NewSASCredential(sas string) *SASCredential {
 	return exported.NewSASCredential(sas)
 }
 
+// JEFF update, maybe move to own file?? json_null.go
 // holds sentinel values used to send nulls
 var nullables map[reflect.Type]interface{} = map[reflect.Type]interface{}{}
 
@@ -109,6 +110,7 @@ type Client struct {
 	namespace string
 }
 
+// KEEP
 // NewClient creates a new Client instance with the provided values.
 //   - moduleName - the fully qualified name of the module where the client is defined; used by the telemetry policy and tracing provider.
 //   - moduleVersion - the semantic version of the module; used by the telemetry policy and tracing provider.

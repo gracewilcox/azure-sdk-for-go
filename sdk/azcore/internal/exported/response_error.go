@@ -17,6 +17,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
 )
 
+// kEEP removing some internal stuff
 // NewResponseError creates a new *ResponseError from the provided HTTP response.
 // Exported as runtime.NewResponseError().
 func NewResponseError(resp *http.Response) error {
@@ -48,6 +49,7 @@ func NewResponseError(resp *http.Response) error {
 	return respErr
 }
 
+// REMOVE
 func extractErrorCodeJSON(body []byte) string {
 	var rawObj map[string]interface{}
 	if err := json.Unmarshal(body, &rawObj); err != nil {
@@ -84,6 +86,7 @@ func extractErrorCodeJSON(body []byte) string {
 	return codeStr
 }
 
+// REMOVE
 func extractErrorCodeXML(body []byte) string {
 	// regular expression is much easier than dealing with the XML parser
 	rx := regexp.MustCompile(`<(?:\w+:)?[c|C]ode>\s*(\w+)\s*<\/(?:\w+:)?[c|C]ode>`)
@@ -95,6 +98,7 @@ func extractErrorCodeXML(body []byte) string {
 	return res[1]
 }
 
+// KEEP no status code
 // ResponseError is returned when a request is made to a service and
 // the service returns a non-success HTTP status code.
 // Use errors.As() to access this type in the error chain.

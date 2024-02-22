@@ -11,7 +11,11 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
+// JEFF maybe use reflection for tests where structs are brittle
+// JEFF brittle structs ClientOptions, PipelineOptions, ResponseError,
+
 // KEEP- remove APIVersion? double check with Jeff
+// JEFF replicate pipeline options, removing APIVersionOptions
 // PipelineOptions contains Pipeline options for SDK developers
 type PipelineOptions struct {
 	// AllowedHeaders is the slice of headers to log with their values intact.
@@ -51,6 +55,14 @@ type TracingOptions struct {
 // Its behavior can be extended by specifying policies during construction.
 type Pipeline = exported.Pipeline
 
+// KEEP
+// JEFF in azcore, we will call tscore.NewPipeline (but tscore.NewPipeline will not contain the apiversion code)
+//
+//		JEFF We will instead insert the apiversion policy before calling tscore.NewPipeline
+//
+//	 JEFF ClientOptions will be duplicate between azcore and tscore
+//
+// Note, we also removed telemetry
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
 // Policies from ClientOptions are placed after policies from PipelineOptions.
 // The module and version parameters are used by the telemetry policy, when enabled.

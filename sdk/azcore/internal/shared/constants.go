@@ -36,6 +36,7 @@ const (
 const BearerTokenPrefix = "Bearer "
 
 // KEEP but rename
+// JEFF ask joel what to rename to, maybe ts.namespace??
 const TracingNamespaceAttrName = "az.namespace"
 
 // KEEP but rename

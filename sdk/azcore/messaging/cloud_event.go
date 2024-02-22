@@ -15,7 +15,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/uuid"
 )
 
-// KEEP
 // CloudEvent represents an event conforming to the CloudEvents 1.0 spec.
 // See here for more details: https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md
 type CloudEvent struct {
@@ -89,7 +88,7 @@ type CloudEventOptions struct {
 	Time *time.Time
 }
 
-// KEEP
+// REMOVE
 // NewCloudEvent creates a CloudEvent.
 //   - source - Identifies the context in which an event happened. The combination of id and source must be unique
 //     for each distinct event.
@@ -225,7 +224,7 @@ func (ce *CloudEvent) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// KEEP
+// REMOVE
 func updateFieldFromValue(ce *CloudEvent, k string, raw json.RawMessage) error {
 	switch k {
 	//

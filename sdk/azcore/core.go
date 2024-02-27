@@ -111,6 +111,9 @@ type Client struct {
 }
 
 // KEEP
+// JOEL thinks this should go in runtime, with less options
+// REVIST AND DO BETTER
+// JOEL thinks we should refactor, more retooling
 // NewClient creates a new Client instance with the provided values.
 //   - moduleName - the fully qualified name of the module where the client is defined; used by the telemetry policy and tracing provider.
 //   - moduleVersion - the semantic version of the module; used by the telemetry policy and tracing provider.

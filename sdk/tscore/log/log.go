@@ -7,6 +7,7 @@
 // Package log provides functionality for configuring logging facilities.
 package log
 
+// TODO document transition from sdk/internal
 import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 )

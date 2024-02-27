@@ -2,8 +2,11 @@ module github.com/Azure/azure-sdk-for-go/sdk/azcore
 
 go 1.18
 
+replace github.com/Azure/azure-sdk-for-go/sdk/tscore => ../tscore
+
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.5.2
+	github.com/Azure/azure-sdk-for-go/sdk/tscore v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/net v0.20.0
 )

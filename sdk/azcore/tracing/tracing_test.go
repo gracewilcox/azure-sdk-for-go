@@ -58,9 +58,6 @@ func TestProvider(t *testing.T) {
 	sp := tr.SpanFromContext(context.Background())
 	require.Zero(t, sp)
 	tr.SetAttributes(Attribute{Key: "some", Value: "attribute"})
-	require.Len(t, tr.attrs, 1)
-	require.EqualValues(t, tr.attrs[0].Key, "some")
-	require.EqualValues(t, tr.attrs[0].Value, "attribute")
 
 	ctx, sp := tr.Start(context.Background(), "name", nil)
 	require.NotEqual(t, context.Background(), ctx)

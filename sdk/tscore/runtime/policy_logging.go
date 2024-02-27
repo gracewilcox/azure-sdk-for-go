@@ -19,6 +19,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/diag"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	azlog "github.com/Azure/azure-sdk-for-go/sdk/tscore/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
@@ -100,7 +101,7 @@ func (p *logPolicy) Do(req *policy.Request) (*http.Response, error) {
 	req.SetOperationValue(opValues)
 
 	// Log the outgoing request as informational
-	if log.Should(log.EventRequest) {
+	if log.Should(azlog.EventRequest) {
 		b := &bytes.Buffer{}
 		fmt.Fprintf(b, "==> OUTGOING REQUEST (Try=%d)\n", opValues.try)
 		p.writeRequestWithResponse(b, req, nil, nil)
@@ -108,7 +109,7 @@ func (p *logPolicy) Do(req *policy.Request) (*http.Response, error) {
 		if p.includeBody {
 			err = writeReqBody(req, b)
 		}
-		log.Write(log.EventRequest, b.String())
+		log.Write(azlog.EventRequest, b.String())
 		if err != nil {
 			return nil, err
 		}
@@ -121,7 +122,7 @@ func (p *logPolicy) Do(req *policy.Request) (*http.Response, error) {
 	tryDuration := tryEnd.Sub(tryStart)
 	opDuration := tryEnd.Sub(opValues.start)
 
-	if log.Should(log.EventResponse) {
+	if log.Should(azlog.EventResponse) {
 		// We're going to log this; build the string to log
 		b := &bytes.Buffer{}
 		fmt.Fprintf(b, "==> REQUEST/RESPONSE (Try=%d/%v, OpTime=%v) -- ", opValues.try, tryDuration, opDuration)
@@ -138,7 +139,7 @@ func (p *logPolicy) Do(req *policy.Request) (*http.Response, error) {
 		} else if p.includeBody {
 			err = writeRespBody(response, b)
 		}
-		log.Write(log.EventResponse, b.String())
+		log.Write(azlog.EventResponse, b.String())
 	}
 	return response, err
 }

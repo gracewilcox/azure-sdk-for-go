@@ -19,6 +19,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	azlog "github.com/Azure/azure-sdk-for-go/sdk/tscore/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/stretchr/testify/require"
 )
@@ -47,7 +48,7 @@ func TestPolicyLoggingSuccess(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("unexpected status code: %d", resp.StatusCode)
 	}
-	if logReq, ok := rawlog[log.EventRequest]; ok {
+	if logReq, ok := rawlog[azlog.EventRequest]; ok {
 		// Request ==> OUTGOING REQUEST (Try=1)
 		// 	GET http://127.0.0.1:49475?one=fish&sig=REDACTED
 		// 	(no headers)
@@ -63,7 +64,7 @@ func TestPolicyLoggingSuccess(t *testing.T) {
 	} else {
 		t.Fatal("missing LogRequest")
 	}
-	if logResp, ok := rawlog[log.EventResponse]; ok {
+	if logResp, ok := rawlog[azlog.EventResponse]; ok {
 		// Response ==> REQUEST/RESPONSE (Try=1/1.0034ms, OpTime=1.0034ms) -- RESPONSE SUCCESSFULLY RECEIVED
 		// 	GET http://127.0.0.1:49475?one=fish&sig=REDACTED
 		// 	(no headers)
@@ -101,7 +102,7 @@ func TestPolicyLoggingError(t *testing.T) {
 	if resp != nil {
 		t.Fatal("unexpected respose")
 	}
-	if logReq, ok := rawlog[log.EventRequest]; ok {
+	if logReq, ok := rawlog[azlog.EventRequest]; ok {
 		// Request ==> OUTGOING REQUEST (Try=1)
 		// 	GET http://127.0.0.1:50057
 		// 	Authorization: REDACTED
@@ -112,7 +113,7 @@ func TestPolicyLoggingError(t *testing.T) {
 	} else {
 		t.Fatal("missing LogRequest")
 	}
-	if logResponse, ok := rawlog[log.EventResponse]; ok {
+	if logResponse, ok := rawlog[azlog.EventResponse]; ok {
 		// Response ==> REQUEST/RESPONSE (Try=1/0s, OpTime=0s) -- REQUEST ERROR
 		// 	GET http://127.0.0.1:50057
 		// 	Authorization: REDACTED
@@ -204,9 +205,9 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 	require.NotNil(t, resp)
 
 	require.Len(t, rawlog, 3)
-	require.Contains(t, rawlog[log.EventRequest], "?client-allowed-qp=sent2&pipeline-allowed-qp=sent1&redacted-qp=REDACTED")
-	require.Regexp(t, `client-allowed: sent2\s+pipeline-allowed: sent1\s+redacted-header: REDACTED`, rawlog[log.EventRequest])
-	require.Regexp(t, `Client-Allowed: received2\s+Content-Length: 0\s+Date: (?:[a-zA-Z0-9:,\s]+)\s+Pipeline-Allowed: received1\s+Redacted-Header: REDACTED`, rawlog[log.EventResponse])
+	require.Contains(t, rawlog[azlog.EventRequest], "?client-allowed-qp=sent2&pipeline-allowed-qp=sent1&redacted-qp=REDACTED")
+	require.Regexp(t, `client-allowed: sent2\s+pipeline-allowed: sent1\s+redacted-header: REDACTED`, rawlog[azlog.EventRequest])
+	require.Regexp(t, `Client-Allowed: received2\s+Content-Length: 0\s+Date: (?:[a-zA-Z0-9:,\s]+)\s+Pipeline-Allowed: received1\s+Redacted-Header: REDACTED`, rawlog[azlog.EventResponse])
 }
 
 func TestSkipWriteReqBody(t *testing.T) {

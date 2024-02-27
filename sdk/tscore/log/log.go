@@ -8,7 +8,7 @@
 package log
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 )
 
 // Event is used to group entries.  Each group can be toggled on or off.

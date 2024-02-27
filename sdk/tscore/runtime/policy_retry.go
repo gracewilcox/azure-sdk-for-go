@@ -19,6 +19,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	azlog "github.com/Azure/azure-sdk-for-go/sdk/tscore/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
@@ -102,7 +103,7 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 	try := int32(1)
 	for {
 		resp = nil // reset
-		log.Writef(log.EventRetryPolicy, "=====> Try=%d", try)
+		log.Writef(azlog.EventRetryPolicy, "=====> Try=%d", try)
 
 		// For each try, seek to the beginning of the Body stream. We do this even for the 1st try because
 		// the stream may not be at offset 0 when we first get it and we want the same behavior for the
@@ -135,15 +136,15 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 			}
 		}
 		if err == nil {
-			log.Writef(log.EventRetryPolicy, "response %d", resp.StatusCode)
+			log.Writef(azlog.EventRetryPolicy, "response %d", resp.StatusCode)
 		} else {
-			log.Writef(log.EventRetryPolicy, "error %v", err)
+			log.Writef(azlog.EventRetryPolicy, "error %v", err)
 		}
 
 		if ctxErr := req.Raw().Context().Err(); ctxErr != nil {
 			// don't retry if the parent context has been cancelled or its deadline exceeded
 			err = ctxErr
-			log.Writef(log.EventRetryPolicy, "abort due to %v", err)
+			log.Writef(azlog.EventRetryPolicy, "abort due to %v", err)
 			return
 		}
 
@@ -151,7 +152,7 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 		var nre errorinfo.NonRetriable
 		if errors.As(err, &nre) {
 			// the error says it's not retriable so don't retry
-			log.Writef(log.EventRetryPolicy, "non-retriable error %T", nre)
+			log.Writef(azlog.EventRetryPolicy, "non-retriable error %T", nre)
 			return
 		}
 
@@ -159,18 +160,18 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 			// a non-nil ShouldRetry overrides our HTTP status code check
 			if !options.ShouldRetry(resp, err) {
 				// predicate says we shouldn't retry
-				log.Write(log.EventRetryPolicy, "exit due to ShouldRetry")
+				log.Write(azlog.EventRetryPolicy, "exit due to ShouldRetry")
 				return
 			}
 		} else if err == nil && !HasStatusCode(resp, options.StatusCodes...) {
 			// if there is no error and the response code isn't in the list of retry codes then we're done.
-			log.Write(log.EventRetryPolicy, "exit due to non-retriable status code")
+			log.Write(azlog.EventRetryPolicy, "exit due to non-retriable status code")
 			return
 		}
 
 		if try == options.MaxRetries+1 {
 			// max number of tries has been reached, don't sleep again
-			log.Writef(log.EventRetryPolicy, "MaxRetries %d exceeded", options.MaxRetries)
+			log.Writef(azlog.EventRetryPolicy, "MaxRetries %d exceeded", options.MaxRetries)
 			return
 		}
 
@@ -180,20 +181,20 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 			delay = calcDelay(options, try)
 		} else if delay > options.MaxRetryDelay {
 			// the retry-after delay exceeds the the cap so don't retry
-			log.Writef(log.EventRetryPolicy, "Retry-After delay %s exceeds MaxRetryDelay of %s", delay, options.MaxRetryDelay)
+			log.Writef(azlog.EventRetryPolicy, "Retry-After delay %s exceeds MaxRetryDelay of %s", delay, options.MaxRetryDelay)
 			return
 		}
 
 		// drain before retrying so nothing is leaked
 		Drain(resp)
 
-		log.Writef(log.EventRetryPolicy, "End Try #%d, Delay=%v", try, delay)
+		log.Writef(azlog.EventRetryPolicy, "End Try #%d, Delay=%v", try, delay)
 		select {
 		case <-time.After(delay):
 			try++
 		case <-req.Raw().Context().Done():
 			err = req.Raw().Context().Err()
-			log.Writef(log.EventRetryPolicy, "abort due to %v", err)
+			log.Writef(azlog.EventRetryPolicy, "abort due to %v", err)
 			return
 		}
 	}

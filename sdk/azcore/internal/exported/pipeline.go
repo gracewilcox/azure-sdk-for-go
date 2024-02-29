@@ -9,34 +9,27 @@ package exported
 import (
 	"errors"
 	"net/http"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // KEEP
 // Policy represents an extensibility point for the Pipeline that can mutate the specified
 // Request and react to the received Response.
 // Exported as policy.Policy.
-type Policy interface {
-	// Do applies the policy to the specified Request.  When implementing a Policy, mutate the
-	// request before calling req.Next() to move on to the next policy, and respond to the result
-	// before returning to the caller.
-	Do(req *Request) (*http.Response, error)
-}
+type Policy = policy.Policy
 
 // KEEP
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
 // Exported as runtime.Pipeline.
-type Pipeline struct {
-	policies []Policy
-}
+type Pipeline = runtime.Pipeline
 
 // KEEP
 // Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
 // Exported as policy.Transporter.
-type Transporter interface {
-	// Do sends the HTTP request and returns the HTTP response or error.
-	Do(req *http.Request) (*http.Response, error)
-}
+type Transporter = policy.Transporter
 
 // KEEP
 // used to adapt a TransportPolicy to a Policy
@@ -68,15 +61,4 @@ func NewPipeline(transport Transporter, policies ...Policy) Pipeline {
 	return Pipeline{
 		policies: policies,
 	}
-}
-
-// Do is called for each and every HTTP request. It passes the request through all
-// the Policy objects (which can transform the Request's URL/query parameters/headers)
-// and ultimately sends the transformed HTTP request over the network.
-func (p Pipeline) Do(req *Request) (*http.Response, error) {
-	if req == nil {
-		return nil, errors.New("request cannot be nil")
-	}
-	req.policies = p.policies
-	return req.Next()
 }

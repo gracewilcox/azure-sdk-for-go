@@ -9,15 +9,14 @@ package runtime
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 const (
@@ -104,9 +103,7 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 
 // KEEP
 // StartSpanOptions contains the optional values for StartSpan.
-type StartSpanOptions struct {
-	// for future expansion
-}
+type StartSpanOptions = runtime.StartSpanOptions
 
 // KEEP
 // StartSpan starts a new tracing span.
@@ -117,38 +114,5 @@ type StartSpanOptions struct {
 //   - tracer is the client's Tracer for creating spans
 //   - options contains optional values. pass nil to accept any default values
 func StartSpan(ctx context.Context, name string, tracer tracing.Tracer, options *StartSpanOptions) (context.Context, func(error)) {
-	if !tracer.Enabled() {
-		return ctx, func(err error) {}
-	}
-
-	// we MUST propagate the active tracer before returning so that the trace policy can access it
-	ctx = context.WithValue(ctx, shared.CtxWithTracingTracer{}, tracer)
-
-	const newSpanKind = tracing.SpanKindInternal
-	if activeSpan := ctx.Value(ctxActiveSpan{}); activeSpan != nil {
-		// per the design guidelines, if a SDK method Foo() calls SDK method Bar(),
-		// then the span for Bar() must be suppressed. however, if Bar() makes a REST
-		// call, then Bar's HTTP span must be a child of Foo's span.
-		// however, there is an exception to this rule. if the SDK method Foo() is a
-		// messaging producer/consumer, and it takes a callback that's a SDK method
-		// Bar(), then the span for Bar() must _not_ be suppressed.
-		if kind := activeSpan.(tracing.SpanKind); kind == tracing.SpanKindClient || kind == tracing.SpanKindInternal {
-			return ctx, func(err error) {}
-		}
-	}
-	ctx, span := tracer.Start(ctx, name, &tracing.SpanOptions{
-		Kind: newSpanKind,
-	})
-	ctx = context.WithValue(ctx, ctxActiveSpan{}, newSpanKind)
-	return ctx, func(err error) {
-		if err != nil {
-			errType := strings.Replace(fmt.Sprintf("%T", err), "*exported.", "*azcore.", 1)
-			span.SetStatus(tracing.SpanStatusError, fmt.Sprintf("%s:\n%s", errType, err.Error()))
-		}
-		span.End()
-	}
+	return runtime.StartSpan(ctx, name, tracer, options)
 }
-
-// KEEP
-// ctxActiveSpan is used as a context key for indicating a SDK client span is in progress.
-type ctxActiveSpan struct{}

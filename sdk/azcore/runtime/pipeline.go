@@ -9,6 +9,7 @@ package runtime
 import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // JEFF maybe use reflection for tests where structs are brittle
@@ -45,10 +46,7 @@ type PipelineOptions struct {
 
 // KEEP
 // TracingOptions contains tracing options for SDK developers.
-type TracingOptions struct {
-	// Namespace contains the value to use for the az.namespace span attribute.
-	Namespace string
-}
+type TracingOptions = runtime.TracingOptions
 
 // KEEP
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.

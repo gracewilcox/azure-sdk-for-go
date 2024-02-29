@@ -14,6 +14,8 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // NOTE: when adding a new context key type, it likely needs to be
@@ -37,7 +39,7 @@ type CtxWithTracingTracer struct{}
 
 // KEEP
 // CtxAPINameKey is used as a context key for adding/retrieving the API name.
-type CtxAPINameKey struct{}
+type CtxAPINameKey = runtime.CtxAPINameKey
 
 // KEEP
 // Delay waits for the duration to elapse or the context to be cancelled.

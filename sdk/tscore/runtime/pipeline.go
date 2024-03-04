@@ -44,6 +44,10 @@ type TracingOptions struct {
 // Its behavior can be extended by specifying policies during construction.
 type Pipeline = exported.Pipeline
 
+func NewCustomPipeline(transport policy.Transporter, policies ...policy.Policy) Pipeline {
+	return exported.NewPipeline(transport, policies...)
+}
+
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
 // Policies from ClientOptions are placed after policies from PipelineOptions.
 // The module and version parameters are used by the telemetry policy, when enabled.

@@ -75,3 +75,7 @@ func (p Pipeline) Do(req *Request) (*http.Response, error) {
 	req.policies = p.policies
 	return req.Next()
 }
+
+func (p *Pipeline) AppendPolicy(policy Policy) {
+	p.policies = append(p.policies, policy)
+}

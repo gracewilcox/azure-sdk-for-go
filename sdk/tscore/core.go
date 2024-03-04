@@ -88,6 +88,16 @@ type Client struct {
 	namespace string
 }
 
+func NewCustomClient(pipeline runtime.Pipeline, tracer tracing.Tracer, tracingProvider tracing.Provider, moduleVersion string, namespace string) (*Client, error) {
+	return &Client{
+		pl:        pipeline,
+		tr:        tracer,
+		tp:        tracingProvider,
+		modVer:    moduleVersion,
+		namespace: namespace,
+	}, nil
+}
+
 // NewClient creates a new Client instance with the provided values.
 //   - moduleName - the fully qualified name of the module where the client is defined; used by the telemetry policy and tracing provider.
 //   - moduleVersion - the semantic version of the module; used by the telemetry policy and tracing provider.

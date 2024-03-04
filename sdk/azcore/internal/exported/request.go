@@ -10,7 +10,6 @@ package exported
 import (
 	"context"
 	"net/http"
-	"reflect"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
@@ -39,22 +38,6 @@ func EncodeByteArray(v []byte, format Base64Encoding) string {
 // Don't use this type directly, use NewRequest() instead.
 // Exported as policy.Request.
 type Request = policy.Request
-
-type opValues map[reflect.Type]interface{}
-
-// Set adds/changes a value
-func (ov opValues) set(value interface{}) {
-	ov[reflect.TypeOf(value)] = value
-}
-
-// Get looks for a value set by SetValue first
-func (ov opValues) get(value interface{}) bool {
-	v, ok := ov[reflect.ValueOf(value).Elem().Type()]
-	if ok {
-		reflect.ValueOf(value).Elem().Set(reflect.ValueOf(v))
-	}
-	return ok
-}
 
 // NewRequest creates a new Request with the specified input.
 // Exported as runtime.NewRequest().

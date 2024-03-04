@@ -7,9 +7,6 @@
 package exported
 
 import (
-	"errors"
-	"net/http"
-
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
@@ -32,33 +29,8 @@ type Pipeline = runtime.Pipeline
 type Transporter = policy.Transporter
 
 // KEEP
-// used to adapt a TransportPolicy to a Policy
-type transportPolicy struct {
-	trans Transporter
-}
-
-func (tp transportPolicy) Do(req *Request) (*http.Response, error) {
-	if tp.trans == nil {
-		return nil, errors.New("missing transporter")
-	}
-	resp, err := tp.trans.Do(req.Raw())
-	if err != nil {
-		return nil, err
-	} else if resp == nil {
-		// there was no response and no error (rare but can happen)
-		// this ensures the retry policy will retry the request
-		return nil, errors.New("received nil response")
-	}
-	return resp, nil
-}
-
-// KEEP
 // NewPipeline creates a new Pipeline object from the specified Policies.
 // Not directly exported, but used as part of runtime.NewPipeline().
 func NewPipeline(transport Transporter, policies ...Policy) Pipeline {
-	// transport policy must always be the last in the slice
-	policies = append(policies, transportPolicy{trans: transport})
-	return Pipeline{
-		policies: policies,
-	}
+	return runtime.NewCustomPipeline(transport, policies...)
 }

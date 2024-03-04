@@ -7,13 +7,12 @@
 package azcore
 
 import (
-	"reflect"
-
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
 )
 
 // KEEP
@@ -46,51 +45,18 @@ func NewSASCredential(sas string) *SASCredential {
 	return exported.NewSASCredential(sas)
 }
 
-// JEFF update, maybe move to own file?? json_null.go
-// holds sentinel values used to send nulls
-var nullables map[reflect.Type]interface{} = map[reflect.Type]interface{}{}
-
 // KEEP
 // NullValue is used to send an explicit 'null' within a request.
 // This is typically used in JSON-MERGE-PATCH operations to delete a value.
 func NullValue[T any]() T {
-	t := shared.TypeOfT[T]()
-	v, found := nullables[t]
-	if !found {
-		var o reflect.Value
-		if k := t.Kind(); k == reflect.Map {
-			o = reflect.MakeMap(t)
-		} else if k == reflect.Slice {
-			// empty slices appear to all point to the same data block
-			// which causes comparisons to become ambiguous.  so we create
-			// a slice with len/cap of one which ensures a unique address.
-			o = reflect.MakeSlice(t, 1, 1)
-		} else {
-			o = reflect.New(t.Elem())
-		}
-		v = o.Interface()
-		nullables[t] = v
-	}
-	// return the sentinel object
-	return v.(T)
+	return tscore.NullValue[T]()
 }
 
 // KEEP
 // IsNullValue returns true if the field contains a null sentinel value.
 // This is used by custom marshallers to properly encode a null value.
 func IsNullValue[T any](v T) bool {
-	// see if our map has a sentinel object for this *T
-	t := reflect.TypeOf(v)
-	if o, found := nullables[t]; found {
-		o1 := reflect.ValueOf(o)
-		v1 := reflect.ValueOf(v)
-		// we found it; return true if v points to the sentinel object.
-		// NOTE: maps and slices can only be compared to nil, else you get
-		// a runtime panic.  so we compare addresses instead.
-		return o1.Pointer() == v1.Pointer()
-	}
-	// no sentinel object for this *t
-	return false
+	return tscore.IsNullValue(v)
 }
 
 // KEEP- remove API version and cloud
@@ -100,15 +66,7 @@ func IsNullValue[T any](v T) bool {
 type ClientOptions = policy.ClientOptions
 
 // Client is a basic HTTP client.  It consists of a pipeline and tracing provider.
-type Client struct {
-	pl runtime.Pipeline
-	tr tracing.Tracer
-
-	// cached on the client to support shallow copying with new values
-	tp        tracing.Provider
-	modVer    string
-	namespace string
-}
+type Client = tscore.Client
 
 // KEEP
 // JOEL thinks this should go in runtime, with less options
@@ -137,32 +95,5 @@ func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions,
 		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: plOpts.Tracing.Namespace})
 	}
 
-	return &Client{
-		pl:        pl,
-		tr:        tr,
-		tp:        options.TracingProvider,
-		modVer:    moduleVersion,
-		namespace: plOpts.Tracing.Namespace,
-	}, nil
-}
-
-// Pipeline returns the pipeline for this client.
-func (c *Client) Pipeline() runtime.Pipeline {
-	return c.pl
-}
-
-// Tracer returns the tracer for this client.
-func (c *Client) Tracer() tracing.Tracer {
-	return c.tr
-}
-
-// WithClientName returns a shallow copy of the Client with its tracing client name changed to clientName.
-// Note that the values for module name and version will be preserved from the source Client.
-//   - clientName - the fully qualified name of the client ("package.Client"); this is used by the tracing provider when creating spans
-func (c *Client) WithClientName(clientName string) *Client {
-	tr := c.tp.NewTracer(clientName, c.modVer)
-	if tr.Enabled() && c.namespace != "" {
-		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: c.namespace})
-	}
-	return &Client{pl: c.pl, tr: tr, tp: c.tp, modVer: c.modVer, namespace: c.namespace}
+	return tscore.NewCustomClient(pl, tr, options.TracingProvider, moduleVersion, plOpts.Tracing.Namespace)
 }

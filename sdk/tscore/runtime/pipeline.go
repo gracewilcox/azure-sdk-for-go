@@ -70,16 +70,16 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	}
 	// we put the includeResponsePolicy at the very beginning so that the raw response
 	// is populated with the final response (some policies might mutate the response)
-	policies := []policy.Policy{exported.PolicyFunc(includeResponsePolicy)}
+	policies := []policy.Policy{exported.PolicyFunc(IncludeResponsePolicy)}
 	policies = append(policies, plOpts.PerCall...)
 	policies = append(policies, cp.PerCallPolicies...)
 	policies = append(policies, NewRetryPolicy(&cp.Retry))
 	policies = append(policies, plOpts.PerRetry...)
 	policies = append(policies, cp.PerRetryPolicies...)
-	policies = append(policies, exported.PolicyFunc(httpHeaderPolicy))
-	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams))
+	policies = append(policies, exported.PolicyFunc(HttpHeaderPolicy))
+	policies = append(policies, NewHTTPTracePolicy(cp.Logging.AllowedQueryParams))
 	policies = append(policies, NewLogPolicy(&cp.Logging))
-	policies = append(policies, exported.PolicyFunc(bodyDownloadPolicy))
+	policies = append(policies, exported.PolicyFunc(BodyDownloadPolicy))
 	transport := cp.Transport
 	if transport == nil {
 		transport = defaultHTTPClient

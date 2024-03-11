@@ -27,7 +27,7 @@ func TestHTTPTracePolicy(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 
-	pl := exported.NewPipeline(srv, newHTTPTracePolicy([]string{"visibleqp"}))
+	pl := exported.NewPipeline(srv, NewHTTPTracePolicy([]string{"visibleqp"}))
 
 	// no tracer
 	req, err := exported.NewRequest(context.Background(), http.MethodGet, srv.URL())
@@ -182,7 +182,7 @@ func TestStartSpansDontNest(t *testing.T) {
 	srv.SetResponse() // always return http.StatusOK
 	defer close()
 
-	pl := exported.NewPipeline(srv, newHTTPTracePolicy(nil))
+	pl := exported.NewPipeline(srv, NewHTTPTracePolicy(nil))
 
 	apiSpanCount := 0
 	httpSpanCount := 0

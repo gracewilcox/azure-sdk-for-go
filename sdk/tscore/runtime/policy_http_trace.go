@@ -34,7 +34,7 @@ const (
 
 // newHTTPTracePolicy creates a new instance of the httpTracePolicy.
 //   - allowedQueryParams contains the user-specified query parameters that don't need to be redacted from the trace
-func newHTTPTracePolicy(allowedQueryParams []string) exported.Policy {
+func NewHTTPTracePolicy(allowedQueryParams []string) exported.Policy {
 	return &httpTracePolicy{allowedQP: getAllowedQueryParams(allowedQueryParams)}
 }
 

@@ -9,7 +9,6 @@ package runtime
 import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	tspolicy "github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
@@ -70,71 +69,39 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	if options != nil {
 		cp = *options
 	}
-
-	tsPlOpts := runtime.PipelineOptions{
-		AllowedHeaders:         plOpts.AllowedHeaders,
-		AllowedQueryParameters: plOpts.AllowedQueryParameters,
-		PerCall:                plOpts.PerCall,
-		PerRetry:               plOpts.PerRetry,
-		Tracing:                plOpts.Tracing,
+	if len(plOpts.AllowedHeaders) > 0 {
+		headers := make([]string, len(plOpts.AllowedHeaders)+len(cp.Logging.AllowedHeaders))
+		copy(headers, plOpts.AllowedHeaders)
+		headers = append(headers, cp.Logging.AllowedHeaders...)
+		cp.Logging.AllowedHeaders = headers
 	}
-	tsOptions := &tspolicy.ClientOptions{
-		Logging:          cp.Logging,
-		Retry:            cp.Retry,
-		Telemetry:        cp.Telemetry,
-		TracingProvider:  cp.TracingProvider,
-		Transport:        cp.Transport,
-		PerCallPolicies:  cp.PerCallPolicies,
-		PerRetryPolicies: cp.PerRetryPolicies,
+	if len(plOpts.AllowedQueryParameters) > 0 {
+		qp := make([]string, len(plOpts.AllowedQueryParameters)+len(cp.Logging.AllowedQueryParams))
+		copy(qp, plOpts.AllowedQueryParameters)
+		qp = append(qp, cp.Logging.AllowedQueryParams...)
+		cp.Logging.AllowedQueryParams = qp
 	}
-
-	pipeline := runtime.NewPipeline(module, version, tsPlOpts, tsOptions)
-
+	// we put the includeResponsePolicy at the very beginning so that the raw response
+	// is populated with the final response (some policies might mutate the response)
+	policies := []policy.Policy{exported.PolicyFunc(includeResponsePolicy)}
 	if cp.APIVersion != "" {
-		pipeline.AppendPolicy(newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
+		policies = append(policies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
 	}
 	if !cp.Telemetry.Disabled {
-		pipeline.AppendPolicy(NewTelemetryPolicy(module, version, &cp.Telemetry))
+		policies = append(policies, NewTelemetryPolicy(module, version, &cp.Telemetry))
 	}
-
-	return pipeline
-	// cp := policy.ClientOptions{}
-	// if options != nil {
-	// 	cp = *options
-	// }
-	// if len(plOpts.AllowedHeaders) > 0 {
-	// 	headers := make([]string, len(plOpts.AllowedHeaders)+len(cp.Logging.AllowedHeaders))
-	// 	copy(headers, plOpts.AllowedHeaders)
-	// 	headers = append(headers, cp.Logging.AllowedHeaders...)
-	// 	cp.Logging.AllowedHeaders = headers
-	// }
-	// if len(plOpts.AllowedQueryParameters) > 0 {
-	// 	qp := make([]string, len(plOpts.AllowedQueryParameters)+len(cp.Logging.AllowedQueryParams))
-	// 	copy(qp, plOpts.AllowedQueryParameters)
-	// 	qp = append(qp, cp.Logging.AllowedQueryParams...)
-	// 	cp.Logging.AllowedQueryParams = qp
-	// }
-	// // we put the includeResponsePolicy at the very beginning so that the raw response
-	// // is populated with the final response (some policies might mutate the response)
-	// policies := []policy.Policy{exported.PolicyFunc(includeResponsePolicy)}
-	// if cp.APIVersion != "" {
-	// 	policies = append(policies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
-	// }
-	// if !cp.Telemetry.Disabled {
-	// 	policies = append(policies, NewTelemetryPolicy(module, version, &cp.Telemetry))
-	// }
-	// policies = append(policies, plOpts.PerCall...)
-	// policies = append(policies, cp.PerCallPolicies...)
-	// policies = append(policies, NewRetryPolicy(&cp.Retry))
-	// policies = append(policies, plOpts.PerRetry...)
-	// policies = append(policies, cp.PerRetryPolicies...)
-	// policies = append(policies, exported.PolicyFunc(httpHeaderPolicy))
-	// policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams))
-	// policies = append(policies, NewLogPolicy(&cp.Logging))
-	// policies = append(policies, exported.PolicyFunc(bodyDownloadPolicy))
-	// transport := cp.Transport
-	// if transport == nil {
-	// 	transport = defaultHTTPClient
-	// }
-	// return exported.NewPipeline(transport, policies...)
+	policies = append(policies, plOpts.PerCall...)
+	policies = append(policies, cp.PerCallPolicies...)
+	policies = append(policies, NewRetryPolicy(&cp.Retry))
+	policies = append(policies, plOpts.PerRetry...)
+	policies = append(policies, cp.PerRetryPolicies...)
+	policies = append(policies, exported.PolicyFunc(httpHeaderPolicy))
+	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams))
+	policies = append(policies, NewLogPolicy(&cp.Logging))
+	policies = append(policies, exported.PolicyFunc(bodyDownloadPolicy))
+	transport := cp.Transport
+	if transport == nil {
+		transport = defaultHTTPClient
+	}
+	return exported.NewPipeline(transport, policies...)
 }

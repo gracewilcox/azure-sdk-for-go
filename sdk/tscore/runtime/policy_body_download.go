@@ -15,8 +15,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
-// bodyDownloadPolicy creates a policy object that downloads the response's body to a []byte.
-func bodyDownloadPolicy(req *policy.Request) (*http.Response, error) {
+// BodyDownloadPolicy creates a policy object that downloads the response's body to a []byte.
+func BodyDownloadPolicy(req *policy.Request) (*http.Response, error) {
 	resp, err := req.Next()
 	if err != nil {
 		return resp, err

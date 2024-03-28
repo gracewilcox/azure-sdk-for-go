@@ -78,13 +78,6 @@ func TestTransportFunc(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestValidateModVer(t *testing.T) {
-	require.NoError(t, ValidateModVer("v1.2.3"))
-	require.NoError(t, ValidateModVer("v1.2.3-beta.1"))
-	require.Error(t, ValidateModVer("1.2.3"))
-	require.Error(t, ValidateModVer("v1.2"))
-}
-
 func TestContextWithDeniedValues(t *testing.T) {
 	type testKey struct{}
 	const value = "value"

@@ -119,11 +119,7 @@ func TestNewClient(t *testing.T) {
 	require.NotZero(t, client.Pipeline())
 	require.Zero(t, client.Tracer())
 
-	client, err = NewClient("package.Client", "", runtime.PipelineOptions{}, &ClientOptions{
-		Telemetry: policy.TelemetryOptions{
-			Disabled: true,
-		},
-	})
+	client, err = NewClient("package.Client", "", runtime.PipelineOptions{}, &ClientOptions{})
 	require.NoError(t, err)
 	require.NotNil(t, client)
 }

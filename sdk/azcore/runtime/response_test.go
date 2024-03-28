@@ -15,6 +15,10 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 )
 
+func newTestPipeline(opts *policy.ClientOptions) Pipeline {
+	return NewPipeline("testmodule", "v0.1.0", PipelineOptions{}, opts)
+}
+
 func TestResponseUnmarshalXML(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()

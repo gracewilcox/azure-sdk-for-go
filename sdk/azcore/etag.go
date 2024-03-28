@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// TODO maybe we move all the wrappers to single go file?? too many files and aliases, for each package
 package azcore
 
 import (

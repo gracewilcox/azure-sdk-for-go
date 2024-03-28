@@ -37,9 +37,6 @@ type ClientOptions struct {
 	// Retry configures the built-in retry policy.
 	Retry RetryOptions
 
-	// Telemetry configures the built-in telemetry policy.
-	Telemetry TelemetryOptions
-
 	// TracingProvider configures the tracing provider.
 	// It defaults to a no-op tracer.
 	TracingProvider tracing.Provider
@@ -118,16 +115,6 @@ type RetryOptions struct {
 	// if one is nil, the other is not nil.
 	// A return value of true means the retry policy should retry.
 	ShouldRetry func(*http.Response, error) bool
-}
-
-// TelemetryOptions configures the telemetry policy's behavior.
-type TelemetryOptions struct {
-	// ApplicationID is an application-specific identification string to add to the User-Agent.
-	// It has a maximum length of 24 characters and must not contain any spaces.
-	ApplicationID string
-
-	// Disabled will prevent the addition of any telemetry data to the User-Agent.
-	Disabled bool
 }
 
 // TokenRequestOptions contain specific parameter that may be used by credentials types when attempting to get a token.

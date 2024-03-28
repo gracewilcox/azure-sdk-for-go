@@ -177,7 +177,7 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 	defer close()
 	srv.AppendResponse(mock.WithHeader(plAllowedHeader, "received1"), mock.WithHeader(clAllowedHeader, "received2"), mock.WithHeader(redactedHeader, "cantseeme"))
 
-	pl := NewPipeline("", "", PipelineOptions{
+	pl := NewPipeline(PipelineOptions{
 		AllowedHeaders:         []string{plAllowedHeader},
 		AllowedQueryParameters: []string{plAllowedQP},
 	}, &policy.ClientOptions{

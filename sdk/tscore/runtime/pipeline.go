@@ -11,6 +11,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
+// TODO maybe rename to ServiceOptions??
 // PipelineOptions contains Pipeline options for SDK developers
 type PipelineOptions struct {
 	// AllowedHeaders is the slice of headers to log with their values intact.
@@ -44,14 +45,14 @@ type TracingOptions struct {
 // Its behavior can be extended by specifying policies during construction.
 type Pipeline = exported.Pipeline
 
+// NewCustomPipeline exposes the base NewPipeline functionality
 func NewCustomPipeline(transport policy.Transporter, policies ...policy.Policy) Pipeline {
 	return exported.NewPipeline(transport, policies...)
 }
 
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
 // Policies from ClientOptions are placed after policies from PipelineOptions.
-// The module and version parameters are used by the telemetry policy, when enabled.
-func NewPipeline(module, version string, plOpts PipelineOptions, options *policy.ClientOptions) Pipeline {
+func NewPipeline(plOpts PipelineOptions, options *policy.ClientOptions) Pipeline {
 	cp := policy.ClientOptions{}
 	if options != nil {
 		cp = *options
@@ -70,19 +71,19 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	}
 	// we put the includeResponsePolicy at the very beginning so that the raw response
 	// is populated with the final response (some policies might mutate the response)
-	policies := []policy.Policy{exported.PolicyFunc(IncludeResponsePolicy)}
+	policies := []policy.Policy{exported.PolicyFunc(includeResponsePolicy)}
 	policies = append(policies, plOpts.PerCall...)
 	policies = append(policies, cp.PerCallPolicies...)
 	policies = append(policies, NewRetryPolicy(&cp.Retry))
 	policies = append(policies, plOpts.PerRetry...)
 	policies = append(policies, cp.PerRetryPolicies...)
-	policies = append(policies, exported.PolicyFunc(HttpHeaderPolicy))
+	policies = append(policies, exported.PolicyFunc(httpHeaderPolicy))
 	policies = append(policies, NewHTTPTracePolicy(cp.Logging.AllowedQueryParams))
 	policies = append(policies, NewLogPolicy(&cp.Logging))
-	policies = append(policies, exported.PolicyFunc(BodyDownloadPolicy))
+	policies = append(policies, exported.PolicyFunc(bodyDownloadPolicy))
 	transport := cp.Transport
 	if transport == nil {
 		transport = defaultHTTPClient
 	}
-	return exported.NewPipeline(transport, policies...)
+	return NewCustomPipeline(transport, policies...)
 }

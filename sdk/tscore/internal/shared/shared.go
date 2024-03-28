@@ -8,10 +8,8 @@ package shared
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"reflect"
-	"regexp"
 	"strconv"
 	"time"
 )
@@ -106,15 +104,6 @@ type TransportFunc func(*http.Request) (*http.Response, error)
 // Do implements the Transporter interface for the TransportFunc type.
 func (pf TransportFunc) Do(req *http.Request) (*http.Response, error) {
 	return pf(req)
-}
-
-// ValidateModVer verifies that moduleVersion is a valid semver 2.0 string.
-func ValidateModVer(moduleVersion string) error {
-	modVerRegx := regexp.MustCompile(`^v\d+\.\d+\.\d+(?:-[a-zA-Z0-9_.-]+)?$`)
-	if !modVerRegx.MatchString(moduleVersion) {
-		return fmt.Errorf("malformed moduleVersion param value %s", moduleVersion)
-	}
-	return nil
 }
 
 // ContextWithDeniedValues wraps an existing [context.Context], denying access to certain context values.

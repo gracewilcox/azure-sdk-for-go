@@ -14,7 +14,7 @@ import (
 )
 
 // includeResponsePolicy creates a policy that retrieves the raw HTTP response upon request
-func IncludeResponsePolicy(req *policy.Request) (*http.Response, error) {
+func includeResponsePolicy(req *policy.Request) (*http.Response, error) {
 	resp, err := req.Next()
 	if resp == nil {
 		return resp, err

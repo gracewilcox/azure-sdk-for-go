@@ -27,6 +27,7 @@ const BearerTokenPrefix = "Bearer "
 
 const TracingNamespaceAttrName = "namespace"
 
+// TODO remove??
 const (
 	// Module is the name of the calling module used in telemetry data.
 	Module = "tscore"

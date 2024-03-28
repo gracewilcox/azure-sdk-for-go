@@ -48,8 +48,6 @@ func defaultTestPipeline(srv policy.Transporter, scope string) Pipeline {
 	}
 	b := NewBearerTokenPolicy(mockCredential{}, []string{scope}, nil)
 	return NewPipeline(
-		"testmodule",
-		"v0.1.0",
 		PipelineOptions{PerRetry: []policy.Policy{b}},
 		&policy.ClientOptions{Retry: retryOpts, Transport: srv},
 	)

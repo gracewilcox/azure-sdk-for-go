@@ -4,6 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// TODO move all to tscore
 package runtime
 
 import (

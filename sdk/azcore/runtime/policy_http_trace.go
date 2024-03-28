@@ -14,6 +14,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
+// TODO where do these constants get used
+// TODO possible extensibiblity point
 const (
 	attrHTTPMethod     = "http.method"
 	attrHTTPURL        = "http.url"

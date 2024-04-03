@@ -135,7 +135,6 @@ func (pf TransportFunc) Do(req *http.Request) (*http.Response, error) {
 }
 
 // REMOVE
-// TODO, remove this. We don't need mod version
 // ValidateModVer verifies that moduleVersion is a valid semver 2.0 string.
 func ValidateModVer(moduleVersion string) error {
 	modVerRegx := regexp.MustCompile(`^v\d+\.\d+\.\d+(?:-[a-zA-Z0-9_.-]+)?$`)

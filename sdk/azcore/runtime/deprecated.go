@@ -11,7 +11,6 @@ import (
 )
 
 // REMOVE
-// TODO move to deprecated
 // WithCaptureResponse applies the HTTP response retrieval annotation to the parent context.
 // The resp parameter will contain the HTTP response after the request has completed.
 // Deprecated: use [policy.WithCaptureResponse] instead.
@@ -19,7 +18,6 @@ func WithCaptureResponse(parent context.Context, resp **http.Response) context.C
 	return policy.WithCaptureResponse(parent, resp)
 }
 
-// TODO move to deprecated file
 // REMOVE
 // WithHTTPHeader adds the specified http.Header to the parent context.
 // Use this to specify custom HTTP headers at the API-call level.

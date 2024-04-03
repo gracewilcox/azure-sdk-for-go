@@ -15,7 +15,6 @@ import (
 )
 
 // KEEP
-// TODO move the retryAfter stuff to RetryOptions??
 // NewRetryPolicy creates a policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {

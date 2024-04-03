@@ -53,17 +53,7 @@ type TracingOptions = runtime.TracingOptions
 // Its behavior can be extended by specifying policies during construction.
 type Pipeline = exported.Pipeline
 
-// TODO get retry and logging policy to work
-// FIX RETRY POLICY
-// TODO- remove private policies that are exported in tscore
-// KEEP
-// JEFF in azcore, we will call tscore.NewPipeline (but tscore.NewPipeline will not contain the apiversion code)
-//
-//		JEFF We will instead insert the apiversion policy before calling tscore.NewPipeline
-//
-//	 JEFF ClientOptions will be duplicate between azcore and tscore
-//
-// Note, we also removed telemetry
+// TODO logging policy to work
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
 // Policies from ClientOptions are placed after policies from PipelineOptions.
 // The module and version parameters are used by the telemetry policy, when enabled.
@@ -99,7 +89,7 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	policies = append(policies, plOpts.PerRetry...)
 	policies = append(policies, cp.PerRetryPolicies...)
 	policies = append(policies, exported.PolicyFunc(runtime.HttpHeaderPolicy))
-	policies = append(policies, runtime.NewHTTPTracePolicy(cp.Logging.AllowedQueryParams))
+	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams))
 	policies = append(policies, NewLogPolicy(&cp.Logging))
 	policies = append(policies, exported.PolicyFunc(runtime.BodyDownloadPolicy))
 	transport := cp.Transport

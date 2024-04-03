@@ -89,15 +89,22 @@ type Client struct {
 	namespace string
 }
 
+type CustomClientOptions struct {
+	Tracer          tracing.Tracer
+	TracingProvider tracing.Provider
+	ModuleVersion   string
+	Namespace       string
+}
+
 // TODO, make pipeline the only required one, put everything else in the struct
 // TODO, gut as many fields as we can, see what we can get rid of
-func NewCustomClient(pipeline runtime.Pipeline, tracer tracing.Tracer, tracingProvider tracing.Provider, moduleVersion string, namespace string) (*Client, error) {
+func NewCustomClient(pipeline runtime.Pipeline, options CustomClientOptions) (*Client, error) {
 	return &Client{
 		pl:        pipeline,
-		tr:        tracer,
-		tp:        tracingProvider,
-		modVer:    moduleVersion,
-		namespace: namespace,
+		tr:        options.Tracer,
+		tp:        options.TracingProvider,
+		modVer:    options.ModuleVersion,
+		namespace: options.Namespace,
 	}, nil
 }
 
@@ -120,14 +127,12 @@ func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions,
 		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: plOpts.Tracing.Namespace})
 	}
 
-	// TODO CHANGE TO USE NEWCUSTOMCLIENT
-	return &Client{
-		pl:        pl,
-		tr:        tr,
-		tp:        options.TracingProvider,
-		modVer:    moduleVersion,
-		namespace: plOpts.Tracing.Namespace,
-	}, nil
+	return NewCustomClient(pl, CustomClientOptions{
+		Tracer:          tr,
+		TracingProvider: options.TracingProvider,
+		ModuleVersion:   moduleVersion,
+		Namespace:       plOpts.Tracing.Namespace,
+	})
 }
 
 // Pipeline returns the pipeline for this client.
@@ -148,6 +153,12 @@ func (c *Client) WithClientName(clientName string) *Client {
 	if tr.Enabled() && c.namespace != "" {
 		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: c.namespace})
 	}
-	// TODO, change to use NewCustomClient
-	return &Client{pl: c.pl, tr: tr, tp: c.tp, modVer: c.modVer, namespace: c.namespace}
+	client, _ := NewCustomClient(c.pl, CustomClientOptions{
+		Tracer:          tr,
+		TracingProvider: c.tp,
+		ModuleVersion:   c.modVer,
+		Namespace:       c.namespace,
+	})
+
+	return client
 }

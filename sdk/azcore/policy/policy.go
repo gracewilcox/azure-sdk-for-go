@@ -30,8 +30,7 @@ type Transporter = exported.Transporter
 // Don't use this type directly, use runtime.NewRequest() instead.
 type Request = exported.Request
 
-// KEEP- remove APIVersion and Cloud
-// TODO, remove telemetry options
+// KEEP- remove APIVersion, Cloud and telemetry in tscore
 // ClientOptions contains optional settings for a client's pipeline.
 // Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
 // Zero-value fields will have their specified default values applied during use.

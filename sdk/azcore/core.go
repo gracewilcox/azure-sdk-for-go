@@ -95,5 +95,10 @@ func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions,
 		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: plOpts.Tracing.Namespace})
 	}
 
-	return tscore.NewCustomClient(pl, tr, options.TracingProvider, moduleVersion, plOpts.Tracing.Namespace)
+	return tscore.NewCustomClient(pl, tscore.CustomClientOptions{
+		Tracer:          tr,
+		TracingProvider: options.TracingProvider,
+		ModuleVersion:   moduleVersion,
+		Namespace:       plOpts.Tracing.Namespace,
+	})
 }

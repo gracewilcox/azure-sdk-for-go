@@ -16,22 +16,12 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"sort"
 	"strings"
-	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/diag"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
-
-// KEEP
-type logPolicy struct {
-	includeBody    bool
-	allowedHeaders map[string]struct{}
-	allowedQP      map[string]struct{}
-}
 
 // KEEP but remove x-ms headers
 // JEFF remove allowed headers, more facade refactoring
@@ -42,48 +32,16 @@ func NewLogPolicy(o *policy.LogOptions) policy.Policy {
 	if o == nil {
 		o = &policy.LogOptions{}
 	}
-	// construct default hash set of allowed headers
-	allowedHeaders := map[string]struct{}{
-		"accept":                        {},
-		"cache-control":                 {},
-		"connection":                    {},
-		"content-length":                {},
-		"content-type":                  {},
-		"date":                          {},
-		"etag":                          {},
-		"expires":                       {},
-		"if-match":                      {},
-		"if-modified-since":             {},
-		"if-none-match":                 {},
-		"if-unmodified-since":           {},
-		"last-modified":                 {},
-		"ms-cv":                         {},
-		"pragma":                        {},
-		"request-id":                    {},
-		"retry-after":                   {},
-		"server":                        {},
-		"traceparent":                   {},
-		"transfer-encoding":             {},
-		"user-agent":                    {},
-		"www-authenticate":              {},
-		"x-ms-request-id":               {},
-		"x-ms-client-request-id":        {},
-		"x-ms-return-client-request-id": {},
-	}
-	// add any caller-specified allowed headers to the set
-	for _, ah := range o.AllowedHeaders {
-		allowedHeaders[strings.ToLower(ah)] = struct{}{}
-	}
-	// now do the same thing for query params
-	allowedQP := getAllowedQueryParams(o.AllowedQueryParams)
-	return &logPolicy{
-		includeBody:    o.IncludeBody,
-		allowedHeaders: allowedHeaders,
-		allowedQP:      allowedQP,
-	}
+
+	// adding Azure specific headers
+	// TODO test
+	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-request-id")
+	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-client-request-id")
+	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-return-client-request-id")
+
+	return runtime.NewLogPolicy(o)
 }
 
-// KEEP
 // getAllowedQueryParams merges the default set of allowed query parameters
 // with a custom set (usually comes from client options).
 func getAllowedQueryParams(customAllowedQP []string) map[string]struct{} {
@@ -96,70 +54,8 @@ func getAllowedQueryParams(customAllowedQP []string) map[string]struct{} {
 	return allowedQP
 }
 
-// KEEP
-// logPolicyOpValues is the struct containing the per-operation values
-type logPolicyOpValues struct {
-	try   int32
-	start time.Time
-}
-
-func (p *logPolicy) Do(req *policy.Request) (*http.Response, error) {
-	// Get the per-operation values. These are saved in the Message's map so that they persist across each retry calling into this policy object.
-	var opValues logPolicyOpValues
-	if req.OperationValue(&opValues); opValues.start.IsZero() {
-		opValues.start = time.Now() // If this is the 1st try, record this operation's start time
-	}
-	opValues.try++ // The first try is #1 (not #0)
-	req.SetOperationValue(opValues)
-
-	// Log the outgoing request as informational
-	if log.Should(log.EventRequest) {
-		b := &bytes.Buffer{}
-		fmt.Fprintf(b, "==> OUTGOING REQUEST (Try=%d)\n", opValues.try)
-		p.writeRequestWithResponse(b, req, nil, nil)
-		var err error
-		if p.includeBody {
-			err = writeReqBody(req, b)
-		}
-		log.Write(log.EventRequest, b.String())
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Set the time for this particular retry operation and then Do the operation.
-	tryStart := time.Now()
-	response, err := req.Next() // Make the request
-	tryEnd := time.Now()
-	tryDuration := tryEnd.Sub(tryStart)
-	opDuration := tryEnd.Sub(opValues.start)
-
-	if log.Should(log.EventResponse) {
-		// We're going to log this; build the string to log
-		b := &bytes.Buffer{}
-		fmt.Fprintf(b, "==> REQUEST/RESPONSE (Try=%d/%v, OpTime=%v) -- ", opValues.try, tryDuration, opDuration)
-		if err != nil { // This HTTP request did not get a response from the service
-			fmt.Fprint(b, "REQUEST ERROR\n")
-		} else {
-			fmt.Fprint(b, "RESPONSE RECEIVED\n")
-		}
-
-		p.writeRequestWithResponse(b, req, response, err)
-		if err != nil {
-			// skip frames runtime.Callers() and runtime.StackTrace()
-			b.WriteString(diag.StackTrace(2, 32))
-		} else if p.includeBody {
-			err = writeRespBody(response, b)
-		}
-		log.Write(log.EventResponse, b.String())
-	}
-	return response, err
-}
-
-// KEEP
 const redactedValue = "REDACTED"
 
-// KEEP
 // getSanitizedURL returns a sanitized string for the provided url.URL
 func getSanitizedURL(u url.URL, allowedQueryParams map[string]struct{}) string {
 	// redact applicable query params
@@ -173,47 +69,6 @@ func getSanitizedURL(u url.URL, allowedQueryParams map[string]struct{}) string {
 	return u.String()
 }
 
-// writeRequestWithResponse appends a formatted HTTP request into a Buffer. If request and/or err are
-// not nil, then these are also written into the Buffer.
-func (p *logPolicy) writeRequestWithResponse(b *bytes.Buffer, req *policy.Request, resp *http.Response, err error) {
-	// Write the request into the buffer.
-	fmt.Fprint(b, "   "+req.Raw().Method+" "+getSanitizedURL(*req.Raw().URL, p.allowedQP)+"\n")
-	p.writeHeader(b, req.Raw().Header)
-	if resp != nil {
-		fmt.Fprintln(b, "   --------------------------------------------------------------------------------")
-		fmt.Fprint(b, "   RESPONSE Status: "+resp.Status+"\n")
-		p.writeHeader(b, resp.Header)
-	}
-	if err != nil {
-		fmt.Fprintln(b, "   --------------------------------------------------------------------------------")
-		fmt.Fprint(b, "   ERROR:\n"+err.Error()+"\n")
-	}
-}
-
-// formatHeaders appends an HTTP request's or response's header into a Buffer.
-func (p *logPolicy) writeHeader(b *bytes.Buffer, header http.Header) {
-	if len(header) == 0 {
-		b.WriteString("   (no headers)\n")
-		return
-	}
-	keys := make([]string, 0, len(header))
-	// Alphabetize the headers
-	for k := range header {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		// don't use Get() as it will canonicalize k which might cause a mismatch
-		value := header[k][0]
-		// redact all header values not in the allow-list
-		if _, ok := p.allowedHeaders[strings.ToLower(k)]; !ok {
-			value = redactedValue
-		}
-		fmt.Fprintf(b, "   %s: %+v\n", k, value)
-	}
-}
-
-// KEEP
 // returns true if the request/response body should be logged.
 // this is determined by looking at the content-type header value.
 func shouldLogBody(b *bytes.Buffer, contentType string) bool {
@@ -227,7 +82,6 @@ func shouldLogBody(b *bytes.Buffer, contentType string) bool {
 	return false
 }
 
-// KEEP
 // writes to a buffer, used for logging purposes
 func writeReqBody(req *policy.Request, b *bytes.Buffer) error {
 	if req.Raw().Body == nil {
@@ -249,7 +103,6 @@ func writeReqBody(req *policy.Request, b *bytes.Buffer) error {
 	return nil
 }
 
-// KEEP
 // writes to a buffer, used for logging purposes
 func writeRespBody(resp *http.Response, b *bytes.Buffer) error {
 	ct := resp.Header.Get(shared.HeaderContentType)
@@ -272,7 +125,6 @@ func writeRespBody(resp *http.Response, b *bytes.Buffer) error {
 	return nil
 }
 
-// KEEP
 func logBody(b *bytes.Buffer, body []byte) {
 	fmt.Fprintln(b, "   --------------------------------------------------------------------------------")
 	fmt.Fprintln(b, string(body))

@@ -78,6 +78,8 @@ type LogOptions = policy.LogOptions
 // This allows for modification of a subset of fields.
 type RetryOptions = policy.RetryOptions
 
+type RetryData = policy.RetryData
+
 // REMOVE
 // TelemetryOptions configures the telemetry policy's behavior.
 type TelemetryOptions struct {

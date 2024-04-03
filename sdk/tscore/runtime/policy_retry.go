@@ -57,6 +57,26 @@ func setDefaults(o *policy.RetryOptions) {
 			http.StatusGatewayTimeout,      // 504
 		}
 	}
+
+	// set retryData default
+	if o.RetryData == nil {
+		o.RetryData = []policy.RetryData{
+			{
+				Header: shared.HeaderRetryAfter,
+				Units:  time.Second,
+
+				// retry-after values are expressed in either number of
+				// seconds or an HTTP-date indicating when to try again
+				Custom: func(ra string) time.Duration {
+					t, err := time.Parse(time.RFC1123, ra)
+					if err != nil {
+						return 0
+					}
+					return time.Until(t)
+				},
+			},
+		}
+	}
 }
 
 func calcDelay(o policy.RetryOptions, try int32) time.Duration { // try is >=1; never 0
@@ -176,7 +196,7 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 		}
 
 		// use the delay from retry-after if available
-		delay := shared.RetryAfter(resp)
+		delay := shared.RetryAfter(resp, options.RetryData)
 		if delay <= 0 {
 			delay = calcDelay(options, try)
 		} else if delay > options.MaxRetryDelay {

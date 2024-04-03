@@ -42,48 +42,33 @@ func Delay(ctx context.Context, delay time.Duration) error {
 	}
 }
 
+type RetryData struct {
+	Header string
+	Units  time.Duration
+
+	// custom is used when the regular algorithm failed and is optional.
+	// the returned duration is used verbatim (units is not applied).
+	Custom func(string) time.Duration
+}
+
 // RetryAfter returns non-zero if the response contains one of the headers with a "retry after" value.
 // Headers are checked in the following order: retry-after
-func RetryAfter(resp *http.Response) time.Duration {
+func RetryAfter(resp *http.Response, retryData []RetryData) time.Duration {
 	if resp == nil {
 		return 0
 	}
 
-	type retryData struct {
-		header string
-		units  time.Duration
-
-		// custom is used when the regular algorithm failed and is optional.
-		// the returned duration is used verbatim (units is not applied).
-		custom func(string) time.Duration
-	}
-
 	// the headers are listed in order of preference
-	retries := []retryData{
-		{
-			header: HeaderRetryAfter,
-			units:  time.Second,
-
-			// retry-after values are expressed in either number of
-			// seconds or an HTTP-date indicating when to try again
-			custom: func(ra string) time.Duration {
-				t, err := time.Parse(time.RFC1123, ra)
-				if err != nil {
-					return 0
-				}
-				return time.Until(t)
-			},
-		},
-	}
+	retries := retryData
 
 	for _, retry := range retries {
-		v := resp.Header.Get(retry.header)
+		v := resp.Header.Get(retry.Header)
 		if v == "" {
 			continue
 		}
 		if retryAfter, _ := strconv.Atoi(v); retryAfter > 0 {
-			return time.Duration(retryAfter) * retry.units
-		} else if d := retry.custom(v); d > 0 {
+			return time.Duration(retryAfter) * retry.Units
+		} else if d := retry.Custom(v); d > 0 {
 			return d
 		}
 	}

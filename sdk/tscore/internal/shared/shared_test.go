@@ -16,6 +16,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var retries = []RetryData{
+	{
+		Header: HeaderRetryAfter,
+		Units:  time.Second,
+
+		// retry-after values are expressed in either number of
+		// seconds or an HTTP-date indicating when to try again
+		Custom: func(ra string) time.Duration {
+			t, err := time.Parse(time.RFC1123, ra)
+			if err != nil {
+				return 0
+			}
+			return time.Until(t)
+		},
+	},
+}
+
 func TestDelay(t *testing.T) {
 	if err := Delay(context.Background(), 5*time.Millisecond); err != nil {
 		t.Fatal(err)
@@ -28,17 +45,17 @@ func TestDelay(t *testing.T) {
 }
 
 func TestRetryAfter(t *testing.T) {
-	if RetryAfter(nil) != 0 {
+	if RetryAfter(nil, retries) != 0 {
 		t.Fatal("expected zero duration")
 	}
 	resp := &http.Response{
 		Header: http.Header{},
 	}
-	if d := RetryAfter(resp); d > 0 {
+	if d := RetryAfter(resp, retries); d > 0 {
 		t.Fatalf("unexpected retry-after value %d", d)
 	}
 	resp.Header.Set(HeaderRetryAfter, "300")
-	d := RetryAfter(resp)
+	d := RetryAfter(resp, retries)
 	if d <= 0 {
 		t.Fatal("expected retry-after value from seconds")
 	}
@@ -47,7 +64,7 @@ func TestRetryAfter(t *testing.T) {
 	}
 	atDate := time.Now().Add(600 * time.Second)
 	resp.Header.Set(HeaderRetryAfter, atDate.Format(time.RFC1123))
-	d = RetryAfter(resp)
+	d = RetryAfter(resp, retries)
 	if d <= 0 {
 		t.Fatal("expected retry-after value from date")
 	}
@@ -56,7 +73,7 @@ func TestRetryAfter(t *testing.T) {
 		t.Fatalf("expected ~600 seconds, got %d", s)
 	}
 	resp.Header.Set(HeaderRetryAfter, "invalid")
-	if d = RetryAfter(resp); d != 0 {
+	if d = RetryAfter(resp, retries); d != 0 {
 		t.Fatalf("expected zero for invalid value, got %d", d)
 	}
 }

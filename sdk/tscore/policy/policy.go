@@ -115,7 +115,11 @@ type RetryOptions struct {
 	// if one is nil, the other is not nil.
 	// A return value of true means the retry policy should retry.
 	ShouldRetry func(*http.Response, error) bool
+
+	RetryData []RetryData
 }
+
+type RetryData = shared.RetryData
 
 // TokenRequestOptions contain specific parameter that may be used by credentials types when attempting to get a token.
 type TokenRequestOptions = exported.TokenRequestOptions

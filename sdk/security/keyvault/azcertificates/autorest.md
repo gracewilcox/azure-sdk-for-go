@@ -4,7 +4,7 @@
 clear-output-folder: false
 export-clients: true
 go: true
-input-file: https://github.com/Azure/azure-rest-api-specs/blob/7452e1cc7db72fbc6cd9539b390d8b8e5c2a1864/specification/keyvault/data-plane/Microsoft.KeyVault/stable/7.5/certificates.json
+input-file: https://github.com/Azure/azure-rest-api-specs/blob/8af9817c15d688c941cda106758045b5deb9a069/specification/keyvault/data-plane/Microsoft.KeyVault/preview/7.6-preview.1/certificates.json
 license-header: MICROSOFT_MIT_NO_VERSION
 module: github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates
 openapi-type: "data-plane"
@@ -12,7 +12,7 @@ output-folder: ../azcertificates
 override-client-name: Client
 security: "AADToken"
 security-scopes: "https://vault.azure.net/.default"
-use: "@autorest/go@4.0.0-preview.59"
+use: "@autorest/go@4.0.0-preview.61"
 inject-spans: true
 version: "^3.0.0"
 

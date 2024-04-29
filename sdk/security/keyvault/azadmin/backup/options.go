@@ -20,6 +20,22 @@ type BeginFullRestoreOptions struct {
 	ResumeToken string
 }
 
+// BeginPreFullBackupOptions contains the optional parameters for the Client.BeginPreFullBackup method.
+type BeginPreFullBackupOptions struct {
+	// Optional parameters to validate prior to performing a full backup operation.
+	PreBackupOperationParameters *PreBackupOperationParameters
+
+	// Resumes the LRO from the provided token.
+	ResumeToken string
+}
+
+// BeginPreFullRestoreOperationOptions contains the optional parameters for the Client.BeginPreFullRestoreOperation
+// method.
+type BeginPreFullRestoreOperationOptions struct {
+	// Resumes the LRO from the provided token.
+	ResumeToken string
+}
+
 // BeginSelectiveKeyRestoreOptions contains the optional parameters for the Client.BeginSelectiveKeyRestore method.
 type BeginSelectiveKeyRestoreOptions struct {
 	// Resumes the LRO from the provided token.

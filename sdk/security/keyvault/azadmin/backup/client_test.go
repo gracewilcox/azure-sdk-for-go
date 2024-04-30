@@ -150,3 +150,16 @@ func TestBeginSelectiveKeyRestoreOperation(t *testing.T) {
 		time.Sleep(60 * time.Second)
 	}
 }
+
+func TestBeginPreFullBackup(t *testing.T) {
+	backupClient, _ := startBackupTest(t)
+
+	// should the parameters be optional???
+
+	poller, err := backupClient.BeginPreFullBackup(context.Background(), nil)
+	require.NoError(t, err)
+	selectiveResults, err := poller.PollUntilDone(context.Background(), nil)
+	require.NoError(t, err)
+	testSerde(t, &selectiveResults)
+
+}

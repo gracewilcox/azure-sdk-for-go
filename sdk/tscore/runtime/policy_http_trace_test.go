@@ -27,7 +27,7 @@ func TestHTTPTracePolicy(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 
-	pl := exported.NewPipeline(srv, NewHTTPTracePolicy([]string{"visibleqp"}))
+	pl := exported.NewPipeline(srv, NewHTTPTracePolicy([]string{"visibleqp"}, nil))
 
 	// no tracer
 	req, err := exported.NewRequest(context.Background(), http.MethodGet, srv.URL())
@@ -77,9 +77,7 @@ func TestHTTPTracePolicy(t *testing.T) {
 	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrHTTPURL, Value: srv.URL() + "?foo=REDACTED&visibleqp=bar"})
 	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrNetPeerName, Value: srv.URL()[7:]}) // strip off the http://
 	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrHTTPUserAgent, Value: "my-user-agent"})
-	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrAZClientReqID, Value: "my-client-request"})
 	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrHTTPStatusCode, Value: http.StatusOK})
-	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrAZServiceReqID, Value: "request-id"})
 
 	// HTTP bad request
 	req, err = exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
@@ -182,7 +180,7 @@ func TestStartSpansDontNest(t *testing.T) {
 	srv.SetResponse() // always return http.StatusOK
 	defer close()
 
-	pl := exported.NewPipeline(srv, NewHTTPTracePolicy(nil))
+	pl := exported.NewPipeline(srv, NewHTTPTracePolicy(nil, nil))
 
 	apiSpanCount := 0
 	httpSpanCount := 0

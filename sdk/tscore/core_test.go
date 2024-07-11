@@ -160,7 +160,7 @@ func TestNewClientTracingEnabled(t *testing.T) {
 	srv.AppendResponse()
 	_, err = client.Pipeline().Do(req)
 	require.NoError(t, err)
-	require.EqualValues(t, "az.namespace:Widget.Factory", attrString)
+	require.EqualValues(t, "namespace:Widget.Factory", attrString)
 }
 
 func TestClientWithClientName(t *testing.T) {
@@ -205,7 +205,7 @@ func TestClientWithClientName(t *testing.T) {
 	srv.SetResponse()
 	_, err = client.Pipeline().Do(req)
 	require.NoError(t, err)
-	require.EqualValues(t, "az.namespace:Widget.Factory", attrString)
+	require.EqualValues(t, "namespace:Widget.Factory", attrString)
 
 	newClient := client.WithClientName("other")
 	require.EqualValues(t, "other", clientName)
@@ -213,7 +213,7 @@ func TestClientWithClientName(t *testing.T) {
 	require.EqualValues(t, client.Pipeline(), newClient.Pipeline())
 	_, err = newClient.Pipeline().Do(req)
 	require.NoError(t, err)
-	require.EqualValues(t, "az.namespace:Widget.Factory", attrString)
+	require.EqualValues(t, "namespace:Widget.Factory", attrString)
 }
 
 func TestNewKeyCredential(t *testing.T) {

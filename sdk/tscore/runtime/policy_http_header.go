@@ -14,7 +14,7 @@ import (
 )
 
 // newHTTPHeaderPolicy creates a policy object that adds custom HTTP headers to a request
-func HttpHeaderPolicy(req *policy.Request) (*http.Response, error) {
+func httpHeaderPolicy(req *policy.Request) (*http.Response, error) {
 	// check if any custom HTTP headers have been specified
 	if header := req.Raw().Context().Value(shared.CtxWithHTTPHeaderKey{}); header != nil {
 		for k, v := range header.(http.Header) {

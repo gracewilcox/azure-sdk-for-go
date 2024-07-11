@@ -108,7 +108,6 @@ func NewCustomClient(pipeline runtime.Pipeline, options CustomClientOptions) (*C
 	}, nil
 }
 
-// GRACE TODO maybe rename pipeline options
 // GRACE TODO rename to NewDefaultClient? Name TBD? or delete
 // NewClient creates a new Client instance with the provided values.
 //   - moduleName - the fully qualified name of the module where the client is defined; used by the tracing provider.

@@ -295,7 +295,7 @@ func TestRetryPolicySuccessWithRetryComplex(t *testing.T) {
 	srv.AppendError(errors.New("bogus error"))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusInternalServerError))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusAccepted))
-	pl := exported.NewPipeline(srv, exported.PolicyFunc(IncludeResponsePolicy), NewRetryPolicy(testRetryOptions()))
+	pl := exported.NewPipeline(srv, exported.PolicyFunc(includeResponsePolicy), NewRetryPolicy(testRetryOptions()))
 	var respFromCtx *http.Response
 	ctxWithResp := policy.WithCaptureResponse(context.Background(), &respFromCtx)
 	req, err := NewRequest(ctxWithResp, http.MethodGet, srv.URL())
@@ -634,7 +634,7 @@ func TestRetryPolicySuccessWithPerTryTimeoutNoRetryWithBodyDownload(t *testing.T
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody(largeBody))
 	opt := testRetryOptions()
 	opt.TryTimeout = 10 * time.Second
-	pl := exported.NewPipeline(srv, NewRetryPolicy(opt), exported.PolicyFunc(BodyDownloadPolicy))
+	pl := exported.NewPipeline(srv, NewRetryPolicy(opt), exported.PolicyFunc(bodyDownloadPolicy))
 	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

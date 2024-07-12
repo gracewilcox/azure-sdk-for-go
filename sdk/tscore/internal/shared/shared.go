@@ -42,6 +42,8 @@ func Delay(ctx context.Context, delay time.Duration) error {
 	}
 }
 
+// TODO add description
+// exported in ...
 type RetryData struct {
 	Header string
 	Units  time.Duration

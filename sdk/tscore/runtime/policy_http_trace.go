@@ -31,9 +31,9 @@ const (
 
 // newHTTPTracePolicy creates a new instance of the httpTracePolicy.
 //   - allowedQueryParams contains the user-specified query parameters that don't need to be redacted from the trace
-func newHTTPTracePolicy(allowedQueryParams []string, op *traceOptions) exported.Policy {
+func newHTTPTracePolicy(allowedQueryParams []string, op *TracingOptions) exported.Policy {
 	if op == nil {
-		op = &traceOptions{}
+		op = &TracingOptions{}
 	}
 	return &httpTracePolicy{
 		allowedQP: getAllowedQueryParams(allowedQueryParams),
@@ -41,15 +41,10 @@ func newHTTPTracePolicy(allowedQueryParams []string, op *traceOptions) exported.
 	}
 }
 
-type traceOptions struct {
-	RequestAttributes  map[string]string
-	ResponseAttributes map[string]string
-}
-
 // httpTracePolicy is a policy that creates a trace for the HTTP request and its response
 type httpTracePolicy struct {
 	allowedQP map[string]struct{}
-	options   traceOptions
+	options   TracingOptions
 }
 
 // Do implements the pipeline.Policy interfaces for the httpTracePolicy type.

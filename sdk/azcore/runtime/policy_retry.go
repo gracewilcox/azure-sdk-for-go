@@ -18,8 +18,19 @@ import (
 // NewRetryPolicy creates a policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {
+	options := policy.RetryOptions{}
+	if o != nil {
+		options = *o
+	}
+
+	options = azureRetryPolicy(options)
+	return runtime.NewRetryPolicy(&options)
+}
+
+// TODO add description
+func azureRetryPolicy(o policy.RetryOptions) policy.RetryOptions {
 	// setting default retries for Azure
-	// tscore has its own defualts, this overrides them to be Azure specific
+	// tscore has its own defaults, this overrides them to be Azure specific
 	if o.RetryData == nil {
 		nop := func(string) time.Duration { return 0 }
 		o.RetryData = []policy.RetryData{
@@ -50,5 +61,5 @@ func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {
 		}
 	}
 
-	return runtime.NewRetryPolicy(o)
+	return o
 }

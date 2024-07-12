@@ -37,7 +37,9 @@ type PipelineOptions struct {
 // TracingOptions contains tracing options for SDK developers.
 type TracingOptions struct {
 	// Namespace contains the value to use for the namespace span attribute.
-	Namespace string
+	Namespace          string
+	RequestAttributes  map[string]string
+	ResponseAttributes map[string]string
 }
 
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.

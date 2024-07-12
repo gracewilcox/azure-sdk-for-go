@@ -96,8 +96,6 @@ type CustomClientOptions struct {
 	Namespace       string
 }
 
-// TODO, make pipeline the only required one, put everything else in the struct
-// TODO, gut as many fields as we can, see what we can get rid of
 func NewCustomClient(pipeline runtime.Pipeline, options CustomClientOptions) (*Client, error) {
 	return &Client{
 		pl:        pipeline,
@@ -108,7 +106,6 @@ func NewCustomClient(pipeline runtime.Pipeline, options CustomClientOptions) (*C
 	}, nil
 }
 
-// GRACE TODO rename to NewDefaultClient? Name TBD? or delete
 // NewClient creates a new Client instance with the provided values.
 //   - moduleName - the fully qualified name of the module where the client is defined; used by the tracing provider.
 //   - moduleVersion - the semantic version of the module; used by the tracing provider.

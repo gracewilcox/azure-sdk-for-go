@@ -22,23 +22,29 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
+// TODO test
 // KEEP but remove x-ms headers
 // JEFF remove allowed headers, more facade refactoring
 // JEFF add stuff to azcore client constructor
 // NewLogPolicy creates a request/response logging policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewLogPolicy(o *policy.LogOptions) policy.Policy {
-	if o == nil {
-		o = &policy.LogOptions{}
+	options := policy.LogOptions{}
+	if o != nil {
+		options = *o
 	}
 
-	// adding Azure specific headers
-	// TODO test
+	options = appendAzureAllowedHeaders(options)
+	return runtime.NewLogPolicy(&options)
+}
+
+// adding azure specific headers to LogOptions.AllowedHeaders
+func appendAzureAllowedHeaders(o policy.LogOptions) policy.LogOptions {
 	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-request-id")
 	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-client-request-id")
 	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-return-client-request-id")
 
-	return runtime.NewLogPolicy(o)
+	return o
 }
 
 // returns true if the request/response body should be logged.

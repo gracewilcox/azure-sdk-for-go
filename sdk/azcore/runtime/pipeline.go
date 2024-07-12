@@ -9,6 +9,7 @@ package runtime
 import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	tspolicy "github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
@@ -62,39 +63,34 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	if options != nil {
 		cp = *options
 	}
-	if len(plOpts.AllowedHeaders) > 0 {
-		headers := make([]string, len(plOpts.AllowedHeaders)+len(cp.Logging.AllowedHeaders))
-		copy(headers, plOpts.AllowedHeaders)
-		headers = append(headers, cp.Logging.AllowedHeaders...)
-		cp.Logging.AllowedHeaders = headers
-	}
-	if len(plOpts.AllowedQueryParameters) > 0 {
-		qp := make([]string, len(plOpts.AllowedQueryParameters)+len(cp.Logging.AllowedQueryParams))
-		copy(qp, plOpts.AllowedQueryParameters)
-		qp = append(qp, cp.Logging.AllowedQueryParams...)
-		cp.Logging.AllowedQueryParams = qp
-	}
-	// we put the includeResponsePolicy at the very beginning so that the raw response
-	// is populated with the final response (some policies might mutate the response)
-	policies := []policy.Policy{exported.PolicyFunc(runtime.IncludeResponsePolicy)}
+
+	// adding azure specific policies to PerCallPolicies
+	var azPolicies []policy.Policy
 	if cp.APIVersion != "" {
-		policies = append(policies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
+		azPolicies = append(azPolicies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
 	}
 	if !cp.Telemetry.Disabled {
-		policies = append(policies, NewTelemetryPolicy(module, version, &cp.Telemetry))
+		azPolicies = append(azPolicies, NewTelemetryPolicy(module, version, &cp.Telemetry))
 	}
-	policies = append(policies, plOpts.PerCall...)
-	policies = append(policies, cp.PerCallPolicies...)
-	policies = append(policies, NewRetryPolicy(&cp.Retry))
-	policies = append(policies, plOpts.PerRetry...)
-	policies = append(policies, cp.PerRetryPolicies...)
-	policies = append(policies, exported.PolicyFunc(runtime.HttpHeaderPolicy))
-	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams))
-	policies = append(policies, NewLogPolicy(&cp.Logging))
-	policies = append(policies, exported.PolicyFunc(runtime.BodyDownloadPolicy))
-	transport := cp.Transport
-	if transport == nil {
-		transport = defaultHTTPClient
+
+	// converting azcore options to tscore options
+	// some processing occurs, including adding azure specific options
+	// so they're correctly passed down to tscore
+	tsPlOpts := runtime.PipelineOptions{
+		AllowedHeaders:         plOpts.AllowedHeaders,
+		AllowedQueryParameters: plOpts.AllowedQueryParameters,
+		PerCall:                plOpts.PerCall,
+		PerRetry:               plOpts.PerRetry,
+		Tracing:                azureTracingPolicy(plOpts.Tracing),
 	}
-	return exported.NewPipeline(transport, policies...)
+	tsClOpts := &tspolicy.ClientOptions{
+		Logging:          appendAzureAllowedHeaders(cp.Logging),
+		Retry:            azureRetryPolicy(cp.Retry),
+		TracingProvider:  cp.TracingProvider,
+		Transport:        cp.Transport,
+		PerCallPolicies:  append(azPolicies, cp.PerCallPolicies...),
+		PerRetryPolicies: cp.PerRetryPolicies,
+	}
+
+	return runtime.NewPipeline(tsPlOpts, tsClOpts)
 }

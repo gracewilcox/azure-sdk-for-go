@@ -10,7 +10,6 @@ package runtime
 import (
 	"context"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
@@ -28,13 +27,11 @@ const (
 	attrNetPeerName = "net.peer.name"
 )
 
-// newHTTPTracePolicy creates a new instance of the httpTracePolicy.
-//   - allowedQueryParams contains the user-specified query parameters that don't need to be redacted from the trace
-func newHTTPTracePolicy(allowedQueryParams []string) exported.Policy {
-	return runtime.NewHTTPTracePolicy(allowedQueryParams, &runtime.TraceOptions{
-		RequestAttributes:  map[string]string{shared.HeaderXMSClientRequestID: attrAZClientReqID},
-		ResponseAttributes: map[string]string{shared.HeaderXMSRequestID: attrAZServiceReqID},
-	})
+func azureTracingPolicy(o TracingOptions) TracingOptions {
+	o.RequestAttributes = map[string]string{shared.HeaderXMSClientRequestID: attrAZClientReqID}
+	o.ResponseAttributes = map[string]string{shared.HeaderXMSRequestID: attrAZServiceReqID}
+
+	return o
 }
 
 // KEEP

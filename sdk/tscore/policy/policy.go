@@ -116,6 +116,7 @@ type RetryOptions struct {
 	// A return value of true means the retry policy should retry.
 	ShouldRetry func(*http.Response, error) bool
 
+	// TODO add description
 	RetryData []RetryData
 }
 

@@ -19,16 +19,16 @@ import (
 // KEEP
 // Policy represents an extensibility point for the Pipeline that can mutate the specified
 // Request and react to the received Response.
-type Policy = exported.Policy
+type Policy = policy.Policy
 
 // KEEP
 // Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
-type Transporter = exported.Transporter
+type Transporter = policy.Transporter
 
 // KEEP
 // Request is an abstraction over the creation of an HTTP request as it passes through the pipeline.
 // Don't use this type directly, use runtime.NewRequest() instead.
-type Request = exported.Request
+type Request = policy.Request
 
 // KEEP- remove APIVersion, Cloud and telemetry in tscore
 // ClientOptions contains optional settings for a client's pipeline.

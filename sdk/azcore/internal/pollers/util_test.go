@@ -16,6 +16,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 
@@ -108,7 +109,7 @@ func TestNopPoller(t *testing.T) {
 
 func TestPollHelper(t *testing.T) {
 	const fakeEndpoint = "https://fake.polling/endpoint"
-	err := PollHelper(context.Background(), "invalid endpoint", exported.Pipeline{}, func(*http.Response) (string, error) {
+	err := PollHelper(context.Background(), "invalid endpoint", runtime.Pipeline{}, func(*http.Response) (string, error) {
 		t.Fatal("shouldn't have been called")
 		return "", nil
 	})

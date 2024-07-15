@@ -16,10 +16,10 @@ import (
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 
@@ -161,7 +161,7 @@ func TestUnmarshalRequestReadFailure(t *testing.T) {
 
 	var nre errorinfo.NonRetriable
 
-	b, err := UnmarshalRequestAsByteArray(req, exported.Base64StdFormat)
+	b, err := UnmarshalRequestAsByteArray(req, runtime.Base64StdFormat)
 	require.Error(t, err)
 	require.Zero(t, b)
 	require.ErrorAs(t, err, &nre)
@@ -209,10 +209,10 @@ func TestMarshalUnmarshalAsByteArray(t *testing.T) {
 	req, err := http.NewRequest(http.MethodPut, "https://foo.bar/baz", nil)
 	require.NoError(t, err)
 	require.NotNil(t, req)
-	body, err := UnmarshalRequestAsByteArray(req, exported.Base64StdFormat)
+	body, err := UnmarshalRequestAsByteArray(req, runtime.Base64StdFormat)
 	require.NoError(t, err)
 	require.Nil(t, body)
-	resp, err := MarshalResponseAsByteArray(ResponseContent{HTTPStatus: http.StatusOK}, []byte(encodeVal), exported.Base64StdFormat, req)
+	resp, err := MarshalResponseAsByteArray(ResponseContent{HTTPStatus: http.StatusOK}, []byte(encodeVal), runtime.Base64StdFormat, req)
 	require.NoError(t, err)
 	body, err = io.ReadAll(resp.Body)
 	require.NoError(t, err)
@@ -221,14 +221,14 @@ func TestMarshalUnmarshalAsByteArray(t *testing.T) {
 	req, err = http.NewRequest(http.MethodPut, "https://foo.bar/baz", io.NopCloser(bytes.NewReader(body)))
 	require.NoError(t, err)
 	require.NotNil(t, req)
-	body, err = UnmarshalRequestAsByteArray(req, exported.Base64StdFormat)
+	body, err = UnmarshalRequestAsByteArray(req, runtime.Base64StdFormat)
 	require.NoError(t, err)
 	require.EqualValues(t, encodeVal, string(body))
 
 	req, err = http.NewRequest(http.MethodPut, "https://foo.bar/baz", io.NopCloser(strings.NewReader("not base64 encoded")))
 	require.NoError(t, err)
 	require.NotNil(t, req)
-	body, err = UnmarshalRequestAsByteArray(req, exported.Base64StdFormat)
+	body, err = UnmarshalRequestAsByteArray(req, runtime.Base64StdFormat)
 	require.Error(t, err)
 	require.Nil(t, body)
 }

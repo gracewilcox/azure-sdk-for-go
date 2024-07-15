@@ -19,6 +19,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/streaming"
 	"github.com/stretchr/testify/require"
 )
 
@@ -152,7 +153,7 @@ func TestRequestSetBodyContentLengthHeader(t *testing.T) {
 	for i := 0; i < buffLen; i++ {
 		buff[i] = 1
 	}
-	err = req.SetBody(exported.NopCloser(bytes.NewReader(buff)), "application/octet-stream")
+	err = req.SetBody(streaming.NopCloser(bytes.NewReader(buff)), "application/octet-stream")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -252,11 +253,11 @@ func TestSetMultipartFormData(t *testing.T) {
 	err = SetMultipartFormData(req, map[string]interface{}{
 		"string": "value",
 		"int":    1,
-		"data":   exported.NopCloser(strings.NewReader("some data")),
+		"data":   streaming.NopCloser(strings.NewReader("some data")),
 		"datum": []io.ReadSeekCloser{
-			exported.NopCloser(strings.NewReader("first part")),
-			exported.NopCloser(strings.NewReader("second part")),
-			exported.NopCloser(strings.NewReader("third part")),
+			streaming.NopCloser(strings.NewReader("first part")),
+			streaming.NopCloser(strings.NewReader("second part")),
+			streaming.NopCloser(strings.NewReader("third part")),
 		},
 	})
 	if err != nil {
@@ -309,7 +310,7 @@ func TestSetMultipartFormData(t *testing.T) {
 		case "datum":
 			content, err := io.ReadAll(part)
 			require.NoError(t, err)
-			datum = append(datum, exported.NopCloser(bytes.NewReader(content)))
+			datum = append(datum, streaming.NopCloser(bytes.NewReader(content)))
 		default:
 			t.Fatalf("unexpected part %s", fn)
 		}

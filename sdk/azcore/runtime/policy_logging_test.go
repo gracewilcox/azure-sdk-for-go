@@ -20,6 +20,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/streaming"
 	"github.com/stretchr/testify/require"
 )
 
@@ -210,7 +211,7 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 }
 
 func TestSkipWriteReqBody(t *testing.T) {
-	req, err := exported.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
+	req, err := NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
 	require.NoError(t, err)
 
 	buf := bytes.Buffer{}
@@ -218,15 +219,15 @@ func TestSkipWriteReqBody(t *testing.T) {
 	require.Contains(t, buf.String(), "Request contained no body")
 	buf.Reset()
 
-	require.NoError(t, req.SetBody(exported.NopCloser(bytes.NewReader([]byte{0xf0, 0x0d})), "application/octet-stream"))
+	require.NoError(t, req.SetBody(streaming.NopCloser(bytes.NewReader([]byte{0xf0, 0x0d})), "application/octet-stream"))
 	require.NoError(t, writeReqBody(req, &buf))
 	require.Contains(t, buf.String(), "Skip logging body for application/octet-stream")
 }
 
 func TestWriteReqBody(t *testing.T) {
-	req, err := exported.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
+	req, err := NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
 	require.NoError(t, err)
-	require.NoError(t, req.SetBody(exported.NopCloser(strings.NewReader(`{"foo":"bar"}`)), shared.ContentTypeAppJSON))
+	require.NoError(t, req.SetBody(streaming.NopCloser(strings.NewReader(`{"foo":"bar"}`)), shared.ContentTypeAppJSON))
 
 	buf := bytes.Buffer{}
 	require.NoError(t, writeReqBody(req, &buf))
@@ -254,10 +255,10 @@ func (r *readSeekerFailer) Seek(int64, int) (int64, error) {
 }
 
 func TestWriteReqBodyReadError(t *testing.T) {
-	req, err := exported.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
+	req, err := NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
 	require.NoError(t, err)
 	rsf := &readSeekerFailer{}
-	require.NoError(t, req.SetBody(exported.NopCloser(rsf), shared.ContentTypeAppJSON))
+	require.NoError(t, req.SetBody(streaming.NopCloser(rsf), shared.ContentTypeAppJSON))
 
 	buf := bytes.Buffer{}
 	rsf.failRead = true
@@ -304,7 +305,7 @@ func TestWriteRespBodyReadError(t *testing.T) {
 	buf := bytes.Buffer{}
 
 	resp.Header.Set(shared.HeaderContentType, "application/json")
-	resp.Body = exported.NopCloser(&readSeekerFailer{failRead: true})
+	resp.Body = streaming.NopCloser(&readSeekerFailer{failRead: true})
 	require.Error(t, writeRespBody(resp, &buf))
 	require.Contains(t, buf.String(), "Failed to read response body: read failed")
 }

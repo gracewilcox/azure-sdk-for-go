@@ -11,7 +11,11 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
+
+const testURL = "http://test.contoso.com/"
 
 func TestPipelineErrors(t *testing.T) {
 	pl := NewPipeline(nil)
@@ -22,7 +26,7 @@ func TestPipelineErrors(t *testing.T) {
 	if resp != nil {
 		t.Fatal("expected nil response")
 	}
-	req, err := NewRequest(context.Background(), http.MethodGet, testURL)
+	req, err := runtime.NewRequest(context.Background(), http.MethodGet, testURL)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +45,7 @@ func TestPipelineErrors(t *testing.T) {
 	if resp != nil {
 		t.Fatal("expected nil response")
 	}
-	req, err = NewRequest(context.Background(), http.MethodGet, testURL)
+	req, err = runtime.NewRequest(context.Background(), http.MethodGet, testURL)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +75,7 @@ func (m *mockTransport) Do(*http.Request) (*http.Response, error) {
 }
 
 func TestPipelineDo(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodGet, testURL)
+	req, err := runtime.NewRequest(context.Background(), http.MethodGet, testURL)
 	if err != nil {
 		t.Fatal(err)
 	}

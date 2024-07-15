@@ -9,7 +9,6 @@ package runtime
 import (
 	"net/http"
 
-	azexported "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
@@ -54,5 +53,5 @@ func Drain(resp *http.Response) {
 // KEEP
 // DecodeByteArray will base-64 decode the provided string into v.
 func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
-	return azexported.DecodeByteArray(s, v, format)
+	return runtime.DecodeByteArray(s, v, format)
 }

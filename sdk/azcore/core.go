@@ -31,7 +31,7 @@ type KeyCredential = exported.KeyCredential
 // NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
 //   - key is the authentication key
 func NewKeyCredential(key string) *KeyCredential {
-	return exported.NewKeyCredential(key)
+	return tscore.NewKeyCredential(key)
 }
 
 // REMOVE

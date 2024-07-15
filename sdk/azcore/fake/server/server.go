@@ -20,6 +20,7 @@ import (
 	fakepoller "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers/fake"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // KEEP
@@ -59,7 +60,7 @@ func MarshalResponseAsByteArray(content ResponseContent, body []byte, format aze
 		return nil, err
 	}
 	if body != nil {
-		resp = exported.SetResponseBody(resp, []byte(azexported.EncodeByteArray(body, format)), shared.ContentTypeAppJSON)
+		resp = exported.SetResponseBody(resp, []byte(runtime.EncodeByteArray(body, format)), shared.ContentTypeAppJSON)
 	}
 	return resp, nil
 }
@@ -125,7 +126,7 @@ func UnmarshalRequestAsByteArray(req *http.Request, format azexported.Base64Enco
 	}
 	req.Body.Close()
 	var val []byte
-	if err := azexported.DecodeByteArray(string(body), &val, format); err != nil {
+	if err := runtime.DecodeByteArray(string(body), &val, format); err != nil {
 		return nil, errorinfo.NonRetriableError(err)
 	}
 	return val, nil

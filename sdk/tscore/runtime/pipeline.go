@@ -83,3 +83,7 @@ func NewPipeline(plOpts PipelineOptions, options *policy.ClientOptions) Pipeline
 	}
 	return exported.NewPipeline(transport, policies...)
 }
+
+func NewCustomPipeline(transport exported.Transporter, policies ...exported.Policy) Pipeline {
+	return exported.NewPipeline(transport, policies...)
+}

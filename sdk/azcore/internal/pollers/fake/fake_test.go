@@ -16,6 +16,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 
@@ -53,29 +54,29 @@ func TestCanResume(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	fp, err := New[struct{}](exported.Pipeline{}, nil)
+	fp, err := New[struct{}](runtime.Pipeline{}, nil)
 	require.NoError(t, err)
 	require.Empty(t, fp.FakeStatus)
 
-	fp, err = New[struct{}](exported.Pipeline{}, &http.Response{Header: http.Header{}})
+	fp, err = New[struct{}](runtime.Pipeline{}, &http.Response{Header: http.Header{}})
 	require.Error(t, err)
 	require.Nil(t, fp)
 
 	resp := initialResponse(context.Background(), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
-	fp, err = New[struct{}](exported.Pipeline{}, resp)
+	fp, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.Error(t, err)
 	require.Nil(t, fp)
 
 	resp = initialResponse(context.WithValue(context.Background(), shared.CtxAPINameKey{}, 123), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
-	fp, err = New[struct{}](exported.Pipeline{}, resp)
+	fp, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.Error(t, err)
 	require.Nil(t, fp)
 
 	resp = initialResponse(context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
-	fp, err = New[struct{}](exported.Pipeline{}, resp)
+	fp, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.NotNil(t, fp)
 	require.False(t, fp.Done())
@@ -85,7 +86,7 @@ func TestSynchronousCompletion(t *testing.T) {
 	resp := initialResponse(context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
 	resp.StatusCode = http.StatusNoContent
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusSucceeded)
-	fp, err := New[struct{}](exported.Pipeline{}, resp)
+	fp, err := New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, poller.StatusSucceeded, fp.FakeStatus)
 	require.True(t, fp.Done())

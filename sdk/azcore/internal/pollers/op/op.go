@@ -17,6 +17,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // Applicable returns true if the LRO is using Operation-Location.
@@ -32,7 +34,7 @@ func CanResume(token map[string]interface{}) bool {
 
 // Poller is an LRO poller that uses the Operation-Location pattern.
 type Poller[T any] struct {
-	pl   exported.Pipeline
+	pl   runtime.Pipeline
 	resp *http.Response
 
 	OpLocURL   string                `json:"oplocURL"`
@@ -113,20 +115,20 @@ func (p *Poller[T]) Poll(ctx context.Context) (*http.Response, error) {
 }
 
 func (p *Poller[T]) Result(ctx context.Context, out *T) error {
-	var req *exported.Request
+	var req *policy.Request
 	var err error
 	if p.FinalState == pollers.FinalStateViaLocation && p.LocURL != "" {
-		req, err = exported.NewRequest(ctx, http.MethodGet, p.LocURL)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, p.LocURL)
 	} else if p.FinalState == pollers.FinalStateViaOpLocation && p.Method == http.MethodPost {
 		// no final GET required, terminal response should have it
 	} else if rl, rlErr := poller.GetResourceLocation(p.resp); rlErr != nil && !errors.Is(rlErr, poller.ErrNoBody) {
 		return rlErr
 	} else if rl != "" {
-		req, err = exported.NewRequest(ctx, http.MethodGet, rl)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, rl)
 	} else if p.Method == http.MethodPatch || p.Method == http.MethodPut {
-		req, err = exported.NewRequest(ctx, http.MethodGet, p.OrigURL)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, p.OrigURL)
 	} else if p.Method == http.MethodPost && p.LocURL != "" {
-		req, err = exported.NewRequest(ctx, http.MethodGet, p.LocURL)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, p.LocURL)
 	}
 	if err != nil {
 		return err

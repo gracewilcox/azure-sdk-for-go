@@ -18,6 +18,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // Applicable returns true if the LRO is a fake.
@@ -33,7 +34,7 @@ func CanResume(token map[string]interface{}) bool {
 
 // Poller is an LRO poller that uses the Core-Fake-Poller pattern.
 type Poller[T any] struct {
-	pl exported.Pipeline
+	pl runtime.Pipeline
 
 	resp *http.Response
 

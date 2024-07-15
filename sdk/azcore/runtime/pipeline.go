@@ -7,7 +7,6 @@
 package runtime
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	tspolicy "github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
@@ -52,7 +51,7 @@ type TracingOptions = runtime.TracingOptions
 // KEEP
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
-type Pipeline = exported.Pipeline
+type Pipeline = runtime.Pipeline
 
 // TODO logging policy to work
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.

@@ -17,6 +17,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 
@@ -62,31 +63,31 @@ func TestCanResume(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	bp, err := New[struct{}](exported.Pipeline{}, nil)
+	bp, err := New[struct{}](runtime.Pipeline{}, nil)
 	require.NoError(t, err)
 	require.Empty(t, bp.CurState)
 
 	resp := initialResponse(http.MethodPut, strings.NewReader(`{ "properties": { "provisioningState": "Started" } }`))
 	resp.StatusCode = http.StatusCreated
-	bp, err = New[struct{}](exported.Pipeline{}, resp)
+	bp, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, "Started", bp.CurState)
 
 	resp = initialResponse(http.MethodPut, strings.NewReader(`{ "properties": { "provisioningState": "Started" } }`))
 	resp.StatusCode = http.StatusOK
-	bp, err = New[struct{}](exported.Pipeline{}, resp)
+	bp, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, "Started", bp.CurState)
 
 	resp = initialResponse(http.MethodPut, http.NoBody)
 	resp.StatusCode = http.StatusOK
-	bp, err = New[struct{}](exported.Pipeline{}, resp)
+	bp, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, poller.StatusSucceeded, bp.CurState)
 
 	resp = initialResponse(http.MethodPut, http.NoBody)
 	resp.StatusCode = http.StatusNoContent
-	bp, err = New[struct{}](exported.Pipeline{}, resp)
+	bp, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, poller.StatusSucceeded, bp.CurState)
 }

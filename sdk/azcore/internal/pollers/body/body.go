@@ -15,6 +15,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // Kind is the identifier of this type in a resume token.
@@ -43,7 +44,7 @@ func CanResume(token map[string]interface{}) bool {
 
 // Poller is an LRO poller that uses the Body pattern.
 type Poller[T any] struct {
-	pl exported.Pipeline
+	pl runtime.Pipeline
 
 	resp *http.Response
 

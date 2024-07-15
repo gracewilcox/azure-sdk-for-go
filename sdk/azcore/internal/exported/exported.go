@@ -8,28 +8,10 @@ package exported
 
 import (
 	"context"
-	"io"
-	"net/http"
 	"sync/atomic"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/streaming"
 )
-
-// KEEP
-// NopCloser returns a ReadSeekCloser with a no-op close method wrapping the provided io.ReadSeeker.
-// Exported as streaming.NopCloser().
-func NopCloser(rs io.ReadSeeker) io.ReadSeekCloser {
-	return streaming.NopCloser(rs)
-}
-
-// KEEP
-// HasStatusCode returns true if the Response's status code is one of the specified values.
-// Exported as runtime.HasStatusCode().
-func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
-	return runtime.HasStatusCode(resp, statusCodes...)
-}
 
 // KEEP just remove "Azure service note"
 // AccessToken represents an Azure service bearer access token with expiry information.
@@ -68,23 +50,10 @@ type TokenCredential interface {
 }
 
 // KEEP
-// DecodeByteArray will base-64 decode the provided string into v.
-// Exported as runtime.DecodeByteArray()
-func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
-	return runtime.DecodeByteArray(s, v, format)
-}
-
-// KEEP
+// TODO can I remove??
 // KeyCredential contains an authentication key used to authenticate to an Azure service.
 // Exported as azcore.KeyCredential.
 type KeyCredential = tscore.KeyCredential
-
-// KEEP
-// NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
-//   - key is the authentication key
-func NewKeyCredential(key string) *KeyCredential {
-	return tscore.NewKeyCredential(key)
-}
 
 // REMOVE
 // SASCredential contains a shared access signature used to authenticate to an Azure service.

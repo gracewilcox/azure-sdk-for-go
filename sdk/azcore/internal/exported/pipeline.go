@@ -16,7 +16,7 @@ import (
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
 // Exported as runtime.Pipeline.
-type Pipeline = runtime.Pipeline
+//type Pipeline = runtime.Pipeline
 
 // KEEP
 // TODO figure out how to remove

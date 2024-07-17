@@ -13,7 +13,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
-// AccessToken represents an Azure service bearer access token with expiry information.
+// AccessToken represents a service bearer access token with expiry information.
 type AccessToken = exported.AccessToken
 
 // TokenCredential represents a credential capable of providing an OAuth token.
@@ -72,48 +72,22 @@ func IsNullValue[T any](v T) bool {
 	return false
 }
 
-// ClientOptions contains optional settings for a client's pipeline.
-// Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
-// Zero-value fields will have their specified default values applied during use.
-type ClientOptions = policy.ClientOptions
-
 // Client is a basic HTTP client.  It consists of a pipeline and tracing provider.
-// GRACE TODO remove modVer and namespace
 type Client struct {
 	pl runtime.Pipeline
 	tr tracing.Tracer
-
-	// cached on the client to support shallow copying with new values
-	tp        tracing.Provider
-	modVer    string
-	namespace string
 }
 
-type CustomClientOptions struct {
-	Tracer          tracing.Tracer
-	TracingProvider tracing.Provider
-	ModuleVersion   string
-	Namespace       string
-}
-
-func NewCustomClient(pipeline runtime.Pipeline, options CustomClientOptions) (*Client, error) {
-	return &Client{
-		pl:        pipeline,
-		tr:        options.Tracer,
-		tp:        options.TracingProvider,
-		modVer:    options.ModuleVersion,
-		namespace: options.Namespace,
-	}, nil
-}
-
+// KEEP
+// TODO keep moduleName and moduleVersion as arguments? Should go as options on the tracing provider??
 // NewClient creates a new Client instance with the provided values.
 //   - moduleName - the fully qualified name of the module where the client is defined; used by the tracing provider.
 //   - moduleVersion - the semantic version of the module; used by the tracing provider.
 //   - plOpts - pipeline configuration options; can be the zero-value
 //   - options - optional client configurations; pass nil to accept the default values
-func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions, options *ClientOptions) (*Client, error) {
+func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions, options *policy.ClientOptions) (*Client, error) {
 	if options == nil {
-		options = &ClientOptions{}
+		options = &policy.ClientOptions{}
 	}
 
 	pl := runtime.NewPipeline(plOpts, options)
@@ -123,12 +97,10 @@ func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions,
 		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: plOpts.Tracing.Namespace})
 	}
 
-	return NewCustomClient(pl, CustomClientOptions{
-		Tracer:          tr,
-		TracingProvider: options.TracingProvider,
-		ModuleVersion:   moduleVersion,
-		Namespace:       plOpts.Tracing.Namespace,
-	})
+	return &Client{
+		pl: pl,
+		tr: tr,
+	}, nil
 }
 
 // Pipeline returns the pipeline for this client.
@@ -139,22 +111,4 @@ func (c *Client) Pipeline() runtime.Pipeline {
 // Tracer returns the tracer for this client.
 func (c *Client) Tracer() tracing.Tracer {
 	return c.tr
-}
-
-// WithClientName returns a shallow copy of the Client with its tracing client name changed to clientName.
-// Note that the values for module name and version will be preserved from the source Client.
-//   - clientName - the fully qualified name of the client ("package.Client"); this is used by the tracing provider when creating spans
-func (c *Client) WithClientName(clientName string) *Client {
-	tr := c.tp.NewTracer(clientName, c.modVer)
-	if tr.Enabled() && c.namespace != "" {
-		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: c.namespace})
-	}
-	client, _ := NewCustomClient(c.pl, CustomClientOptions{
-		Tracer:          tr,
-		TracingProvider: c.tp,
-		ModuleVersion:   c.modVer,
-		Namespace:       c.namespace,
-	})
-
-	return client
 }

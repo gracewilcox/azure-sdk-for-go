@@ -11,14 +11,7 @@ import (
 	"net/http"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
-
-// TODO can remove??
-// Base64Encoding is usesd to specify which base-64 encoder/decoder to use when
-// encoding/decoding a slice of bytes to/from a string.
-// Exported as runtime.Base64Encoding
-type Base64Encoding = runtime.Base64Encoding
 
 // not exported but dependent on Request
 

@@ -119,7 +119,7 @@ func TestNewClient(t *testing.T) {
 	require.NotZero(t, client.Pipeline())
 	require.Zero(t, client.Tracer())
 
-	client, err = NewClient("package.Client", "", runtime.PipelineOptions{}, &ClientOptions{})
+	client, err = NewClient("package.Client", "", runtime.PipelineOptions{}, &policy.ClientOptions{})
 	require.NoError(t, err)
 	require.NotNil(t, client)
 }
@@ -204,14 +204,6 @@ func TestClientWithClientName(t *testing.T) {
 	require.NoError(t, err)
 	srv.SetResponse()
 	_, err = client.Pipeline().Do(req)
-	require.NoError(t, err)
-	require.EqualValues(t, "namespace:Widget.Factory", attrString)
-
-	newClient := client.WithClientName("other")
-	require.EqualValues(t, "other", clientName)
-	require.EqualValues(t, "v1.0.0", modVersion)
-	require.EqualValues(t, client.Pipeline(), newClient.Pipeline())
-	_, err = newClient.Pipeline().Do(req)
 	require.NoError(t, err)
 	require.EqualValues(t, "namespace:Widget.Factory", attrString)
 }

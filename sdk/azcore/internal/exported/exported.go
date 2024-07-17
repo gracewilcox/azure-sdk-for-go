@@ -13,7 +13,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
 )
 
-// KEEP just remove "Azure service note"
+// TODO we keeping??
 // AccessToken represents an Azure service bearer access token with expiry information.
 // Exported as azcore.AccessToken.
 type AccessToken = tscore.AccessToken
@@ -48,12 +48,6 @@ type TokenCredential interface {
 	// GetToken requests an access token for the specified set of scopes.
 	GetToken(ctx context.Context, options TokenRequestOptions) (AccessToken, error)
 }
-
-// KEEP
-// TODO can I remove??
-// KeyCredential contains an authentication key used to authenticate to an Azure service.
-// Exported as azcore.KeyCredential.
-type KeyCredential = tscore.KeyCredential
 
 // REMOVE
 // SASCredential contains a shared access signature used to authenticate to an Azure service.

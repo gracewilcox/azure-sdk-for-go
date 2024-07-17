@@ -4,7 +4,7 @@
 package runtime
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
@@ -21,6 +21,6 @@ type KeyCredentialPolicyOptions = runtime.KeyCredentialPolicyOptions
 //   - cred is the [azcore.KeyCredential] used to authenticate with the service
 //   - header is the name of the HTTP request header in which the key is placed
 //   - options contains optional configuration, pass nil to accept the default values
-func NewKeyCredentialPolicy(cred *exported.KeyCredential, header string, options *KeyCredentialPolicyOptions) *KeyCredentialPolicy {
+func NewKeyCredentialPolicy(cred *tscore.KeyCredential, header string, options *KeyCredentialPolicyOptions) *KeyCredentialPolicy {
 	return runtime.NewKeyCredentialPolicy(cred, header, options)
 }

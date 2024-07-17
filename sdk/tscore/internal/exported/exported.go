@@ -44,7 +44,7 @@ func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
 	return false
 }
 
-// AccessToken represents an bearer access token with expiry information.
+// AccessToken represents a bearer access token with expiry information.
 // Exported as tscore.AccessToken.
 type AccessToken struct {
 	Token     string
@@ -55,6 +55,7 @@ type AccessToken struct {
 // Exported as policy.TokenRequestOptions.
 type TokenRequestOptions struct {
 	// Scopes contains the list of permission scopes required for the token.
+	// TODO from charles, should be audience?? read RFC OAuth2
 	Scopes []string
 }
 

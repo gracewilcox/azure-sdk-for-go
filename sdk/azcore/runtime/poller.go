@@ -29,6 +29,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // FinalStateVia is the enumerated type for the possible final-state-via values.
@@ -65,7 +66,7 @@ type NewPollerOptions[T any] struct {
 }
 
 // NewPoller creates a Poller based on the provided initial response.
-func NewPoller[T any](resp *http.Response, pl exported.Pipeline, options *NewPollerOptions[T]) (*Poller[T], error) {
+func NewPoller[T any](resp *http.Response, pl runtime.Pipeline, options *NewPollerOptions[T]) (*Poller[T], error) {
 	if options == nil {
 		options = &NewPollerOptions[T]{}
 	}
@@ -139,7 +140,7 @@ type NewPollerFromResumeTokenOptions[T any] struct {
 }
 
 // NewPollerFromResumeToken creates a Poller from a resume token string.
-func NewPollerFromResumeToken[T any](token string, pl exported.Pipeline, options *NewPollerFromResumeTokenOptions[T]) (*Poller[T], error) {
+func NewPollerFromResumeToken[T any](token string, pl runtime.Pipeline, options *NewPollerFromResumeTokenOptions[T]) (*Poller[T], error) {
 	if options == nil {
 		options = &NewPollerFromResumeTokenOptions[T]{}
 	}

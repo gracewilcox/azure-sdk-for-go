@@ -1,4 +1,4 @@
-module github.com/Azure/azure-sdk-for-go/sdk/azcore
+module github.com/Azure/azure-sdk-for-go/sdk/tscore
 
 go 1.18
 

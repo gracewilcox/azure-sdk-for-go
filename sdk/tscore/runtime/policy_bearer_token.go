@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/temporal"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 // BearerTokenPolicy authorizes requests with bearer tokens acquired from a TokenCredential.
@@ -44,7 +44,7 @@ func acquire(state acquiringResourceState) (newResource exported.AccessToken, ne
 }
 
 // NewBearerTokenPolicy creates a policy object that authorizes requests with bearer tokens.
-// cred: an azcore.TokenCredential implementation such as a credential object from azidentity
+// cred: an tscore.TokenCredential implementation such as a credential object from azidentity
 // scopes: the list of permission scopes required for the token.
 // opts: optional settings. Pass nil to accept default values; this is the same as passing a zero-value options.
 func NewBearerTokenPolicy(cred exported.TokenCredential, scopes []string, opts *policy.BearerTokenOptions) *BearerTokenPolicy {

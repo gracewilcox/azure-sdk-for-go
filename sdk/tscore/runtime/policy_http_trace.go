@@ -14,10 +14,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
 const (
@@ -32,7 +32,13 @@ const (
 // newHTTPTracePolicy creates a new instance of the httpTracePolicy.
 //   - allowedQueryParams contains the user-specified query parameters that don't need to be redacted from the trace
 func newHTTPTracePolicy(allowedQueryParams []string, op *TracingOptions) exported.Policy {
-	return &httpTracePolicy{allowedQP: getAllowedQueryParams(allowedQueryParams)}
+	if op == nil {
+		op = &TracingOptions{}
+	}
+	return &httpTracePolicy{
+		allowedQP: getAllowedQueryParams(allowedQueryParams),
+		options:   *op,
+	}
 }
 
 // httpTracePolicy is a policy that creates a trace for the HTTP request and its response
@@ -134,7 +140,7 @@ func StartSpan(ctx context.Context, name string, tracer tracing.Tracer, options 
 	ctx = context.WithValue(ctx, ctxActiveSpan{}, newSpanKind)
 	return ctx, func(err error) {
 		if err != nil {
-			errType := strings.Replace(fmt.Sprintf("%T", err), "*exported.", "*azcore.", 1)
+			errType := strings.Replace(fmt.Sprintf("%T", err), "*exported.", "*tscore.", 1)
 			span.SetStatus(tracing.SpanStatusError, fmt.Sprintf("%s:\n%s", errType, err.Error()))
 		}
 		span.End()

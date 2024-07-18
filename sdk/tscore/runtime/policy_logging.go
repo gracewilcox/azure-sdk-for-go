@@ -16,10 +16,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/diag"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 type logPolicy struct {
@@ -36,31 +36,28 @@ func NewLogPolicy(o *policy.LogOptions) policy.Policy {
 	}
 	// construct default hash set of allowed headers
 	allowedHeaders := map[string]struct{}{
-		"accept":                        {},
-		"cache-control":                 {},
-		"connection":                    {},
-		"content-length":                {},
-		"content-type":                  {},
-		"date":                          {},
-		"etag":                          {},
-		"expires":                       {},
-		"if-match":                      {},
-		"if-modified-since":             {},
-		"if-none-match":                 {},
-		"if-unmodified-since":           {},
-		"last-modified":                 {},
-		"ms-cv":                         {},
-		"pragma":                        {},
-		"request-id":                    {},
-		"retry-after":                   {},
-		"server":                        {},
-		"traceparent":                   {},
-		"transfer-encoding":             {},
-		"user-agent":                    {},
-		"www-authenticate":              {},
-		"x-ms-request-id":               {},
-		"x-ms-client-request-id":        {},
-		"x-ms-return-client-request-id": {},
+		"accept":              {},
+		"cache-control":       {},
+		"connection":          {},
+		"content-length":      {},
+		"content-type":        {},
+		"date":                {},
+		"etag":                {},
+		"expires":             {},
+		"if-match":            {},
+		"if-modified-since":   {},
+		"if-none-match":       {},
+		"if-unmodified-since": {},
+		"last-modified":       {},
+		"ms-cv":               {},
+		"pragma":              {},
+		"request-id":          {},
+		"retry-after":         {},
+		"server":              {},
+		"traceparent":         {},
+		"transfer-encoding":   {},
+		"user-agent":          {},
+		"www-authenticate":    {},
 	}
 	// add any caller-specified allowed headers to the set
 	for _, ah := range o.AllowedHeaders {

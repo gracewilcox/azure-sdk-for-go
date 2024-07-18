@@ -4,9 +4,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package azcore
+package tscore
 
-import "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
+import "github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 
 // ResponseError is returned when a request is made to a service and
 // the service returns a non-success HTTP status code.

@@ -7,8 +7,8 @@
 package runtime
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 // PipelineOptions contains Pipeline options for SDK developers
@@ -21,10 +21,6 @@ type PipelineOptions struct {
 	// AllowedQueryParameters is the slice of query parameters to log with their values intact.
 	// All query parameters not in the slice will have their values REDACTED.
 	AllowedQueryParameters []string
-
-	// APIVersion overrides the default version requested of the service.
-	// Set with caution as this package version has not been tested with arbitrary service versions.
-	APIVersion APIVersionOptions
 
 	// PerCall contains custom policies to inject into the pipeline.
 	// Each policy is executed once per request.
@@ -79,7 +75,7 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	policies = append(policies, plOpts.PerRetry...)
 	policies = append(policies, cp.PerRetryPolicies...)
 	policies = append(policies, exported.PolicyFunc(httpHeaderPolicy))
-	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams))
+	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams, &plOpts.Tracing))
 	policies = append(policies, NewLogPolicy(&cp.Logging))
 	policies = append(policies, exported.PolicyFunc(bodyDownloadPolicy))
 	transport := cp.Transport

@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package azcore
+package tscore
 
 import (
 	"context"
@@ -12,12 +12,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
 	"github.com/stretchr/testify/require"
 )
 
@@ -210,8 +210,4 @@ func TestClientWithClientName(t *testing.T) {
 
 func TestNewKeyCredential(t *testing.T) {
 	require.NotNil(t, NewKeyCredential("foo"))
-}
-
-func TestNewSASCredential(t *testing.T) {
-	require.NotNil(t, NewSASCredential("foo"))
 }

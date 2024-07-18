@@ -6,11 +6,11 @@ package runtime
 import (
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
-// KeyCredentialPolicy authorizes requests with a [azcore.KeyCredential].
+// KeyCredentialPolicy authorizes requests with a [tscore.KeyCredential].
 type KeyCredentialPolicy struct {
 	cred      *exported.KeyCredential
 	header    string
@@ -30,7 +30,7 @@ type KeyCredentialPolicyOptions struct {
 }
 
 // NewKeyCredentialPolicy creates a new instance of [KeyCredentialPolicy].
-//   - cred is the [azcore.KeyCredential] used to authenticate with the service
+//   - cred is the [tscore.KeyCredential] used to authenticate with the service
 //   - header is the name of the HTTP request header in which the key is placed
 //   - options contains optional configuration, pass nil to accept the default values
 func NewKeyCredentialPolicy(cred *exported.KeyCredential, header string, options *KeyCredentialPolicyOptions) *KeyCredentialPolicy {

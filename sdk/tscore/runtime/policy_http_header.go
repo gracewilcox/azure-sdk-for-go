@@ -9,8 +9,8 @@ package runtime
 import (
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 // newHTTPHeaderPolicy creates a policy object that adds custom HTTP headers to a request

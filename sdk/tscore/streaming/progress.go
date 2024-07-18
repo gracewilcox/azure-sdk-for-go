@@ -9,7 +9,7 @@ package streaming
 import (
 	"io"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
 )
 
 type progress struct {

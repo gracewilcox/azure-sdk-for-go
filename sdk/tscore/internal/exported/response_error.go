@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 )
 
 // NewResponseError creates a new *ResponseError from the provided HTTP response.
@@ -27,21 +27,10 @@ func NewResponseError(resp *http.Response) error {
 	return respErr
 }
 
-// NewResponseErrorWithErrorCode creates an *azcore.ResponseError from the provided HTTP response and errorCode.
-// Exported as runtime.NewResponseErrorWithErrorCode().
-func NewResponseErrorWithErrorCode(resp *http.Response, errorCode string) error {
-	respErr := &ResponseError{
-		StatusCode:  resp.StatusCode,
-		RawResponse: resp,
-	}
-	log.Write(log.EventResponseError, respErr.Error())
-	return respErr
-}
-
 // ResponseError is returned when a request is made to a service and
 // the service returns a non-success HTTP status code.
 // Use errors.As() to access this type in the error chain.
-// Exported as azcore.ResponseError.
+// Exported as tscore.ResponseError.
 type ResponseError struct {
 	// StatusCode is the HTTP status code as defined in https://pkg.go.dev/net/http#pkg-constants.
 	StatusCode int

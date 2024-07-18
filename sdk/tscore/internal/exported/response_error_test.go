@@ -13,8 +13,8 @@ import (
 	"strings"
 	"testing"
 
-	azlog "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
+	azlog "github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/stretchr/testify/require"
 )
 

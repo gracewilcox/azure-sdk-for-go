@@ -15,11 +15,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 const (
@@ -54,6 +54,26 @@ func setDefaults(o *policy.RetryOptions) {
 			http.StatusBadGateway,          // 502
 			http.StatusServiceUnavailable,  // 503
 			http.StatusGatewayTimeout,      // 504
+		}
+	}
+
+	// set retryData default
+	if o.RetryData == nil {
+		o.RetryData = []policy.RetryData{
+			{
+				Header: shared.HeaderRetryAfter,
+				Units:  time.Second,
+
+				// retry-after values are expressed in either number of
+				// seconds or an HTTP-date indicating when to try again
+				Custom: func(ra string) time.Duration {
+					t, err := time.Parse(time.RFC1123, ra)
+					if err != nil {
+						return 0
+					}
+					return time.Until(t)
+				},
+			},
 		}
 	}
 }
@@ -175,7 +195,7 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 		}
 
 		// use the delay from retry-after if available
-		delay := shared.RetryAfter(resp)
+		delay := shared.RetryAfter(resp, options.RetryData)
 		if delay <= 0 {
 			delay = calcDelay(options, try)
 		} else if delay > options.MaxRetryDelay {

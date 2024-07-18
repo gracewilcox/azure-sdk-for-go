@@ -43,12 +43,12 @@ func Delay(ctx context.Context, delay time.Duration) error {
 }
 
 type RetryData struct {
-	header string
-	units  time.Duration
+	Header string
+	Units  time.Duration
 
 	// custom is used when the regular algorithm failed and is optional.
 	// the returned duration is used verbatim (units is not applied).
-	custom func(string) time.Duration
+	Custom func(string) time.Duration
 }
 
 // RetryAfter returns non-zero if the response contains one of the headers with a "retry after" value.
@@ -62,13 +62,13 @@ func RetryAfter(resp *http.Response, retryData []RetryData) time.Duration {
 	retries := retryData
 
 	for _, retry := range retries {
-		v := resp.Header.Get(retry.header)
+		v := resp.Header.Get(retry.Header)
 		if v == "" {
 			continue
 		}
 		if retryAfter, _ := strconv.Atoi(v); retryAfter > 0 {
-			return time.Duration(retryAfter) * retry.units
-		} else if d := retry.custom(v); d > 0 {
+			return time.Duration(retryAfter) * retry.Units
+		} else if d := retry.Custom(v); d > 0 {
 			return d
 		}
 	}

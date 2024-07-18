@@ -24,7 +24,7 @@ const (
 	EventResponse Event = "Response"
 
 	// EventResponseError entries contain information about HTTP responses that returned
-	// an *azcore.ResponseError (i.e. responses with a non 2xx HTTP status code).
+	// an *tscore.ResponseError (i.e. responses with a non 2xx HTTP status code).
 	// This includes the contents of ResponseError.Error().
 	EventResponseError Event = "ResponseError"
 

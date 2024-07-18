@@ -11,9 +11,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
 // Policy represents an extensibility point for the Pipeline that can mutate the specified
@@ -120,7 +120,12 @@ type RetryOptions struct {
 	// if one is nil, the other is not nil.
 	// A return value of true means the retry policy should retry.
 	ShouldRetry func(*http.Response, error) bool
+
+	// TODO add description
+	RetryData []RetryData
 }
+
+type RetryData = shared.RetryData
 
 // TelemetryOptions configures the telemetry policy's behavior.
 type TelemetryOptions struct {

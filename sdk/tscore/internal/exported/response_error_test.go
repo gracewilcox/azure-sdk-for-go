@@ -13,8 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
-	azlog "github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/stretchr/testify/require"
 )
 
@@ -204,7 +203,7 @@ RESPONSE 500: the system is down
 }
 --------------------------------------------------------------------------------
 `
-	msg, ok := rawlog[azlog.EventResponseError]
+	msg, ok := rawlog[log.EventResponseError]
 	require.True(t, ok)
 	require.Len(t, msg, 1)
 	require.EqualValues(t, want, msg[0])

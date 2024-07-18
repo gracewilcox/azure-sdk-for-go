@@ -8,7 +8,7 @@
 package log
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
 )
 
 // Event is used to group entries.  Each group can be toggled on or off.
@@ -17,23 +17,19 @@ type Event = log.Event
 const (
 	// EventRequest entries contain information about HTTP requests.
 	// This includes information like the URL, query parameters, and headers.
-	EventRequest Event = "Request"
+	EventRequest = log.EventRequest
 
 	// EventResponse entries contain information about HTTP responses.
 	// This includes information like the HTTP status code, headers, and request URL.
-	EventResponse Event = "Response"
+	EventResponse Event = log.EventResponse
 
 	// EventResponseError entries contain information about HTTP responses that returned
 	// an *tscore.ResponseError (i.e. responses with a non 2xx HTTP status code).
 	// This includes the contents of ResponseError.Error().
-	EventResponseError Event = "ResponseError"
+	EventResponseError Event = log.EventResponseError
 
 	// EventRetryPolicy entries contain information specific to the retry policy in use.
-	EventRetryPolicy Event = "Retry"
-
-	// EventLRO entries contain information specific to long-running operations.
-	// This includes information like polling location, operation state, and sleep intervals.
-	EventLRO Event = "LongRunningOperation"
+	EventRetryPolicy Event = log.EventRetryPolicy
 )
 
 // SetEvents is used to control which events are written to

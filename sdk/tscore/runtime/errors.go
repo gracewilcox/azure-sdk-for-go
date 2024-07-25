@@ -14,8 +14,6 @@ import (
 
 // NewResponseError creates an *tscore.ResponseError from the provided HTTP response.
 // Call this when a service request returns a non-successful status code.
-// The error code will be extracted from the *http.Response, either from the x-ms-error-code
-// header (preferred) or attempted to be parsed from the response body.
 func NewResponseError(resp *http.Response) error {
 	return exported.NewResponseError(resp)
 }

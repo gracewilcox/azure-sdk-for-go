@@ -9,24 +9,24 @@ package policy
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 // Policy represents an extensibility point for the Pipeline that can mutate the specified
 // Request and react to the received Response.
-type Policy = exported.Policy
+type Policy = policy.Policy
 
 // Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
-type Transporter = exported.Transporter
+type Transporter = policy.Transporter
 
 // Request is an abstraction over the creation of an HTTP request as it passes through the pipeline.
 // Don't use this type directly, use runtime.NewRequest() instead.
-type Request = exported.Request
+type Request = policy.Request
 
 // ClientOptions contains optional settings for a client's pipeline.
 // Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
@@ -70,68 +70,14 @@ type ClientOptions struct {
 }
 
 // LogOptions configures the logging policy's behavior.
-type LogOptions struct {
-	// IncludeBody indicates if request and response bodies should be included in logging.
-	// The default value is false.
-	// NOTE: enabling this can lead to disclosure of sensitive information, use with care.
-	IncludeBody bool
-
-	// AllowedHeaders is the slice of headers to log with their values intact.
-	// All headers not in the slice will have their values REDACTED.
-	// Applies to request and response headers.
-	AllowedHeaders []string
-
-	// AllowedQueryParams is the slice of query parameters to log with their values intact.
-	// All query parameters not in the slice will have their values REDACTED.
-	AllowedQueryParams []string
-}
+type LogOptions = policy.LogOptions
 
 // RetryOptions configures the retry policy's behavior.
 // Zero-value fields will have their specified default values applied during use.
 // This allows for modification of a subset of fields.
-type RetryOptions struct {
-	// MaxRetries specifies the maximum number of attempts a failed operation will be retried
-	// before producing an error.
-	// The default value is three.  A value less than zero means one try and no retries.
-	MaxRetries int32
+type RetryOptions = policy.RetryOptions
 
-	// TryTimeout indicates the maximum time allowed for any single try of an HTTP request.
-	// This is disabled by default.  Specify a value greater than zero to enable.
-	// NOTE: Setting this to a small value might cause premature HTTP request time-outs.
-	TryTimeout time.Duration
-
-	// RetryDelay specifies the initial amount of delay to use before retrying an operation.
-	// The value is used only if the HTTP response does not contain a Retry-After header.
-	// The delay increases exponentially with each retry up to the maximum specified by MaxRetryDelay.
-	// The default value is four seconds.  A value less than zero means no delay between retries.
-	RetryDelay time.Duration
-
-	// MaxRetryDelay specifies the maximum delay allowed before retrying an operation.
-	// Typically the value is greater than or equal to the value specified in RetryDelay.
-	// The default Value is 60 seconds.  A value less than zero means there is no cap.
-	MaxRetryDelay time.Duration
-
-	// StatusCodes specifies the HTTP status codes that indicate the operation should be retried.
-	// A nil slice will use the following values.
-	//   http.StatusRequestTimeout      408
-	//   http.StatusTooManyRequests     429
-	//   http.StatusInternalServerError 500
-	//   http.StatusBadGateway          502
-	//   http.StatusServiceUnavailable  503
-	//   http.StatusGatewayTimeout      504
-	// Specifying values will replace the default values.
-	// Specifying an empty slice will disable retries for HTTP status codes.
-	StatusCodes []int
-
-	// ShouldRetry evaluates if the retry policy should retry the request.
-	// When specified, the function overrides comparison against the list of
-	// HTTP status codes and error checking within the retry policy. Context
-	// and NonRetriable errors remain evaluated before calling ShouldRetry.
-	// The *http.Response and error parameters are mutually exclusive, i.e.
-	// if one is nil, the other is not nil.
-	// A return value of true means the retry policy should retry.
-	ShouldRetry func(*http.Response, error) bool
-}
+type RetryData = policy.RetryData
 
 // TelemetryOptions configures the telemetry policy's behavior.
 type TelemetryOptions struct {
@@ -177,6 +123,7 @@ type AuthorizationHandler struct {
 	OnChallenge func(*Request, *http.Response, func(TokenRequestOptions) error) error
 }
 
+// TODO import from tscore
 // WithCaptureResponse applies the HTTP response retrieval annotation to the parent context.
 // The resp parameter will contain the HTTP response after the request has completed.
 func WithCaptureResponse(parent context.Context, resp **http.Response) context.Context {

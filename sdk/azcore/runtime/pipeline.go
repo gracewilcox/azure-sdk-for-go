@@ -9,6 +9,7 @@ package runtime
 import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // PipelineOptions contains Pipeline options for SDK developers
@@ -39,14 +40,11 @@ type PipelineOptions struct {
 }
 
 // TracingOptions contains tracing options for SDK developers.
-type TracingOptions struct {
-	// Namespace contains the value to use for the az.namespace span attribute.
-	Namespace string
-}
+type TracingOptions = runtime.TracingOptions
 
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
-type Pipeline = exported.Pipeline
+type Pipeline = runtime.Pipeline
 
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
 // Policies from ClientOptions are placed after policies from PipelineOptions.

@@ -19,6 +19,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // getTokenTypeName creates a type name from the type parameter T.
@@ -139,8 +140,8 @@ func (p *NopPoller[T]) Result(ctx context.Context, out *T) error {
 // If the request fails, the update func is not called.
 // The update func returns the state of the operation for logging purposes or an error
 // if it fails to extract the required state from the response.
-func PollHelper(ctx context.Context, endpoint string, pl azexported.Pipeline, update func(resp *http.Response) (string, error)) error {
-	req, err := azexported.NewRequest(ctx, http.MethodGet, endpoint)
+func PollHelper(ctx context.Context, endpoint string, pl runtime.Pipeline, update func(resp *http.Response) (string, error)) error {
+	req, err := runtime.NewRequest(ctx, http.MethodGet, endpoint)
 	if err != nil {
 		return err
 	}

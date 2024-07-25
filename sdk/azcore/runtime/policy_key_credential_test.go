@@ -10,12 +10,13 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
 	"github.com/stretchr/testify/require"
 )
 
 func TestKeyCredentialPolicy(t *testing.T) {
 	const key = "foo"
-	cred := exported.NewKeyCredential(key)
+	cred := tscore.NewKeyCredential(key)
 
 	const headerName = "fake-auth"
 	policy := NewKeyCredentialPolicy(cred, headerName, nil)
@@ -50,7 +51,7 @@ func TestKeyCredentialPolicy(t *testing.T) {
 }
 
 func TestKeyCredentialPolicy_RequiresHTTPS(t *testing.T) {
-	cred := exported.NewKeyCredential("foo")
+	cred := tscore.NewKeyCredential("foo")
 
 	policy := NewKeyCredentialPolicy(cred, "fake-auth", nil)
 	require.NotNil(t, policy)
@@ -84,7 +85,7 @@ func TestKeyCredentialPolicy_NilCredential(t *testing.T) {
 }
 
 func TestKeyCredentialPolicy_InsecureAllowCredentialWithHTTP(t *testing.T) {
-	cred := exported.NewKeyCredential("foo")
+	cred := tscore.NewKeyCredential("foo")
 
 	policy := NewKeyCredentialPolicy(cred, "fake-auth", &KeyCredentialPolicyOptions{
 		InsecureAllowCredentialWithHTTP: true,

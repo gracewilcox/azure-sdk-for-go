@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/stretchr/testify/require"
 )
@@ -56,9 +55,7 @@ func TestNewPipelineCustomPolicies(t *testing.T) {
 		require.GreaterOrEqual(t, defaultPerRetryPolicy.count, 1)
 	}
 
-	pl := NewPipeline("",
-		"",
-		PipelineOptions{PerCall: []policy.Policy{defaultPerCallPolicy}, PerRetry: []policy.Policy{defaultPerRetryPolicy}},
+	pl := NewPipeline(PipelineOptions{PerCall: []policy.Policy{defaultPerCallPolicy}, PerRetry: []policy.Policy{defaultPerRetryPolicy}},
 		&policy.ClientOptions{
 			Transport:        srv,
 			Retry:            policy.RetryOptions{RetryDelay: time.Microsecond, MaxRetries: 1},
@@ -79,7 +76,7 @@ func TestPipelineDoConcurrent(t *testing.T) {
 	defer close()
 	srv.SetResponse()
 
-	pl := NewPipeline("TestPipelineDoConcurrent", shared.Version, PipelineOptions{}, nil)
+	pl := NewPipeline(PipelineOptions{}, nil)
 
 	plErr := make(chan error, 1)
 	wg := &sync.WaitGroup{}

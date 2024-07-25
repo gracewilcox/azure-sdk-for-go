@@ -20,6 +20,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 
@@ -30,14 +31,14 @@ func TestHTTPTracePolicy(t *testing.T) {
 	pl := exported.NewPipeline(srv, newHTTPTracePolicy([]string{"visibleqp"}))
 
 	// no tracer
-	req, err := exported.NewRequest(context.Background(), http.MethodGet, srv.URL())
+	req, err := runtime.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendResponse()
 	_, err = pl.Do(req)
 	require.NoError(t, err)
 
 	// wrong tracer type
-	req, err = exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, 0), http.MethodGet, srv.URL())
+	req, err = runtime.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, 0), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendResponse()
 	_, err = pl.Do(req)
@@ -64,7 +65,7 @@ func TestHTTPTracePolicy(t *testing.T) {
 	}, nil)
 
 	// HTTP ok
-	req, err = exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL()+"?foo=redactme&visibleqp=bar")
+	req, err = runtime.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL()+"?foo=redactme&visibleqp=bar")
 	require.NoError(t, err)
 	req.Raw().Header.Add(shared.HeaderUserAgent, "my-user-agent")
 	req.Raw().Header.Add(shared.HeaderXMSClientRequestID, "my-client-request")
@@ -84,7 +85,7 @@ func TestHTTPTracePolicy(t *testing.T) {
 	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrAZServiceReqID, Value: "request-id"})
 
 	// HTTP bad request
-	req, err = exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
+	req, err = runtime.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest))
 	_, err = pl.Do(req)
@@ -94,7 +95,7 @@ func TestHTTPTracePolicy(t *testing.T) {
 	require.Contains(t, spanAttrs, tracing.Attribute{Key: attrHTTPStatusCode, Value: http.StatusBadRequest})
 
 	// HTTP error
-	req, err = exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
+	req, err = runtime.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendError(net.ErrClosed)
 	_, err = pl.Do(req)
@@ -104,7 +105,7 @@ func TestHTTPTracePolicy(t *testing.T) {
 	require.EqualValues(t, "use of closed network connection", spanStatusStr)
 
 	const urlErrText = "the endpoint is invalid"
-	req, err = exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
+	req, err = runtime.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendError(&url.Error{
 		Op:  http.MethodGet,
@@ -206,7 +207,7 @@ func TestStartSpansDontNest(t *testing.T) {
 	barMethod := func(ctx context.Context) {
 		ourCtx, endSpan := StartSpan(ctx, "BarMethod", tr, nil)
 		defer endSpan(nil)
-		req, err := exported.NewRequest(ourCtx, http.MethodGet, srv.URL()+"/bar")
+		req, err := runtime.NewRequest(ourCtx, http.MethodGet, srv.URL()+"/bar")
 		require.NoError(t, err)
 		_, err = pl.Do(req)
 		require.NoError(t, err)
@@ -216,7 +217,7 @@ func TestStartSpansDontNest(t *testing.T) {
 		ctx, endSpan := StartSpan(ctx, "FooMethod", tr, nil)
 		defer endSpan(nil)
 		barMethod(ctx)
-		req, err := exported.NewRequest(ctx, http.MethodGet, srv.URL()+"/foo")
+		req, err := runtime.NewRequest(ctx, http.MethodGet, srv.URL()+"/foo")
 		require.NoError(t, err)
 		_, err = pl.Do(req)
 		require.NoError(t, err)

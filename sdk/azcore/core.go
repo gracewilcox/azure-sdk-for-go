@@ -7,14 +7,12 @@
 package azcore
 
 import (
-	"reflect"
-	"sync"
-
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
 )
 
 // AccessToken represents an Azure service bearer access token with expiry information.
@@ -24,12 +22,12 @@ type AccessToken = exported.AccessToken
 type TokenCredential = exported.TokenCredential
 
 // KeyCredential contains an authentication key used to authenticate to an Azure service.
-type KeyCredential = exported.KeyCredential
+type KeyCredential = tscore.KeyCredential
 
 // NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
 //   - key is the authentication key
 func NewKeyCredential(key string) *KeyCredential {
-	return exported.NewKeyCredential(key)
+	return tscore.NewKeyCredential(key)
 }
 
 // SASCredential contains a shared access signature used to authenticate to an Azure service.
@@ -41,66 +39,16 @@ func NewSASCredential(sas string) *SASCredential {
 	return exported.NewSASCredential(sas)
 }
 
-// holds sentinel values used to send nulls
-var nullables map[reflect.Type]any = map[reflect.Type]any{}
-var nullablesMu sync.RWMutex
-
 // NullValue is used to send an explicit 'null' within a request.
 // This is typically used in JSON-MERGE-PATCH operations to delete a value.
 func NullValue[T any]() T {
-	t := shared.TypeOfT[T]()
-
-	nullablesMu.RLock()
-	v, found := nullables[t]
-	nullablesMu.RUnlock()
-
-	if found {
-		// return the sentinel object
-		return v.(T)
-	}
-
-	// promote to exclusive lock and check again (double-checked locking pattern)
-	nullablesMu.Lock()
-	defer nullablesMu.Unlock()
-	v, found = nullables[t]
-
-	if !found {
-		var o reflect.Value
-		if k := t.Kind(); k == reflect.Map {
-			o = reflect.MakeMap(t)
-		} else if k == reflect.Slice {
-			// empty slices appear to all point to the same data block
-			// which causes comparisons to become ambiguous.  so we create
-			// a slice with len/cap of one which ensures a unique address.
-			o = reflect.MakeSlice(t, 1, 1)
-		} else {
-			o = reflect.New(t.Elem())
-		}
-		v = o.Interface()
-		nullables[t] = v
-	}
-	// return the sentinel object
-	return v.(T)
+	return tscore.NullValue[T]()
 }
 
 // IsNullValue returns true if the field contains a null sentinel value.
 // This is used by custom marshallers to properly encode a null value.
 func IsNullValue[T any](v T) bool {
-	// see if our map has a sentinel object for this *T
-	t := reflect.TypeOf(v)
-	nullablesMu.RLock()
-	defer nullablesMu.RUnlock()
-
-	if o, found := nullables[t]; found {
-		o1 := reflect.ValueOf(o)
-		v1 := reflect.ValueOf(v)
-		// we found it; return true if v points to the sentinel object.
-		// NOTE: maps and slices can only be compared to nil, else you get
-		// a runtime panic.  so we compare addresses instead.
-		return o1.Pointer() == v1.Pointer()
-	}
-	// no sentinel object for this *t
-	return false
+	return tscore.IsNullValue[T](v)
 }
 
 // ClientOptions contains optional settings for a client's pipeline.

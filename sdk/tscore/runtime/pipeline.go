@@ -48,8 +48,7 @@ type Pipeline = exported.Pipeline
 
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
 // Policies from ClientOptions are placed after policies from PipelineOptions.
-// The module and version parameters are used by the telemetry policy, when enabled.
-func NewPipeline(module, version string, plOpts PipelineOptions, options *policy.ClientOptions) Pipeline {
+func NewPipeline(plOpts PipelineOptions, options *policy.ClientOptions) Pipeline {
 	cp := policy.ClientOptions{}
 	if options != nil {
 		cp = *options
@@ -82,5 +81,10 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	if transport == nil {
 		transport = defaultHTTPClient
 	}
+	return NewCustomPipeline(transport, policies...)
+}
+
+// NewCustomPipeline creates a new Pipeline object from the specified Policies.
+func NewCustomPipeline(transport policy.Transporter, policies ...policy.Policy) Pipeline {
 	return exported.NewPipeline(transport, policies...)
 }

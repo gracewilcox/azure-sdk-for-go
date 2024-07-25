@@ -11,6 +11,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
 )
 
+// TODO import from tscore
 // Event is used to group entries.  Each group can be toggled on or off.
 type Event = log.Event
 

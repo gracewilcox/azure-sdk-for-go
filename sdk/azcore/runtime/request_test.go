@@ -22,7 +22,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/streaming"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/streaming"
 	"github.com/stretchr/testify/require"
 )
 
@@ -156,7 +156,7 @@ func TestRequestSetBodyContentLengthHeader(t *testing.T) {
 	for i := 0; i < buffLen; i++ {
 		buff[i] = 1
 	}
-	err = req.SetBody(exported.NopCloser(bytes.NewReader(buff)), "application/octet-stream")
+	err = req.SetBody(streaming.NopCloser(bytes.NewReader(buff)), "application/octet-stream")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -255,11 +255,11 @@ func TestSetMultipartFormData(t *testing.T) {
 		"json":   []byte(`{"id":123}`),
 		"string": "value",
 		"int":    1,
-		"data":   exported.NopCloser(strings.NewReader("some data")),
+		"data":   streaming.NopCloser(strings.NewReader("some data")),
 		"datum": []io.ReadSeekCloser{
-			exported.NopCloser(strings.NewReader("first part")),
-			exported.NopCloser(strings.NewReader("second part")),
-			exported.NopCloser(strings.NewReader("third part")),
+			streaming.NopCloser(strings.NewReader("first part")),
+			streaming.NopCloser(strings.NewReader("second part")),
+			streaming.NopCloser(strings.NewReader("third part")),
 		},
 	})
 	require.NoError(t, err)
@@ -305,7 +305,7 @@ func TestSetMultipartFormData(t *testing.T) {
 		case "datum":
 			content, err := io.ReadAll(part)
 			require.NoError(t, err)
-			datum = append(datum, exported.NopCloser(bytes.NewReader(content)))
+			datum = append(datum, streaming.NopCloser(bytes.NewReader(content)))
 		default:
 			t.Fatalf("unexpected part %s", fn)
 		}
@@ -327,28 +327,28 @@ func TestSetMultipartContent(t *testing.T) {
 	require.NoError(t, err)
 	err = SetMultipartFormData(req, map[string]any{
 		"default": streaming.MultipartContent{
-			Body: exported.NopCloser(strings.NewReader("default body")),
+			Body: streaming.NopCloser(strings.NewReader("default body")),
 		},
 		"withContentType": streaming.MultipartContent{
-			Body:        exported.NopCloser(strings.NewReader("body with content type")),
+			Body:        streaming.NopCloser(strings.NewReader("body with content type")),
 			ContentType: "text/plain",
 		},
 		"withFilename": streaming.MultipartContent{
-			Body:     exported.NopCloser(strings.NewReader("body with filename")),
+			Body:     streaming.NopCloser(strings.NewReader("body with filename")),
 			Filename: "content.txt",
 		},
 		"allSet": streaming.MultipartContent{
-			Body:        exported.NopCloser(strings.NewReader("body with everything set")),
+			Body:        streaming.NopCloser(strings.NewReader("body with everything set")),
 			ContentType: "text/plain",
 			Filename:    "content.txt",
 		},
 		"multiple": []streaming.MultipartContent{
 			{
-				Body:     exported.NopCloser(bytes.NewReader([]byte{1, 2, 3, 4, 5})),
+				Body:     streaming.NopCloser(bytes.NewReader([]byte{1, 2, 3, 4, 5})),
 				Filename: "data.bin",
 			},
 			{
-				Body:        exported.NopCloser(strings.NewReader("some text")),
+				Body:        streaming.NopCloser(strings.NewReader("some text")),
 				ContentType: "text/plain",
 			},
 		},

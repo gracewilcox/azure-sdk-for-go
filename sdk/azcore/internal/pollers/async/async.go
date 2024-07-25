@@ -17,6 +17,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // see https://github.com/Azure/azure-resource-manager-rpc/blob/master/v1.0/async-api-reference.md
@@ -34,7 +36,7 @@ func CanResume(token map[string]any) bool {
 
 // Poller is an LRO poller that uses the Azure-AsyncOperation pattern.
 type Poller[T any] struct {
-	pl exported.Pipeline
+	pl runtime.Pipeline
 
 	resp *http.Response
 
@@ -59,7 +61,7 @@ type Poller[T any] struct {
 
 // New creates a new Poller from the provided initial response and final-state type.
 // Pass nil for response to create an empty Poller for rehydration.
-func New[T any](pl exported.Pipeline, resp *http.Response, finalState pollers.FinalStateVia) (*Poller[T], error) {
+func New[T any](pl runtime.Pipeline, resp *http.Response, finalState pollers.FinalStateVia) (*Poller[T], error) {
 	if resp == nil {
 		log.Write(log.EventLRO, "Resuming Azure-AsyncOperation poller.")
 		return &Poller[T]{pl: pl}, nil
@@ -126,20 +128,20 @@ func (p *Poller[T]) Result(ctx context.Context, out *T) error {
 	} else if poller.Failed(p.CurState) {
 		return exported.NewResponseError(p.resp)
 	}
-	var req *exported.Request
+	var req *policy.Request
 	var err error
 	if p.Method == http.MethodPatch || p.Method == http.MethodPut {
 		// for PATCH and PUT, the final GET is on the original resource URL
-		req, err = exported.NewRequest(ctx, http.MethodGet, p.OrigURL)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, p.OrigURL)
 	} else if p.Method == http.MethodPost {
 		if p.FinalState == pollers.FinalStateViaAzureAsyncOp {
 			// no final GET required
 		} else if p.FinalState == pollers.FinalStateViaOriginalURI {
-			req, err = exported.NewRequest(ctx, http.MethodGet, p.OrigURL)
+			req, err = runtime.NewRequest(ctx, http.MethodGet, p.OrigURL)
 		} else if p.LocURL != "" {
 			// ideally FinalState would be set to "location" but it isn't always.
 			// must check last due to more permissive condition.
-			req, err = exported.NewRequest(ctx, http.MethodGet, p.LocURL)
+			req, err = runtime.NewRequest(ctx, http.MethodGet, p.LocURL)
 		}
 	}
 	if err != nil {

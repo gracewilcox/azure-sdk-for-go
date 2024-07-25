@@ -18,6 +18,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 
@@ -55,23 +56,23 @@ func TestCanResume(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	poller, err := New[struct{}](exported.Pipeline{}, nil)
+	poller, err := New[struct{}](runtime.Pipeline{}, nil)
 	require.NoError(t, err)
 	require.Empty(t, poller.CurState)
 
-	poller, err = New[struct{}](exported.Pipeline{}, initialResponse())
+	poller, err = New[struct{}](runtime.Pipeline{}, initialResponse())
 	require.Error(t, err)
 	require.Nil(t, poller)
 
 	resp := initialResponse()
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	poller, err = New[struct{}](exported.Pipeline{}, resp)
+	poller, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.NotNil(t, poller)
 
 	resp = initialResponse()
 	resp.Header.Set(shared.HeaderLocation, "this is a bad polling URL")
-	poller, err = New[struct{}](exported.Pipeline{}, resp)
+	poller, err = New[struct{}](runtime.Pipeline{}, resp)
 	require.Error(t, err)
 	require.Nil(t, poller)
 }
@@ -168,7 +169,7 @@ func TestSynchronousCompletion(t *testing.T) {
 	resp := initialResponse()
 	resp.Body = io.NopCloser(strings.NewReader(`{ "properties": { "provisioningState": "Succeeded" } }`))
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	lp, err := New[struct{}](exported.Pipeline{}, resp)
+	lp, err := New[struct{}](runtime.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, fakeLocationURL, lp.PollURL)
 	require.Equal(t, poller.StatusSucceeded, lp.CurState)

@@ -21,6 +21,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func newTestPipeline(opts *policy.ClientOptions) Pipeline {
+	return NewPipeline("testmodule", "v0.1.0", PipelineOptions{}, opts)
+}
+
 // policy that tracks the number of times it was invoked
 type countingPolicy struct {
 	count    int

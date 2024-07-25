@@ -17,13 +17,13 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
-// AccessToken represents an Azure service bearer access token with expiry information.
+// AccessToken represents a bearer access token with expiry information.
 type AccessToken = exported.AccessToken
 
 // TokenCredential represents a credential capable of providing an OAuth token.
 type TokenCredential = exported.TokenCredential
 
-// KeyCredential contains an authentication key used to authenticate to an Azure service.
+// KeyCredential contains an authentication key used to authenticate.
 type KeyCredential = exported.KeyCredential
 
 // NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
@@ -110,7 +110,7 @@ func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions,
 		options = &policy.ClientOptions{}
 	}
 
-	pl := runtime.NewPipeline(moduleName, moduleVersion, plOpts, options)
+	pl := runtime.NewPipeline(plOpts, options)
 
 	tr := options.TracingProvider.NewTracer(moduleName, moduleVersion)
 	if tr.Enabled() && plOpts.Tracing.Namespace != "" {

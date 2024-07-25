@@ -16,10 +16,10 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake/internal/exported"
-	azexported "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	fakepoller "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers/fake"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // ResponseContent is used when building the *http.Response.
@@ -49,13 +49,13 @@ func NewResponse(content ResponseContent, req *http.Request, opts *ResponseOptio
 
 // MarshalResponseAsByteArray base-64 encodes the body with the specified format and returns it in a *http.Response.
 // This function is called by the fake server internals.
-func MarshalResponseAsByteArray(content ResponseContent, body []byte, format azexported.Base64Encoding, req *http.Request) (*http.Response, error) {
+func MarshalResponseAsByteArray(content ResponseContent, body []byte, format runtime.Base64Encoding, req *http.Request) (*http.Response, error) {
 	resp, err := exported.NewResponse(content, req)
 	if err != nil {
 		return nil, err
 	}
 	if body != nil {
-		resp = exported.SetResponseBody(resp, []byte(azexported.EncodeByteArray(body, format)), shared.ContentTypeAppJSON)
+		resp = exported.SetResponseBody(resp, []byte(runtime.EncodeByteArray(body, format)), shared.ContentTypeAppJSON)
 	}
 	return resp, nil
 }
@@ -107,7 +107,7 @@ func MarshalResponseAsXML(content ResponseContent, v any, req *http.Request) (*h
 
 // UnmarshalRequestAsByteArray base-64 decodes the body in the specified format.
 // This function is called by the fake server internals.
-func UnmarshalRequestAsByteArray(req *http.Request, format azexported.Base64Encoding) ([]byte, error) {
+func UnmarshalRequestAsByteArray(req *http.Request, format runtime.Base64Encoding) ([]byte, error) {
 	if req.Body == nil {
 		return nil, nil
 	}
@@ -117,7 +117,7 @@ func UnmarshalRequestAsByteArray(req *http.Request, format azexported.Base64Enco
 	}
 	req.Body.Close()
 	var val []byte
-	if err := azexported.DecodeByteArray(string(body), &val, format); err != nil {
+	if err := runtime.DecodeByteArray(string(body), &val, format); err != nil {
 		return nil, errorinfo.NonRetriableError(err)
 	}
 	return val, nil

@@ -9,8 +9,6 @@ package log
 
 import (
 	"fmt"
-	"os"
-	"time"
 )
 
 const (
@@ -105,19 +103,3 @@ type logger struct {
 
 // the process-wide logger
 var log logger
-
-func init() {
-	initLogging()
-}
-
-// split out for testing purposes
-func initLogging() {
-	if cls := os.Getenv("AZURE_SDK_GO_LOGGING"); cls == "all" {
-		// cls could be enhanced to support a comma-delimited list of log events
-		log.lst = func(cls Event, msg string) {
-			// simple console logger, it writes to stderr in the following format:
-			// [time-stamp] Event: message
-			fmt.Fprintf(os.Stderr, "[%s] %s: %s\n", time.Now().Format(time.StampMicro), cls, msg)
-		}
-	}
-}

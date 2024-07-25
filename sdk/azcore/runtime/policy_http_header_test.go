@@ -16,10 +16,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 )
 
-func newTestPipeline(opts *policy.ClientOptions) Pipeline {
-	return NewPipeline("testmodule", "v0.1.0", PipelineOptions{}, opts)
-}
-
 func TestWithHTTPHeader(t *testing.T) {
 	const (
 		key = "some"

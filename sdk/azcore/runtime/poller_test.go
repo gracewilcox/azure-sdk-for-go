@@ -29,6 +29,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
+	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 	"github.com/stretchr/testify/require"
 )
 
@@ -1192,7 +1193,7 @@ func TestNewFakePoller(t *testing.T) {
 	defer close()
 	srv.AppendResponse(mock.WithHeader(shared.HeaderFakePollerStatus, "FakePollerInProgress"))
 	srv.AppendResponse(mock.WithHeader(shared.HeaderFakePollerStatus, poller.StatusSucceeded), mock.WithStatusCode(http.StatusNoContent))
-	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
+	pollCtx := context.WithValue(context.Background(), tscontext.CtxAPINameKey{}, "FakeAPI")
 	resp, closed := initialResponse(pollCtx, http.MethodPatch, srv.URL(), http.NoBody)
 	resp.StatusCode = http.StatusCreated
 	resp.Header.Set(shared.HeaderFakePollerStatus, "FakePollerInProgress")

@@ -9,8 +9,8 @@ package runtime
 import (
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 )
 
 // includeResponsePolicy creates a policy that retrieves the raw HTTP response upon request
@@ -19,7 +19,7 @@ func includeResponsePolicy(req *policy.Request) (*http.Response, error) {
 	if resp == nil {
 		return resp, err
 	}
-	if httpOutRaw := req.Raw().Context().Value(shared.CtxWithCaptureResponse{}); httpOutRaw != nil {
+	if httpOutRaw := req.Raw().Context().Value(tscontext.CtxWithCaptureResponse{}); httpOutRaw != nil {
 		httpOut := httpOutRaw.(**http.Response)
 		*httpOut = resp
 	}

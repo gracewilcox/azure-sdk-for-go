@@ -22,6 +22,7 @@ import (
 	azpolicy "github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
+	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 )
 
 const (
@@ -124,13 +125,13 @@ func (r *rpRegistrationPolicy) Do(req *azpolicy.Request) (*http.Response, error)
 			u:     r.endpoint,
 			subID: res.SubscriptionID,
 		}
-		if _, err = rpOps.Register(&shared.ContextWithDeniedValues{Context: req.Raw().Context()}, rp); err != nil {
+		if _, err = rpOps.Register(&tscontext.ContextWithDeniedValues{Context: req.Raw().Context()}, rp); err != nil {
 			logRegistrationExit(err)
 			return resp, err
 		}
 
 		// RP was registered, however we need to wait for the registration to complete
-		pollCtx, pollCancel := context.WithTimeout(&shared.ContextWithDeniedValues{Context: req.Raw().Context()}, r.options.PollingDuration)
+		pollCtx, pollCancel := context.WithTimeout(&tscontext.ContextWithDeniedValues{Context: req.Raw().Context()}, r.options.PollingDuration)
 		var lastRegState string
 		for {
 			// get the current registration state

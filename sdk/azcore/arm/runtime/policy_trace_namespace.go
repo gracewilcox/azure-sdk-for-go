@@ -13,11 +13,12 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 )
 
 // httpTraceNamespacePolicy is a policy that adds the az.namespace attribute to the current Span
 func httpTraceNamespacePolicy(req *policy.Request) (resp *http.Response, err error) {
-	rawTracer := req.Raw().Context().Value(shared.CtxWithTracingTracer{})
+	rawTracer := req.Raw().Context().Value(context.CtxWithTracingTracer{})
 	if tracer, ok := rawTracer.(tracing.Tracer); ok && tracer.Enabled() {
 		rt, err := resource.ParseResourceType(req.Raw().URL.Path)
 		if err == nil {

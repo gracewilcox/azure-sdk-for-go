@@ -11,9 +11,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 )
 
 func TestWithHTTPHeader(t *testing.T) {
@@ -27,7 +27,7 @@ func TestWithHTTPHeader(t *testing.T) {
 	if ctx == nil {
 		t.Fatal("nil context")
 	}
-	raw := ctx.Value(shared.CtxWithHTTPHeaderKey{})
+	raw := ctx.Value(tscontext.CtxWithHTTPHeaderKey{})
 	header, ok := raw.(http.Header)
 	if !ok {
 		t.Fatalf("unexpected type %T", raw)

@@ -11,9 +11,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,7 +21,7 @@ func TestIncludeResponse(t *testing.T) {
 	var respFromCtx *http.Response
 	ctx := WithCaptureResponse(context.Background(), &respFromCtx)
 	require.NotNil(t, ctx)
-	raw := ctx.Value(shared.CtxWithCaptureResponse{})
+	raw := ctx.Value(tscontext.CtxWithCaptureResponse{})
 	_, ok := raw.(**http.Response)
 	require.Truef(t, ok, "unexpected type %T", raw)
 	require.Nil(t, respFromCtx)

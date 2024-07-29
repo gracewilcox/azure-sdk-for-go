@@ -74,7 +74,7 @@ func NewPipeline(plOpts PipelineOptions, options *policy.ClientOptions) Pipeline
 	policies = append(policies, plOpts.PerRetry...)
 	policies = append(policies, cp.PerRetryPolicies...)
 	policies = append(policies, exported.PolicyFunc(httpHeaderPolicy))
-	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams, &plOpts.Tracing))
+	policies = append(policies, NewHTTPTracePolicy(cp.Logging.AllowedQueryParams, &plOpts.Tracing))
 	policies = append(policies, NewLogPolicy(&cp.Logging))
 	policies = append(policies, exported.PolicyFunc(bodyDownloadPolicy))
 	transport := cp.Transport

@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
+	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,7 +20,7 @@ func TestWithCaptureResponse(t *testing.T) {
 	var httpResp *http.Response
 	ctx := WithCaptureResponse(context.Background(), &httpResp)
 	require.NotNil(t, ctx)
-	raw := ctx.Value(shared.CtxWithCaptureResponse{})
+	raw := ctx.Value(tscontext.CtxWithCaptureResponse{})
 	resp, ok := raw.(**http.Response)
 	require.True(t, ok)
 	require.Same(t, &httpResp, resp)
@@ -35,7 +35,7 @@ func TestWithHTTPHeader(t *testing.T) {
 	input.Set(key, val)
 	ctx := WithHTTPHeader(context.Background(), input)
 	require.NotNil(t, ctx)
-	raw := ctx.Value(shared.CtxWithHTTPHeaderKey{})
+	raw := ctx.Value(tscontext.CtxWithHTTPHeaderKey{})
 	header, ok := raw.(http.Header)
 	require.True(t, ok)
 	require.EqualValues(t, val, header.Get(key))
@@ -46,7 +46,7 @@ func TestWithRetryOptions(t *testing.T) {
 		MaxRetries: math.MaxInt32,
 	})
 	require.NotNil(t, ctx)
-	raw := ctx.Value(shared.CtxWithRetryOptionsKey{})
+	raw := ctx.Value(tscontext.CtxWithRetryOptionsKey{})
 	opts, ok := raw.(RetryOptions)
 	require.True(t, ok)
 	require.EqualValues(t, math.MaxInt32, opts.MaxRetries)

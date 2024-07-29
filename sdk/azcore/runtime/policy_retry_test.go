@@ -22,6 +22,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
 	"github.com/stretchr/testify/require"
 )
 
@@ -402,7 +403,7 @@ func TestWithRetryOptions(t *testing.T) {
 	if ctx == nil {
 		t.Fatal("nil context")
 	}
-	raw := ctx.Value(shared.CtxWithRetryOptionsKey{})
+	raw := ctx.Value(tscontext.CtxWithRetryOptionsKey{})
 	opts, ok := raw.(policy.RetryOptions)
 	if !ok {
 		t.Fatalf("unexpected type %T", raw)

@@ -8,18 +8,15 @@ package runtime
 
 import (
 	"context"
-	"errors"
 	"io"
 	"math"
 	"math/rand"
 	"net/http"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 const (
@@ -72,131 +69,49 @@ func calcDelay(o policy.RetryOptions, try int32) time.Duration { // try is >=1; 
 // NewRetryPolicy creates a policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {
-	if o == nil {
-		o = &policy.RetryOptions{}
+	options := policy.RetryOptions{}
+	if o != nil {
+		options = *o
 	}
-	p := &retryPolicy{options: *o}
-	return p
+
+	options = addAzureToRetry(options)
+	return runtime.NewRetryPolicy(&options)
 }
 
-type retryPolicy struct {
-	options policy.RetryOptions
-}
+func addAzureToRetry(o policy.RetryOptions) policy.RetryOptions {
+	// setting default retries for Azure
+	// tscore has its own defaults, this overrides them to be Azure specific
+	if o.RetryData == nil {
+		nop := func(string) time.Duration { return 0 }
+		o.RetryData = []policy.RetryData{
+			{
+				Header: shared.HeaderRetryAfterMS,
+				Units:  time.Millisecond,
+				Custom: nop,
+			},
+			{
+				Header: shared.HeaderXMSRetryAfterMS,
+				Units:  time.Millisecond,
+				Custom: nop,
+			},
+			{
+				Header: shared.HeaderRetryAfter,
+				Units:  time.Second,
 
-func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
-	options := p.options
-	// check if the retry options have been overridden for this call
-	if override := req.Raw().Context().Value(shared.CtxWithRetryOptionsKey{}); override != nil {
-		options = override.(policy.RetryOptions)
-	}
-	setDefaults(&options)
-	// Exponential retry algorithm: ((2 ^ attempt) - 1) * delay * random(0.8, 1.2)
-	// When to retry: connection failure or temporary/timeout.
-	var rwbody *retryableRequestBody
-	if req.Body() != nil {
-		// wrap the body so we control when it's actually closed.
-		// do this outside the for loop so defers don't accumulate.
-		rwbody = &retryableRequestBody{body: req.Body()}
-		defer rwbody.realClose()
-	}
-	try := int32(1)
-	for {
-		resp = nil // reset
-		log.Writef(log.EventRetryPolicy, "=====> Try=%d", try)
-
-		// For each try, seek to the beginning of the Body stream. We do this even for the 1st try because
-		// the stream may not be at offset 0 when we first get it and we want the same behavior for the
-		// 1st try as for additional tries.
-		err = req.RewindBody()
-		if err != nil {
-			return
-		}
-		// RewindBody() restores Raw().Body to its original state, so set our rewindable after
-		if rwbody != nil {
-			req.Raw().Body = rwbody
-		}
-
-		if options.TryTimeout == 0 {
-			clone := req.Clone(req.Raw().Context())
-			resp, err = clone.Next()
-		} else {
-			// Set the per-try time for this particular retry operation and then Do the operation.
-			tryCtx, tryCancel := context.WithTimeout(req.Raw().Context(), options.TryTimeout)
-			clone := req.Clone(tryCtx)
-			resp, err = clone.Next() // Make the request
-			// if the body was already downloaded or there was an error it's safe to cancel the context now
-			if err != nil {
-				tryCancel()
-			} else if exported.PayloadDownloaded(resp) {
-				tryCancel()
-			} else {
-				// must cancel the context after the body has been read and closed
-				resp.Body = &contextCancelReadCloser{cf: tryCancel, body: resp.Body}
-			}
-		}
-		if err == nil {
-			log.Writef(log.EventRetryPolicy, "response %d", resp.StatusCode)
-		} else {
-			log.Writef(log.EventRetryPolicy, "error %v", err)
-		}
-
-		if ctxErr := req.Raw().Context().Err(); ctxErr != nil {
-			// don't retry if the parent context has been cancelled or its deadline exceeded
-			err = ctxErr
-			log.Writef(log.EventRetryPolicy, "abort due to %v", err)
-			return
-		}
-
-		// check if the error is not retriable
-		var nre errorinfo.NonRetriable
-		if errors.As(err, &nre) {
-			// the error says it's not retriable so don't retry
-			log.Writef(log.EventRetryPolicy, "non-retriable error %T", nre)
-			return
-		}
-
-		if options.ShouldRetry != nil {
-			// a non-nil ShouldRetry overrides our HTTP status code check
-			if !options.ShouldRetry(resp, err) {
-				// predicate says we shouldn't retry
-				log.Write(log.EventRetryPolicy, "exit due to ShouldRetry")
-				return
-			}
-		} else if err == nil && !HasStatusCode(resp, options.StatusCodes...) {
-			// if there is no error and the response code isn't in the list of retry codes then we're done.
-			log.Write(log.EventRetryPolicy, "exit due to non-retriable status code")
-			return
-		}
-
-		if try == options.MaxRetries+1 {
-			// max number of tries has been reached, don't sleep again
-			log.Writef(log.EventRetryPolicy, "MaxRetries %d exceeded", options.MaxRetries)
-			return
-		}
-
-		// use the delay from retry-after if available
-		delay := shared.RetryAfter(resp)
-		if delay <= 0 {
-			delay = calcDelay(options, try)
-		} else if delay > options.MaxRetryDelay {
-			// the retry-after delay exceeds the the cap so don't retry
-			log.Writef(log.EventRetryPolicy, "Retry-After delay %s exceeds MaxRetryDelay of %s", delay, options.MaxRetryDelay)
-			return
-		}
-
-		// drain before retrying so nothing is leaked
-		Drain(resp)
-
-		log.Writef(log.EventRetryPolicy, "End Try #%d, Delay=%v", try, delay)
-		select {
-		case <-time.After(delay):
-			try++
-		case <-req.Raw().Context().Done():
-			err = req.Raw().Context().Err()
-			log.Writef(log.EventRetryPolicy, "abort due to %v", err)
-			return
+				// retry-after values are expressed in either number of
+				// seconds or an HTTP-date indicating when to try again
+				Custom: func(ra string) time.Duration {
+					t, err := time.Parse(time.RFC1123, ra)
+					if err != nil {
+						return 0
+					}
+					return time.Until(t)
+				},
+			},
 		}
 	}
+
+	return o
 }
 
 // ********** The following type/methods implement the retryableRequestBody (a ReadSeekCloser)

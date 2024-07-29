@@ -8,95 +8,39 @@ package runtime
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"net/http"
-	"net/url"
-	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 const (
-	attrHTTPMethod     = "http.method"
-	attrHTTPURL        = "http.url"
-	attrHTTPUserAgent  = "http.user_agent"
-	attrHTTPStatusCode = "http.status_code"
-
 	attrAZClientReqID  = "az.client_request_id"
 	attrAZServiceReqID = "az.service_request_id"
-
-	attrNetPeerName = "net.peer.name"
 )
 
+// TODO REVERT TO ORIGINAL
 // newHTTPTracePolicy creates a new instance of the httpTracePolicy.
 //   - allowedQueryParams contains the user-specified query parameters that don't need to be redacted from the trace
-func newHTTPTracePolicy(allowedQueryParams []string) policy.Policy {
-	return &httpTracePolicy{allowedQP: getAllowedQueryParams(allowedQueryParams)}
-}
-
-// httpTracePolicy is a policy that creates a trace for the HTTP request and its response
-type httpTracePolicy struct {
-	allowedQP map[string]struct{}
-}
-
-// Do implements the pipeline.Policy interfaces for the httpTracePolicy type.
-func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err error) {
-	rawTracer := req.Raw().Context().Value(shared.CtxWithTracingTracer{})
-	if tracer, ok := rawTracer.(tracing.Tracer); ok && tracer.Enabled() {
-		attributes := []tracing.Attribute{
-			{Key: attrHTTPMethod, Value: req.Raw().Method},
-			{Key: attrHTTPURL, Value: getSanitizedURL(*req.Raw().URL, h.allowedQP)},
-			{Key: attrNetPeerName, Value: req.Raw().URL.Host},
-		}
-
-		if ua := req.Raw().Header.Get(shared.HeaderUserAgent); ua != "" {
-			attributes = append(attributes, tracing.Attribute{Key: attrHTTPUserAgent, Value: ua})
-		}
-		if reqID := req.Raw().Header.Get(shared.HeaderXMSClientRequestID); reqID != "" {
-			attributes = append(attributes, tracing.Attribute{Key: attrAZClientReqID, Value: reqID})
-		}
-
-		ctx := req.Raw().Context()
-		ctx, span := tracer.Start(ctx, "HTTP "+req.Raw().Method, &tracing.SpanOptions{
-			Kind:       tracing.SpanKindClient,
-			Attributes: attributes,
-		})
-
-		defer func() {
-			if resp != nil {
-				span.SetAttributes(tracing.Attribute{Key: attrHTTPStatusCode, Value: resp.StatusCode})
-				if resp.StatusCode > 399 {
-					span.SetStatus(tracing.SpanStatusError, resp.Status)
-				}
-				if reqID := resp.Header.Get(shared.HeaderXMSRequestID); reqID != "" {
-					span.SetAttributes(tracing.Attribute{Key: attrAZServiceReqID, Value: reqID})
-				}
-			} else if err != nil {
-				var urlErr *url.Error
-				if errors.As(err, &urlErr) {
-					// calling *url.Error.Error() will include the unsanitized URL
-					// which we don't want. in addition, we already have the HTTP verb
-					// and sanitized URL in the trace so we aren't losing any info
-					err = urlErr.Err
-				}
-				span.SetStatus(tracing.SpanStatusError, err.Error())
-			}
-			span.End()
-		}()
-
-		req = req.WithContext(ctx)
+func newHTTPTracePolicy(allowedQueryParams []string, o *TracingOptions) policy.Policy {
+	options := TracingOptions{}
+	if o != nil {
+		options = *o
 	}
-	resp, err = req.Next()
-	return
+	options = addAzureToTracing(options)
+	return runtime.NewHTTPTracePolicy(allowedQueryParams, &options)
+}
+
+func addAzureToTracing(o TracingOptions) TracingOptions {
+	o.RequestAttributes = map[string]string{shared.HeaderXMSClientRequestID: attrAZClientReqID}
+	o.ResponseAttributes = map[string]string{shared.HeaderXMSRequestID: attrAZServiceReqID}
+
+	return o
 }
 
 // StartSpanOptions contains the optional values for StartSpan.
-type StartSpanOptions struct {
-	// for future expansion
-}
+type StartSpanOptions = runtime.StartSpanOptions
 
 // StartSpan starts a new tracing span.
 // You must call the returned func to terminate the span. Pass the applicable error
@@ -106,37 +50,5 @@ type StartSpanOptions struct {
 //   - tracer is the client's Tracer for creating spans
 //   - options contains optional values. pass nil to accept any default values
 func StartSpan(ctx context.Context, name string, tracer tracing.Tracer, options *StartSpanOptions) (context.Context, func(error)) {
-	if !tracer.Enabled() {
-		return ctx, func(err error) {}
-	}
-
-	// we MUST propagate the active tracer before returning so that the trace policy can access it
-	ctx = context.WithValue(ctx, shared.CtxWithTracingTracer{}, tracer)
-
-	const newSpanKind = tracing.SpanKindInternal
-	if activeSpan := ctx.Value(ctxActiveSpan{}); activeSpan != nil {
-		// per the design guidelines, if a SDK method Foo() calls SDK method Bar(),
-		// then the span for Bar() must be suppressed. however, if Bar() makes a REST
-		// call, then Bar's HTTP span must be a child of Foo's span.
-		// however, there is an exception to this rule. if the SDK method Foo() is a
-		// messaging producer/consumer, and it takes a callback that's a SDK method
-		// Bar(), then the span for Bar() must _not_ be suppressed.
-		if kind := activeSpan.(tracing.SpanKind); kind == tracing.SpanKindClient || kind == tracing.SpanKindInternal {
-			return ctx, func(err error) {}
-		}
-	}
-	ctx, span := tracer.Start(ctx, name, &tracing.SpanOptions{
-		Kind: newSpanKind,
-	})
-	ctx = context.WithValue(ctx, ctxActiveSpan{}, newSpanKind)
-	return ctx, func(err error) {
-		if err != nil {
-			errType := strings.Replace(fmt.Sprintf("%T", err), "*exported.", "*azcore.", 1)
-			span.SetStatus(tracing.SpanStatusError, fmt.Sprintf("%s:\n%s", errType, err.Error()))
-		}
-		span.End()
-	}
+	return runtime.StartSpan(ctx, name, tracer, options)
 }
-
-// ctxActiveSpan is used as a context key for indicating a SDK client span is in progress.
-type ctxActiveSpan struct{}

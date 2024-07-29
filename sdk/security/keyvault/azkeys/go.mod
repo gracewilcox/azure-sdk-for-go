@@ -2,6 +2,10 @@ module github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys
 
 go 1.18
 
+replace github.com/Azure/azure-sdk-for-go/sdk/azcore => ../../../azcore
+
+replace github.com/Azure/azure-sdk-for-go/sdk/tscore => ../../../tscore
+
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.13.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.7.0
@@ -11,6 +15,7 @@ require (
 )
 
 require (
+	github.com/Azure/azure-sdk-for-go/sdk/tscore v0.0.0-00010101000000-000000000000 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect

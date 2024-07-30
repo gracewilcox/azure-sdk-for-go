@@ -20,9 +20,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/streaming"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 	"github.com/stretchr/testify/require"
 )
 

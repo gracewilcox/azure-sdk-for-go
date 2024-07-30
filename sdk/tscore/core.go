@@ -10,11 +10,11 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
 // AccessToken represents a bearer access token with expiry information.

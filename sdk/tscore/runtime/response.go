@@ -14,7 +14,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 )
 
 // Payload reads and returns the response body or an error.

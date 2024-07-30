@@ -16,10 +16,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/diag"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/diag"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 type logPolicy struct {

@@ -7,8 +7,8 @@
 package runtime
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 // PipelineOptions contains Pipeline options for SDK developers

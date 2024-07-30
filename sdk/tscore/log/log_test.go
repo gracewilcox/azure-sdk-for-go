@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 )
 
 func TestLoggingDefault(t *testing.T) {

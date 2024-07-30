@@ -12,12 +12,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 	"github.com/stretchr/testify/require"
 )
 

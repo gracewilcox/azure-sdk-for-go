@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/stretchr/testify/require"
 )
 

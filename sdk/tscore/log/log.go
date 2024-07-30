@@ -8,7 +8,7 @@
 package log
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 )
 
 // Event is used to group entries.  Each group can be toggled on or off.
@@ -43,6 +43,10 @@ func SetEvents(cls ...Event) {
 // NOTE: this is not goroutine safe and should be called before using SDK clients.
 func SetListener(lst func(Event, string)) {
 	log.SetListener(lst)
+}
+
+func Should(cls Event) bool {
+	return log.Should(cls)
 }
 
 // for testing purposes

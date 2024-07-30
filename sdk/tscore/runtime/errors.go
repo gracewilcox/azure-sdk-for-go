@@ -9,7 +9,7 @@ package runtime
 import (
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 )
 
 // NewResponseError creates an *tscore.ResponseError from the provided HTTP response.

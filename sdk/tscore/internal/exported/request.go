@@ -17,7 +17,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 )
 
 // Base64Encoding is usesd to specify which base-64 encoder/decoder to use when

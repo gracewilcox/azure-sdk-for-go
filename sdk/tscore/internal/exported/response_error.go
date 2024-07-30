@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 )
 
 // NewResponseError creates a new *ResponseError from the provided HTTP response.

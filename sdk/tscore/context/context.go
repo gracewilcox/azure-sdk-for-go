@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 )
 
 // NOTE: when adding a new context key type, it likely needs to be

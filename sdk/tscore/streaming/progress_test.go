@@ -14,10 +14,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/streaming"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 )
 
 func TestProgressReporting(t *testing.T) {

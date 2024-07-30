@@ -12,7 +12,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/recording"
 )
 
 const proxyManualStartEnv = "PROXY_MANUAL_START"

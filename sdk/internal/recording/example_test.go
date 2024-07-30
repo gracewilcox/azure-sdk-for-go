@@ -9,7 +9,7 @@ package recording_test
 import (
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/recording"
 )
 
 func ExampleStart() {

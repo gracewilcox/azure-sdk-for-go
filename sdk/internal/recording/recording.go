@@ -28,7 +28,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/uuid"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/uuid"
 )
 
 // Deprecated: the local recording API that uses this type is no longer supported. Call [Start] and [Stop]

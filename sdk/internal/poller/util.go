@@ -14,7 +14,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/exported"
 )
 
 // the well-known set of LRO status/provisioning state values.

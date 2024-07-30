@@ -3,7 +3,7 @@
 
 package main
 
-import "github.com/Azure/azure-sdk-for-go/sdk/internal/perf"
+import "github.com/gracewilcox/azure-sdk-for-go/sdk/internal/perf"
 
 func main() {
 	perf.Run(map[string]perf.PerfMethods{

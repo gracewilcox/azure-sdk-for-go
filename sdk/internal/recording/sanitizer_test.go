@@ -15,7 +15,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )

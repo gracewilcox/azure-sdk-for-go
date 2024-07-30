@@ -49,6 +49,14 @@ func Should(cls Event) bool {
 	return log.Should(cls)
 }
 
+func Write(cls Event, message string) {
+	log.Write(cls, message)
+}
+
+func Writef(cls Event, format string, a ...interface{}) {
+	log.Writef(cls, format, a...)
+}
+
 // for testing purposes
 func resetEvents() {
 	log.TestResetEvents()

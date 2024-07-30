@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/messaging"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/messaging"
 )
 
 func Example_usingCloudEvent() {

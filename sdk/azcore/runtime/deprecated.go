@@ -10,7 +10,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 )
 
 // WithRetryOptions adds the specified RetryOptions to the parent context.

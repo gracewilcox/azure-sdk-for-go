@@ -12,13 +12,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // see https://github.com/Azure/azure-resource-manager-rpc/blob/master/v1.0/async-api-reference.md

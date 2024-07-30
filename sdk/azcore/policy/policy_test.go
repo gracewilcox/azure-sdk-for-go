@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"testing"
 
-	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
+	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
 	"github.com/stretchr/testify/require"
 )
 

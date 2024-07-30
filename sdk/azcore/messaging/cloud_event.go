@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/uuid"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/to"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/uuid"
 )
 
 // CloudEvent represents an event conforming to the CloudEvents 1.0 spec.

@@ -10,7 +10,7 @@ package tracing
 import (
 	"context"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
 // ProviderOptions contains the optional values when creating a Provider.

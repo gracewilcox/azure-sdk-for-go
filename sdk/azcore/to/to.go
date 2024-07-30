@@ -6,7 +6,7 @@
 
 package to
 
-import "github.com/Azure/azure-sdk-for-go/sdk/tscore/to"
+import "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/to"
 
 // Ptr returns a pointer to the provided value.
 func Ptr[T any](v T) *T {

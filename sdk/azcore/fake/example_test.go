@@ -10,7 +10,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/fake"
 )
 
 // Widget is a hypothetical type used in the following examples.

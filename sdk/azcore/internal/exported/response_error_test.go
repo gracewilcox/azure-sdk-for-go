@@ -14,9 +14,9 @@ import (
 	"strings"
 	"testing"
 
-	azlog "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
+	azlog "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/log"
 	"github.com/stretchr/testify/require"
 )
 

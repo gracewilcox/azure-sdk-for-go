@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/stretchr/testify/require"
 )
 

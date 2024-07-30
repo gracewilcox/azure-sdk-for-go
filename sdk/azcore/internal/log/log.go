@@ -8,8 +8,8 @@
 package log
 
 import (
-	azlog "github.com/Azure/azure-sdk-for-go/sdk/azcore/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
+	azlog "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/log"
 )
 
 type Event = log.Event

@@ -4,8 +4,8 @@
 package runtime
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // KeyCredentialPolicy authorizes requests with a [azcore.KeyCredential].

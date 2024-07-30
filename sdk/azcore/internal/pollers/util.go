@@ -14,12 +14,12 @@ import (
 	"net/http"
 	"reflect"
 
-	azexported "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
+	azexported "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // getTokenTypeName creates a type name from the type parameter T.

@@ -7,13 +7,13 @@
 package arm
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	armpolicy "github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/policy"
-	armruntime "github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore"
+	armpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/arm/policy"
+	armruntime "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/arm/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
 )
 
 // ClientOptions contains configuration settings for a client's pipeline.

@@ -8,7 +8,7 @@
 package log
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/log"
 )
 
 // TODO import from tscore

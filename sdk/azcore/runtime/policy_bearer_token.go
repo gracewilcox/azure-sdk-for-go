@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/temporal"
-	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/errorinfo"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/temporal"
+	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
 )
 
 // BearerTokenPolicy authorizes requests with bearer tokens acquired from a TokenCredential.

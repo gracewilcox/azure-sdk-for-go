@@ -7,7 +7,7 @@
 package arm
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/internal/resource"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/arm/internal/resource"
 )
 
 // RootResourceID defines the tenant as the root parent of all other ResourceID.

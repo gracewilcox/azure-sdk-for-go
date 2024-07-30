@@ -14,8 +14,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
 )
 
 // PagingHandler contains the required data for constructing a Pager.

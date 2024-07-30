@@ -7,7 +7,7 @@
 package arm
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/internal/resource"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/arm/internal/resource"
 )
 
 // SubscriptionResourceType is the ResourceType of a subscription

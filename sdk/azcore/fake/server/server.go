@@ -14,12 +14,12 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake/internal/exported"
-	fakepoller "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers/fake"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/fake"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/fake/internal/exported"
+	fakepoller "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers/fake"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/errorinfo"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // ResponseContent is used when building the *http.Response.

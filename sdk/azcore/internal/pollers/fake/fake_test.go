@@ -13,11 +13,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/poller"
-	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
+	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 

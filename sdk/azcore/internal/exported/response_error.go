@@ -13,9 +13,9 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/exported"
 )
 
 // NewResponseError creates a new *ResponseError from the provided HTTP response.

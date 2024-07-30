@@ -11,9 +11,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
-	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
+	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
 	"github.com/stretchr/testify/require"
 )
 

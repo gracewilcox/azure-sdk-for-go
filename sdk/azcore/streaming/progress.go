@@ -9,7 +9,7 @@ package streaming
 import (
 	"io"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/streaming"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 )
 
 // NopCloser returns a ReadSeekCloser with a no-op close method wrapping the provided io.ReadSeeker.

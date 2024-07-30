@@ -9,7 +9,7 @@ package exported
 import (
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 // not exported but dependent on Request

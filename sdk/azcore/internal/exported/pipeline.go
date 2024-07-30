@@ -7,8 +7,8 @@
 package exported
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 // NewPipeline creates a new Pipeline object from the specified Policies.

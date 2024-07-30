@@ -14,15 +14,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/internal/resource"
-	armpolicy "github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	azpolicy "github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/log"
-	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/arm/internal/resource"
+	armpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/arm/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	azpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/log"
+	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
 )
 
 const (

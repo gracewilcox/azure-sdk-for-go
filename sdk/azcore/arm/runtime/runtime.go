@@ -6,7 +6,7 @@
 
 package runtime
 
-import "github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+import "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/cloud"
 
 func init() {
 	cloud.AzureChina.Services[cloud.ResourceManager] = cloud.ServiceConfiguration{

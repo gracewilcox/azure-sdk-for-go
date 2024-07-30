@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	armpolicy "github.com/Azure/azure-sdk-for-go/sdk/azcore/arm/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	azpolicy "github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	azruntime "github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/temporal"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore"
+	armpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/arm/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	azpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	azruntime "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/temporal"
 )
 
 const headerAuxiliaryAuthorization = "x-ms-authorization-auxiliary"

@@ -10,10 +10,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/tracing"
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 )
 
 // Policy represents an extensibility point for the Pipeline that can mutate the specified

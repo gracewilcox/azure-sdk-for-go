@@ -4,7 +4,7 @@
 package main
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/perf"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/perf"
 )
 
 func main() {

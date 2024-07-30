@@ -16,10 +16,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/diag"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/log"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/diag"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 )
 
 type logPolicy struct {
@@ -31,48 +32,22 @@ type logPolicy struct {
 // NewLogPolicy creates a request/response logging policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
 func NewLogPolicy(o *policy.LogOptions) policy.Policy {
-	if o == nil {
-		o = &policy.LogOptions{}
+	options := policy.LogOptions{}
+	if o != nil {
+		options = *o
 	}
-	// construct default hash set of allowed headers
-	allowedHeaders := map[string]struct{}{
-		"accept":                        {},
-		"cache-control":                 {},
-		"connection":                    {},
-		"content-length":                {},
-		"content-type":                  {},
-		"date":                          {},
-		"etag":                          {},
-		"expires":                       {},
-		"if-match":                      {},
-		"if-modified-since":             {},
-		"if-none-match":                 {},
-		"if-unmodified-since":           {},
-		"last-modified":                 {},
-		"ms-cv":                         {},
-		"pragma":                        {},
-		"request-id":                    {},
-		"retry-after":                   {},
-		"server":                        {},
-		"traceparent":                   {},
-		"transfer-encoding":             {},
-		"user-agent":                    {},
-		"www-authenticate":              {},
-		"x-ms-request-id":               {},
-		"x-ms-client-request-id":        {},
-		"x-ms-return-client-request-id": {},
-	}
-	// add any caller-specified allowed headers to the set
-	for _, ah := range o.AllowedHeaders {
-		allowedHeaders[strings.ToLower(ah)] = struct{}{}
-	}
-	// now do the same thing for query params
-	allowedQP := getAllowedQueryParams(o.AllowedQueryParams)
-	return &logPolicy{
-		includeBody:    o.IncludeBody,
-		allowedHeaders: allowedHeaders,
-		allowedQP:      allowedQP,
-	}
+
+	options = addAzureToLogging(options)
+	return runtime.NewLogPolicy(&options)
+}
+
+// adding azure specific headers to LogOptions.AllowedHeaders
+func addAzureToLogging(o policy.LogOptions) policy.LogOptions {
+	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-request-id")
+	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-client-request-id")
+	o.AllowedHeaders = append(o.AllowedHeaders, "x-ms-return-client-request-id")
+
+	return o
 }
 
 // getAllowedQueryParams merges the default set of allowed query parameters

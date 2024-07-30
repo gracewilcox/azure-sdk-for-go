@@ -6,7 +6,7 @@
 
 package tracing
 
-import "github.com/Azure/azure-sdk-for-go/sdk/tscore/tracing"
+import "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 
 // SpanKind represents the role of a Span inside a Trace. Often, this defines how a Span will be processed and visualized by various backends.
 type SpanKind = tracing.SpanKind

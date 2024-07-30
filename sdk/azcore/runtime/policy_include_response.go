@@ -9,8 +9,8 @@ package runtime
 import (
 	"net/http"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	tscontext "github.com/Azure/azure-sdk-for-go/sdk/tscore/context"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
 )
 
 // includeResponsePolicy creates a policy that retrieves the raw HTTP response upon request

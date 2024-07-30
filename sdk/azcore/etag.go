@@ -7,7 +7,7 @@
 package azcore
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/tscore"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore"
 )
 
 // ETag is a property used for optimistic concurrency during updates

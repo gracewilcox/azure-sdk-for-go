@@ -15,10 +15,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
-	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/to"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/stretchr/testify/require"
 )
 

@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.13.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.7.0
+	github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730234506-b6545dad07bf
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/net v0.27.0
 	golang.org/x/text v0.16.0

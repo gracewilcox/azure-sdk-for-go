@@ -12,6 +12,10 @@ github.com/golang-jwt/jwt/v5 v5.2.1 h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17w
 github.com/golang-jwt/jwt/v5 v5.2.1/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730211923-a576efceac20 h1:xKoviUc5vdtWz6HReTZXtjHv+02msiOMeg/79Qk61pM=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730211923-a576efceac20/go.mod h1:oXvwhTLKHXwGb8POEltrI0OM6d1OuCoAG+24UXq/KBo=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730234506-b6545dad07bf h1:70ENMBGR6jb9wwjkpMq3jMv8g8CyvEqvWqgHAyBS0ic=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730234506-b6545dad07bf/go.mod h1:oXvwhTLKHXwGb8POEltrI0OM6d1OuCoAG+24UXq/KBo=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=

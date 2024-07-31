@@ -49,8 +49,3 @@ func SetEvents(cls ...Event) {
 func SetListener(lst func(Event, string)) {
 	log.SetListener(lst)
 }
-
-// for testing purposes
-func resetEvents() {
-	log.TestResetEvents()
-}

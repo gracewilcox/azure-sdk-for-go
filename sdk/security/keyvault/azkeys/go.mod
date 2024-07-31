@@ -2,12 +2,7 @@ module github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys
 
 go 1.18
 
-replace github.com/Azure/azure-sdk-for-go/sdk/azcore => ../../../azcore
-
-replace github.com/Azure/azure-sdk-for-go/sdk/tscore => ../../../tscore
-
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.13.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.7.0
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.10.0
 	github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/internal v1.0.1

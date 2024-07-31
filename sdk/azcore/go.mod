@@ -3,8 +3,8 @@ module github.com/gracewilcox/azure-sdk-for-go/sdk/azcore
 go 1.18
 
 require (
-	github.com/gracewilcox/azure-sdk-for-go/sdk/internal v1.0.1-0.20240730211923-a576efceac20
-	github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730211923-a576efceac20
+	github.com/gracewilcox/azure-sdk-for-go/sdk/internal v1.0.1-0.20240730235255-16eccf004cde
+	github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730234506-b6545dad07bf
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/net v0.27.0
 )

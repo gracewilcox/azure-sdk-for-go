@@ -44,7 +44,6 @@ func TestLoggingEvent(t *testing.T) {
 		testlog[cls] = msg
 	})
 	SetEvents(EventRequest)
-	defer resetEvents()
 	log.Write(EventResponse, "this shouldn't be in the log")
 	if s, ok := testlog[EventResponse]; ok {
 		t.Fatalf("unexpected log entry %s", s)

@@ -7,21 +7,16 @@
 package runtime
 
 import (
-	"bytes"
 	"context"
 	"errors"
-	"io"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/log"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 	"github.com/stretchr/testify/require"
 )
 
@@ -134,31 +129,6 @@ func TestPolicyLoggingError(t *testing.T) {
 	}
 }
 
-func TestShouldLogBody(t *testing.T) {
-	b := bytes.NewBuffer(make([]byte, 64))
-	if shouldLogBody(b, "application/octet-stream") {
-		t.Fatal("shouldn't log for application/octet-stream")
-	} else if b.Len() == 0 {
-		t.Fatal("skip logging should write skip message to buffer")
-	}
-	b.Reset()
-	if !shouldLogBody(b, "application/json") {
-		t.Fatal("should log for application/json")
-	} else if b.Len() != 0 {
-		t.Fatal("logging shouldn't write message")
-	}
-	if !shouldLogBody(b, "application/xml") {
-		t.Fatal("should log for application/xml")
-	} else if b.Len() != 0 {
-		t.Fatal("logging shouldn't write message")
-	}
-	if !shouldLogBody(b, "text/plain") {
-		t.Fatal("should log for text/plain")
-	} else if b.Len() != 0 {
-		t.Fatal("logging shouldn't write message")
-	}
-}
-
 func TestWithAllowedHeadersQueryParams(t *testing.T) {
 	rawlog := map[log.Event]string{}
 	log.SetListener(func(cls log.Event, s string) {
@@ -209,104 +179,4 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 	require.Contains(t, rawlog[log.EventRequest], "?client-allowed-qp=sent2&pipeline-allowed-qp=sent1&redacted-qp=REDACTED")
 	require.Regexp(t, `client-allowed: sent2\s+pipeline-allowed: sent1\s+redacted-header: REDACTED`, rawlog[log.EventRequest])
 	require.Regexp(t, `Client-Allowed: received2\s+Content-Length: 0\s+Date: (?:[a-zA-Z0-9:,\s]+)\s+Pipeline-Allowed: received1\s+Redacted-Header: REDACTED`, rawlog[log.EventResponse])
-}
-
-func TestSkipWriteReqBody(t *testing.T) {
-	req, err := runtime.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
-	require.NoError(t, err)
-
-	buf := bytes.Buffer{}
-	require.NoError(t, writeReqBody(req, &buf))
-	require.Contains(t, buf.String(), "Request contained no body")
-	buf.Reset()
-
-	require.NoError(t, req.SetBody(streaming.NopCloser(bytes.NewReader([]byte{0xf0, 0x0d})), "application/octet-stream"))
-	require.NoError(t, writeReqBody(req, &buf))
-	require.Contains(t, buf.String(), "Skip logging body for application/octet-stream")
-}
-
-func TestWriteReqBody(t *testing.T) {
-	req, err := runtime.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
-	require.NoError(t, err)
-	require.NoError(t, req.SetBody(streaming.NopCloser(strings.NewReader(`{"foo":"bar"}`)), shared.ContentTypeAppJSON))
-
-	buf := bytes.Buffer{}
-	require.NoError(t, writeReqBody(req, &buf))
-	require.Contains(t, buf.String(), `{"foo":"bar"}`)
-}
-
-type readSeekerFailer struct {
-	failRead bool
-	failSeek bool
-}
-
-func (r *readSeekerFailer) Read([]byte) (int, error) {
-	if r.failRead {
-		return 0, errors.New("read failed")
-	}
-	return 0, io.EOF
-}
-
-func (r *readSeekerFailer) Seek(int64, int) (int64, error) {
-	if r.failSeek {
-		return 0, errors.New("seek failed")
-	}
-	// return a positive value to fake that we have content
-	return 16, nil
-}
-
-func TestWriteReqBodyReadError(t *testing.T) {
-	req, err := runtime.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
-	require.NoError(t, err)
-	rsf := &readSeekerFailer{}
-	require.NoError(t, req.SetBody(streaming.NopCloser(rsf), shared.ContentTypeAppJSON))
-
-	buf := bytes.Buffer{}
-	rsf.failRead = true
-	require.Error(t, writeReqBody(req, &buf))
-	require.Contains(t, buf.String(), "Failed to read request body: read failed")
-
-	buf.Reset()
-	rsf.failRead = false
-	rsf.failSeek = true
-	require.Error(t, writeReqBody(req, &buf))
-	require.Zero(t, buf.Len())
-}
-
-func TestSkipWriteRespBody(t *testing.T) {
-	resp := &http.Response{Header: http.Header{}}
-	buf := bytes.Buffer{}
-	require.NoError(t, writeRespBody(resp, &buf))
-	require.Contains(t, buf.String(), "Response contained no body")
-
-	resp.Header.Set(shared.HeaderContentType, "application/octet-stream")
-	buf.Reset()
-	require.NoError(t, writeRespBody(resp, &buf))
-	require.Contains(t, buf.String(), "Skip logging body for application/octet-stream")
-
-	resp.Header.Set(shared.HeaderContentType, "application/json")
-	resp.Body = io.NopCloser(strings.NewReader(""))
-	buf.Reset()
-	require.NoError(t, writeRespBody(resp, &buf))
-	require.Contains(t, buf.String(), "Response contained no body")
-}
-
-func TestWriteRespBody(t *testing.T) {
-	resp := &http.Response{Header: http.Header{}}
-	buf := bytes.Buffer{}
-
-	resp.Header.Set(shared.HeaderContentType, "application/json")
-	resp.Body = io.NopCloser(strings.NewReader(`{"foo":"bar"}`))
-	require.NoError(t, writeRespBody(resp, &buf))
-	require.Contains(t, buf.String(), `{"foo":"bar"}`)
-}
-
-func TestWriteRespBodyReadError(t *testing.T) {
-	resp := &http.Response{Header: http.Header{}}
-	buf := bytes.Buffer{}
-
-	resp.Header.Set(shared.HeaderContentType, "application/json")
-	resp.Body = streaming.NopCloser(&readSeekerFailer{failRead: true})
-	require.Error(t, writeRespBody(resp, &buf))
-	require.Contains(t, buf.String(), "Failed to read response body: read failed")
 }

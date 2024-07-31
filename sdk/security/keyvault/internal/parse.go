@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/to"
 )
 
 // ParseID parses "https://myvaultname.vault.azure.net/keys/key1053998307/b86c2e6ad9054f4abf69cc185b99aa60"

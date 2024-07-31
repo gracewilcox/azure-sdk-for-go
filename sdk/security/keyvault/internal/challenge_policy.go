@@ -14,9 +14,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/runtime"
 )
 
 const challengeMatchError = `challenge resource "%s" doesn't match the requested domain. Set DisableChallengeResourceVerification to true in your client options to disable. See https://aka.ms/azsdk/blog/vault-uri for more information`
@@ -31,7 +31,7 @@ type keyVaultAuthorizer struct {
 	// tro is the policy's authentication parameters. These are discovered from an authentication challenge
 	// elicited ahead of the first client request.
 	tro policy.TokenRequestOptions
-	// TODO: move into tro once it has a tenant field (https://github.com/Azure/azure-sdk-for-go/issues/19841)
+	// TODO: move into tro once it has a tenant field (https://github.com/gracewilcox/azure-sdk-for-go/issues/19841)
 	tenantID                string
 	verifyChallengeResource bool
 }

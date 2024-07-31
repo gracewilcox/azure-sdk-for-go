@@ -1,9 +1,11 @@
-github.com/Azure/azure-sdk-for-go/sdk/azcore v1.13.0 h1:GJHeeA2N7xrG3q30L2UXDyuWRzDM900/65j70wcM4Ww=
-github.com/Azure/azure-sdk-for-go/sdk/azcore v1.13.0/go.mod h1:l38EPgmsp71HHLq9j7De57JcKOWPyhrsW1Awm1JS6K0=
-github.com/Azure/azure-sdk-for-go/sdk/internal v1.10.0 h1:ywEEhmNahHBihViHepv3xPBn1663uRv2t2q/ESv9seY=
-github.com/Azure/azure-sdk-for-go/sdk/internal v1.10.0/go.mod h1:iZDifYGJTIgIIkYRNWPENUnqx6bJ2xnSDFI2tjwZNuY=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/gracewilcox/azure-sdk-for-go/sdk/azcore v1.1.2-0.20240731004358-f53e31379003 h1:zFtBkkeGw76NsrRp0nz4VeU+81C25cMe0EjyZu2+LCg=
+github.com/gracewilcox/azure-sdk-for-go/sdk/azcore v1.1.2-0.20240731004358-f53e31379003/go.mod h1:PBwvmQr2ck+r5YN2SLa7GPobLjHb6I2mpdLcFEwH5lY=
+github.com/gracewilcox/azure-sdk-for-go/sdk/internal v1.0.1-0.20240730235255-16eccf004cde h1:vcZIrBPG9p9AQhLzY6MdxudWfgEeLUzFEq5oGOj7kBQ=
+github.com/gracewilcox/azure-sdk-for-go/sdk/internal v1.0.1-0.20240730235255-16eccf004cde/go.mod h1:lFJug94rHR/aPYruaP1si0LUntj4ch/sVHL6Z01JSvU=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730234506-b6545dad07bf h1:70ENMBGR6jb9wwjkpMq3jMv8g8CyvEqvWqgHAyBS0ic=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240730234506-b6545dad07bf/go.mod h1:oXvwhTLKHXwGb8POEltrI0OM6d1OuCoAG+24UXq/KBo=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

@@ -48,6 +48,23 @@ type TokenCredential interface {
 	GetToken(ctx context.Context, options TokenRequestOptions) (AccessToken, error)
 }
 
+// KeyCredential contains an authentication key used to authenticate to an Azure service.
+// Exported as azcore.KeyCredential.
+type KeyCredential struct {
+	cred *keyCredential
+}
+
+// NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
+//   - key is the authentication key
+func NewKeyCredential(key string) *KeyCredential {
+	return &KeyCredential{cred: newKeyCredential(key)}
+}
+
+// Update replaces the existing key with the specified value.
+func (k *KeyCredential) Update(key string) {
+	k.cred.Update(key)
+}
+
 // SASCredential contains a shared access signature used to authenticate to an Azure service.
 // Exported as azcore.SASCredential.
 type SASCredential struct {
@@ -63,6 +80,11 @@ func NewSASCredential(sas string) *SASCredential {
 // Update replaces the existing shared access signature with the specified value.
 func (k *SASCredential) Update(sas string) {
 	k.cred.Update(sas)
+}
+
+// KeyCredentialGet returns the key for cred.
+func KeyCredentialGet(cred *KeyCredential) string {
+	return cred.cred.Get()
 }
 
 // SASCredentialGet returns the shared access sig for cred.

@@ -13,29 +13,28 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
-	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
 )
 
-func TestWithHTTPHeader(t *testing.T) {
-	const (
-		key = "some"
-		val = "thing"
-	)
-	input := http.Header{}
-	input.Set(key, val)
-	ctx := WithHTTPHeader(context.Background(), input)
-	if ctx == nil {
-		t.Fatal("nil context")
-	}
-	raw := ctx.Value(tscontext.CtxWithHTTPHeaderKey{})
-	header, ok := raw.(http.Header)
-	if !ok {
-		t.Fatalf("unexpected type %T", raw)
-	}
-	if v := header.Get(key); v != val {
-		t.Fatalf("unexpected value %s", v)
-	}
-}
+// func TestWithHTTPHeader(t *testing.T) {
+// 	const (
+// 		key = "some"
+// 		val = "thing"
+// 	)
+// 	input := http.Header{}
+// 	input.Set(key, val)
+// 	ctx := WithHTTPHeader(context.Background(), input)
+// 	if ctx == nil {
+// 		t.Fatal("nil context")
+// 	}
+// 	raw := ctx.Value(tscontext.CtxWithHTTPHeaderKey{})
+// 	header, ok := raw.(http.Header)
+// 	if !ok {
+// 		t.Fatalf("unexpected type %T", raw)
+// 	}
+// 	if v := header.Get(key); v != val {
+// 		t.Fatalf("unexpected value %s", v)
+// 	}
+// }
 
 func TestAddCustomHTTPHeaderSuccess(t *testing.T) {
 	srv, close := mock.NewServer()

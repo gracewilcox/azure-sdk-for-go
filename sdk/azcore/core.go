@@ -22,12 +22,12 @@ type AccessToken = exported.AccessToken
 type TokenCredential = exported.TokenCredential
 
 // KeyCredential contains an authentication key used to authenticate to an Azure service.
-type KeyCredential = tscore.KeyCredential
+type KeyCredential = exported.KeyCredential
 
 // NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
 //   - key is the authentication key
 func NewKeyCredential(key string) *KeyCredential {
-	return tscore.NewKeyCredential(key)
+	return exported.NewKeyCredential(key)
 }
 
 // SASCredential contains a shared access signature used to authenticate to an Azure service.

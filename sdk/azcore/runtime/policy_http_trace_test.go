@@ -16,7 +16,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
-	tscontext "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/context"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/stretchr/testify/require"
 )
 
@@ -43,7 +43,7 @@ func TestStartSpan(t *testing.T) {
 	ctx, end = StartSpan(context.Background(), "TestStartSpan", tr, nil)
 	end(nil)
 	_, _ = startCalled, endCalled
-	ctxTr := ctx.Value(tscontext.CtxWithTracingTracer{})
+	ctxTr := ctx.Value(runtime.CtxWithTracingTracer{})
 	require.NotNil(t, ctxTr)
 	_, ok := ctxTr.(tracing.Tracer)
 	require.True(t, ok)

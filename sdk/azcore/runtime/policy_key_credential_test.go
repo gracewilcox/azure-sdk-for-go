@@ -1,3 +1,6 @@
+//go:build go1.18
+// +build go1.18
+
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -10,13 +13,12 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore"
 	"github.com/stretchr/testify/require"
 )
 
 func TestKeyCredentialPolicy(t *testing.T) {
 	const key = "foo"
-	cred := tscore.NewKeyCredential(key)
+	cred := exported.NewKeyCredential(key)
 
 	const headerName = "fake-auth"
 	policy := NewKeyCredentialPolicy(cred, headerName, nil)
@@ -51,7 +53,7 @@ func TestKeyCredentialPolicy(t *testing.T) {
 }
 
 func TestKeyCredentialPolicy_RequiresHTTPS(t *testing.T) {
-	cred := tscore.NewKeyCredential("foo")
+	cred := exported.NewKeyCredential("foo")
 
 	policy := NewKeyCredentialPolicy(cred, "fake-auth", nil)
 	require.NotNil(t, policy)
@@ -85,7 +87,7 @@ func TestKeyCredentialPolicy_NilCredential(t *testing.T) {
 }
 
 func TestKeyCredentialPolicy_InsecureAllowCredentialWithHTTP(t *testing.T) {
-	cred := tscore.NewKeyCredential("foo")
+	cred := exported.NewKeyCredential("foo")
 
 	policy := NewKeyCredentialPolicy(cred, "fake-auth", &KeyCredentialPolicyOptions{
 		InsecureAllowCredentialWithHTTP: true,

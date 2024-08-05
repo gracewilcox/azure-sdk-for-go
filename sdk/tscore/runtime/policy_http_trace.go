@@ -102,6 +102,8 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 	return
 }
 
+type CtxWithTracingTracer = shared.CtxWithTracingTracer
+
 // StartSpanOptions contains the optional values for StartSpan.
 type StartSpanOptions struct {
 	// for future expansion

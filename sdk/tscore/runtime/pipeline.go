@@ -8,6 +8,7 @@ package runtime
 
 import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 )
 
@@ -88,3 +89,5 @@ func NewPipeline(plOpts PipelineOptions, options *policy.ClientOptions) Pipeline
 func NewCustomPipeline(transport policy.Transporter, policies ...policy.Policy) Pipeline {
 	return exported.NewPipeline(transport, policies...)
 }
+
+type ContextWithDeniedValues = shared.ContextWithDeniedValues

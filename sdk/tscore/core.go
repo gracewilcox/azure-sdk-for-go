@@ -10,27 +10,11 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
-
-// AccessToken represents a bearer access token with expiry information.
-type AccessToken = exported.AccessToken
-
-// TokenCredential represents a credential capable of providing an OAuth token.
-type TokenCredential = exported.TokenCredential
-
-// KeyCredential contains an authentication key used to authenticate.
-type KeyCredential = exported.KeyCredential
-
-// NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
-//   - key is the authentication key
-func NewKeyCredential(key string) *KeyCredential {
-	return exported.NewKeyCredential(key)
-}
 
 // holds sentinel values used to send nulls
 var nullables map[reflect.Type]any = map[reflect.Type]any{}

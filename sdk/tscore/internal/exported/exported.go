@@ -7,13 +7,10 @@
 package exported
 
 import (
-	"context"
 	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
-	"sync/atomic"
-	"time"
 )
 
 type nopCloser struct {
@@ -42,28 +39,6 @@ func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
 		}
 	}
 	return false
-}
-
-// AccessToken represents a service bearer access token with expiry information.
-// Exported as tscore.AccessToken.
-type AccessToken struct {
-	Token     string
-	ExpiresOn time.Time
-}
-
-// TODO fix- scopes may be azure specific
-// TokenRequestOptions contain specific parameter that may be used by credentials types when attempting to get a token.
-// Exported as policy.TokenRequestOptions.
-type TokenRequestOptions struct {
-	// Scopes contains the list of permission scopes required for the token.
-	Scopes []string
-}
-
-// TokenCredential represents a credential capable of providing an OAuth token.
-// Exported as tscore.TokenCredential.
-type TokenCredential interface {
-	// GetToken requests an access token for the specified set of scopes.
-	GetToken(ctx context.Context, options TokenRequestOptions) (AccessToken, error)
 }
 
 // DecodeByteArray will base-64 decode the provided string into v.
@@ -96,44 +71,4 @@ func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
 	default:
 		return fmt.Errorf("unrecognized byte array format: %d", format)
 	}
-}
-
-// KeyCredential contains an authentication key used to authenticate to an Azure service.
-// Exported as tscore.KeyCredential.
-type KeyCredential struct {
-	cred *keyCredential
-}
-
-// NewKeyCredential creates a new instance of [KeyCredential] with the specified values.
-//   - key is the authentication key
-func NewKeyCredential(key string) *KeyCredential {
-	return &KeyCredential{cred: newKeyCredential(key)}
-}
-
-// Update replaces the existing key with the specified value.
-func (k *KeyCredential) Update(key string) {
-	k.cred.Update(key)
-}
-
-// KeyCredentialGet returns the key for cred.
-func KeyCredentialGet(cred *KeyCredential) string {
-	return cred.cred.Get()
-}
-
-type keyCredential struct {
-	key atomic.Value // string
-}
-
-func newKeyCredential(key string) *keyCredential {
-	keyCred := keyCredential{}
-	keyCred.key.Store(key)
-	return &keyCred
-}
-
-func (k *keyCredential) Get() string {
-	return k.key.Load().(string)
-}
-
-func (k *keyCredential) Update(key string) {
-	k.key.Store(key)
 }

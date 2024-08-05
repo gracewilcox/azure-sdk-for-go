@@ -23,8 +23,6 @@ const (
 	HeaderWWWAuthenticate   = "WWW-Authenticate"
 )
 
-const BearerTokenPrefix = "Bearer "
-
 const TracingNamespaceAttrName = "namespace"
 
 const (

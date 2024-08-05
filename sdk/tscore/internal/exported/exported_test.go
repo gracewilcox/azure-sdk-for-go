@@ -58,16 +58,6 @@ func TestDecodeByteArray(t *testing.T) {
 	require.Error(t, DecodeByteArray(stdEncoding, &out, 123))
 }
 
-func TestNewKeyCredential(t *testing.T) {
-	const val1 = "foo"
-	cred := NewKeyCredential(val1)
-	require.NotNil(t, cred)
-	require.EqualValues(t, val1, KeyCredentialGet(cred))
-	const val2 = "bar"
-	cred.Update(val2)
-	require.EqualValues(t, val2, KeyCredentialGet(cred))
-}
-
 func TestNewRequestFromRequest(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

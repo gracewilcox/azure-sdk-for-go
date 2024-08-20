@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package runtime
+package policy
 
 import (
 	"fmt"
@@ -12,8 +12,14 @@ import (
 	"strings"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
+
+func NewBodyDownloadPolicy(options *policy.BodyDownloadPolicyOptions) pipeline.Policy {
+	return exported.PolicyFunc(bodyDownloadPolicy)
+}
 
 // bodyDownloadPolicy creates a policy object that downloads the response's body to a []byte.
 func bodyDownloadPolicy(req *policy.Request) (*http.Response, error) {

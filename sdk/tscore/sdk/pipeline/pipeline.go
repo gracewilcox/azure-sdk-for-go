@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package exported
+package pipeline
 
 import (
 	"errors"
@@ -55,9 +55,9 @@ func (tp transportPolicy) Do(req *Request) (*http.Response, error) {
 	return resp, nil
 }
 
-// NewPipeline creates a new Pipeline object from the specified Policies.
+// New creates a new Pipeline object from the specified Policies.
 // Not directly exported, but used as part of runtime.NewPipeline().
-func NewPipeline(transport Transporter, policies ...Policy) Pipeline {
+func New(transport Transporter, policies ...Policy) Pipeline {
 	// transport policy must always be the last in the slice
 	policies = append(policies, transportPolicy{trans: transport})
 	return Pipeline{

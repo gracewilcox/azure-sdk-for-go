@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package exported
+package pipeline
 
 import (
 	"bytes"
@@ -17,6 +17,7 @@ import (
 	"reflect"
 	"strconv"
 
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 )
 
@@ -91,7 +92,7 @@ func NewRequestFromRequest(req *http.Request) (*Request, error) {
 				return nil, err
 			}
 
-			readSeekCloser = NopCloser(bytes.NewReader(bodyBytes))
+			readSeekCloser = exported.NopCloser(bytes.NewReader(bodyBytes))
 		}
 
 		// SetBody also takes care of updating the http.Request's body

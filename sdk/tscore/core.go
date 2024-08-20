@@ -11,9 +11,6 @@ import (
 	"sync"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
 // holds sentinel values used to send nulls
@@ -76,43 +73,4 @@ func IsNullValue[T any](v T) bool {
 	}
 	// no sentinel object for this *t
 	return false
-}
-
-// Client is a basic HTTP client.  It consists of a pipeline and tracing provider.
-type Client struct {
-	pl runtime.Pipeline
-	tr tracing.Tracer
-}
-
-// NewClient creates a new Client instance with the provided values.
-//   - moduleName - the fully qualified name of the module where the client is defined; used by the telemetry policy and tracing provider.
-//   - moduleVersion - the semantic version of the module; used by the telemetry policy and tracing provider.
-//   - plOpts - pipeline configuration options; can be the zero-value
-//   - options - optional client configurations; pass nil to accept the default values
-func NewClient(moduleName, moduleVersion string, plOpts runtime.PipelineOptions, options *policy.ClientOptions) (*Client, error) {
-	if options == nil {
-		options = &policy.ClientOptions{}
-	}
-
-	pl := runtime.NewPipeline(plOpts, options)
-
-	tr := options.TracingProvider.NewTracer(moduleName, moduleVersion)
-	if tr.Enabled() && plOpts.Tracing.Namespace != "" {
-		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: plOpts.Tracing.Namespace})
-	}
-
-	return &Client{
-		pl: pl,
-		tr: tr,
-	}, nil
-}
-
-// Pipeline returns the pipeline for this client.
-func (c *Client) Pipeline() runtime.Pipeline {
-	return c.pl
-}
-
-// Tracer returns the tracer for this client.
-func (c *Client) Tracer() tracing.Tracer {
-	return c.tr
 }

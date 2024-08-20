@@ -11,46 +11,26 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
-// Policy represents an extensibility point for the Pipeline that can mutate the specified
-// Request and react to the received Response.
-type Policy = exported.Policy
+type BodyDownloadPolicyOptions struct {
+}
 
-// Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
-type Transporter = exported.Transporter
+// TracingOptions contains tracing options for SDK developers.
+type TracingOptions struct {
+	// Namespace contains the value to use for the namespace span attribute.
+	Namespace string
+	// Provider configures the tracing provider.
+	// It defaults to a no-op tracer
+	Provider      tracing.Provider
+	ModuleName    string
+	ModuleVersion string
 
-// Request is an abstraction over the creation of an HTTP request as it passes through the pipeline.
-// Don't use this type directly, use runtime.NewRequest() instead.
-type Request = exported.Request
-
-// ClientOptions contains optional settings for a client's pipeline.
-// Instances can be shared across calls to SDK client constructors when uniform configuration is desired.
-// Zero-value fields will have their specified default values applied during use.
-type ClientOptions struct {
-	// Logging configures the built-in logging policy.
-	Logging LogOptions
-
-	// Retry configures the built-in retry policy.
-	Retry RetryOptions
-
-	// TracingProvider configures the tracing provider.
-	// It defaults to a no-op tracer.
-	TracingProvider tracing.Provider
-
-	// Transport sets the transport for HTTP requests.
-	Transport Transporter
-
-	// PerCallPolicies contains custom policies to inject into the pipeline.
-	// Each policy is executed once per request.
-	PerCallPolicies []Policy
-
-	// PerRetryPolicies contains custom policies to inject into the pipeline.
-	// Each policy is executed once per request, and for each retry of that request.
-	PerRetryPolicies []Policy
+	// TODO reexamine
+	RequestAttributes  map[string]string
+	ResponseAttributes map[string]string
 }
 
 // LogOptions configures the logging policy's behavior.

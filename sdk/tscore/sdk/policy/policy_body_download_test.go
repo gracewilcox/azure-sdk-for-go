@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package runtime
+package policy
 
 import (
 	"context"
@@ -16,6 +16,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 func TestDownloadBody(t *testing.T) {
@@ -25,7 +26,7 @@ func TestDownloadBody(t *testing.T) {
 	srv.SetResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
 	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

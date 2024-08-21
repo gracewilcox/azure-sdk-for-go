@@ -1,0 +1,13 @@
+parameters:
+  "service-dir":
+    default: "sdk/security/keyvault/azsecrets"
+  "dependencies":
+    default: ""
+emit:
+  - "@azure-tools/typespec-go"
+options:
+  "@azure-tools/typespec-go":
+    module: "github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
+    module-version: "0.0.1"
+    emitter-output-dir: "{project-root}/../../azsecrets"
+    slice-elements-byval: "true"

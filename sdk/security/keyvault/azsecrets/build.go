@@ -1,11 +1,9 @@
-//go:build go1.18
-// +build go1.18
-
-//go:generate autorest ./autorest.md
-//go:generate rm ./constants.go
-//go:generate gofmt -w .
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
+
+//go:generate pwsh ./testdata/gen.ps1
+//go:generate gofmt -w .
+//go:generate go run ./internal/generate
+//go:generate gofmt -w .
 
 package azsecrets

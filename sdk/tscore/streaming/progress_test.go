@@ -14,9 +14,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 )
 
@@ -30,8 +30,8 @@ func TestProgressReporting(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse(mock.WithBody(content))
-	pl := exported.NewPipeline(srv)
-	req, err := runtime.NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := pipeline.New(srv)
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -79,8 +79,8 @@ func TestProgressReportingSeek(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse()
-	pl := exported.NewPipeline(srv)
-	req, err := runtime.NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := pipeline.New(srv)
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

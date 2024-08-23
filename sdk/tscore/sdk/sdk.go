@@ -1,11 +1,10 @@
 package sdk
 
 import (
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
-	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
+	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
@@ -22,13 +21,15 @@ type PipelineOptions struct {
 	// Transport sets the transport for HTTP requests.
 	Transport pipeline.Transporter
 
-	// PerCallPolicies contains custom policies to inject into the pipeline.
-	// Each policy is executed once per request.
-	PerCallPolicies []pipeline.Policy
+	Tracing policy.TracingOptions
 
-	// PerRetryPolicies contains custom policies to inject into the pipeline.
+	// PerCall contains custom policies to inject into the pipeline.
+	// Each policy is executed once per request.
+	PerCall []pipeline.Policy
+
+	// PerRetry contains custom policies to inject into the pipeline.
 	// Each policy is executed once per request, and for each retry of that request.
-	PerRetryPolicies []pipeline.Policy
+	PerRetry []pipeline.Policy
 }
 
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
@@ -39,17 +40,15 @@ func NewPipeline(options *PipelineOptions) pipeline.Pipeline {
 
 	// we put the includeResponsePolicy at the very beginning so that the raw response
 	// is populated with the final response (some policies might mutate the response)
-	policies := []policy.Policy{exported.PolicyFunc(includeResponsePolicy)}
-	policies = append(policies, plOpts.PerCall...)
-	policies = append(policies, cp.PerCallPolicies...)
-	policies = append(policies, NewRetryPolicy(&cp.Retry))
-	policies = append(policies, plOpts.PerRetry...)
-	policies = append(policies, cp.PerRetryPolicies...)
-	policies = append(policies, exported.PolicyFunc(httpHeaderPolicy))
-	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams, &plOpts.Tracing))
-	policies = append(policies, NewLogPolicy(&cp.Logging))
+	policies := []pipeline.Policy{sdkpolicy.NewIncludeResponsePolicy(nil)}
+	policies = append(policies, options.PerCall...)
+	policies = append(policies, sdkpolicy.NewRetryPolicy(&options.Retry))
+	policies = append(policies, options.PerRetry...)
+	policies = append(policies, sdkpolicy.NewHTTPHeaderPolicy(nil))
+	policies = append(policies, sdkpolicy.NewHTTPTracePolicy(&policy.HTTPTraceOptions{AllowedQueryParams: options.Logging.AllowedQueryParams}))
+	policies = append(policies, sdkpolicy.NewLogPolicy(&options.Logging))
 	policies = append(policies, sdkpolicy.NewBodyDownloadPolicy(nil))
-	transport := cp.Transport
+	transport := options.Transport
 	if transport == nil {
 		transport = defaultHTTPClient
 	}
@@ -89,7 +88,7 @@ func NewClient(pipeline pipeline.Pipeline, options *ClientOptions) (*Client, err
 }
 
 // Pipeline returns the pipeline for this client.
-func (c *Client) Pipeline() runtime.Pipeline {
+func (c *Client) Pipeline() pipeline.Pipeline {
 	return c.pl
 }
 

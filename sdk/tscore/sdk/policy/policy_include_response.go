@@ -11,10 +11,15 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
+func NewIncludeResponsePolicy(options *policy.IncludeResponseOptions) pipeline.Policy {
+	return policyFunc(includeResponsePolicy)
+}
+
 // includeResponsePolicy creates a policy that retrieves the raw HTTP response upon request
-func includeResponsePolicy(req *policy.Request) (*http.Response, error) {
+func includeResponsePolicy(req *pipeline.Request) (*http.Response, error) {
 	resp, err := req.Next()
 	if resp == nil {
 		return resp, err

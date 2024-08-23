@@ -15,7 +15,24 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
-type BodyDownloadPolicyOptions struct {
+type BodyDownloadOptions struct {
+	// placeholder for future options
+}
+
+type IncludeResponseOptions struct {
+	// placeholder for future options
+}
+
+type HTTPHeaderOptions struct {
+	// placeholder for future options
+}
+
+type HTTPTraceOptions struct {
+	AllowedQueryParams []string
+
+	// TODO reexamine
+	RequestAttributes  map[string]string
+	ResponseAttributes map[string]string
 }
 
 // TracingOptions contains tracing options for SDK developers.
@@ -27,10 +44,6 @@ type TracingOptions struct {
 	Provider      tracing.Provider
 	ModuleName    string
 	ModuleVersion string
-
-	// TODO reexamine
-	RequestAttributes  map[string]string
-	ResponseAttributes map[string]string
 }
 
 // LogOptions configures the logging policy's behavior.

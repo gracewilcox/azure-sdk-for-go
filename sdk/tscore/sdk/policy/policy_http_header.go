@@ -11,10 +11,15 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
+func NewHTTPHeaderPolicy(options *policy.HTTPHeaderOptions) pipeline.Policy {
+	return policyFunc(httpHeaderPolicy)
+}
+
 // newHTTPHeaderPolicy creates a policy object that adds custom HTTP headers to a request
-func httpHeaderPolicy(req *policy.Request) (*http.Response, error) {
+func httpHeaderPolicy(req *pipeline.Request) (*http.Response, error) {
 	// check if any custom HTTP headers have been specified
 	if header := req.Raw().Context().Value(shared.CtxWithHTTPHeaderKey{}); header != nil {
 		for k, v := range header.(http.Header) {

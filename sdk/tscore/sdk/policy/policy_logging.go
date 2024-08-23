@@ -17,9 +17,11 @@ import (
 	"time"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/diag"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 type logPolicy struct {
@@ -30,7 +32,7 @@ type logPolicy struct {
 
 // NewLogPolicy creates a request/response logging policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
-func NewLogPolicy(o *policy.LogOptions) policy.Policy {
+func NewLogPolicy(o *policy.LogOptions) pipeline.Policy {
 	if o == nil {
 		o = &policy.LogOptions{}
 	}
@@ -90,7 +92,7 @@ type logPolicyOpValues struct {
 	start time.Time
 }
 
-func (p *logPolicy) Do(req *policy.Request) (*http.Response, error) {
+func (p *logPolicy) Do(req *pipeline.Request) (*http.Response, error) {
 	// Get the per-operation values. These are saved in the Message's map so that they persist across each retry calling into this policy object.
 	var opValues logPolicyOpValues
 	if req.OperationValue(&opValues); opValues.start.IsZero() {
@@ -160,7 +162,7 @@ func getSanitizedURL(u url.URL, allowedQueryParams map[string]struct{}) string {
 
 // writeRequestWithResponse appends a formatted HTTP request into a Buffer. If request and/or err are
 // not nil, then these are also written into the Buffer.
-func (p *logPolicy) writeRequestWithResponse(b *bytes.Buffer, req *policy.Request, resp *http.Response, err error) {
+func (p *logPolicy) writeRequestWithResponse(b *bytes.Buffer, req *pipeline.Request, resp *http.Response, err error) {
 	// Write the request into the buffer.
 	fmt.Fprint(b, "   "+req.Raw().Method+" "+getSanitizedURL(*req.Raw().URL, p.allowedQP)+"\n")
 	p.writeHeader(b, req.Raw().Header)
@@ -212,7 +214,7 @@ func shouldLogBody(b *bytes.Buffer, contentType string) bool {
 }
 
 // writes to a buffer, used for logging purposes
-func writeReqBody(req *policy.Request, b *bytes.Buffer) error {
+func writeReqBody(req *pipeline.Request, b *bytes.Buffer) error {
 	if req.Raw().Body == nil {
 		fmt.Fprint(b, "   Request contained no body\n")
 		return nil
@@ -241,7 +243,7 @@ func writeRespBody(resp *http.Response, b *bytes.Buffer) error {
 	} else if !shouldLogBody(b, ct) {
 		return nil
 	}
-	body, err := Payload(resp)
+	body, err := exported.Payload(resp, nil)
 	if err != nil {
 		fmt.Fprintf(b, "   Failed to read response body: %s\n", err.Error())
 		return err

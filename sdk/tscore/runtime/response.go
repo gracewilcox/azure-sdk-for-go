@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
@@ -82,10 +81,7 @@ func UnmarshalAsXML(resp *http.Response, v any) error {
 
 // Drain reads the response body to completion then closes it.  The bytes read are discarded.
 func Drain(resp *http.Response) {
-	if resp != nil && resp.Body != nil {
-		_, _ = io.Copy(io.Discard, resp.Body)
-		resp.Body.Close()
-	}
+	exported.Drain(resp)
 }
 
 // removeBOM removes any byte-order mark prefix from the payload if present.

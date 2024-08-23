@@ -13,6 +13,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 func TestResponseUnmarshalXML(t *testing.T) {
@@ -181,8 +182,8 @@ func TestResponseUnmarshalAsByteArrayStdFormat(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse(mock.WithBody([]byte(`"YSBzdHJpbmcgdGhhdCBnZXRzIGVuY29kZWQgd2l0aCBiYXNlNjR1cmw="`)))
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := pipeline.New(srv, nil)
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

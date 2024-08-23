@@ -22,6 +22,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 	"github.com/stretchr/testify/require"
 )
@@ -37,7 +38,7 @@ type testXML struct {
 }
 
 func TestRequestMarshalXML(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +58,7 @@ func TestRequestMarshalXML(t *testing.T) {
 }
 
 func TestRequestEmptyPipeline(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +72,7 @@ func TestRequestEmptyPipeline(t *testing.T) {
 }
 
 func TestRequestMarshalJSON(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -91,7 +92,7 @@ func TestRequestMarshalJSON(t *testing.T) {
 }
 
 func TestRequestMarshalAsByteArrayURLFormat(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,7 +120,7 @@ func TestRequestMarshalAsByteArrayURLFormat(t *testing.T) {
 }
 
 func TestRequestMarshalAsByteArrayStdFormat(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -147,7 +148,7 @@ func TestRequestMarshalAsByteArrayStdFormat(t *testing.T) {
 }
 
 func TestRequestSetBodyContentLengthHeader(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPut, "http://test.contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPut, "http://test.contoso.com")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -223,12 +224,12 @@ func TestJoinPaths(t *testing.T) {
 }
 
 func TestRequestValidFail(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodGet, "http://test.contoso.com/")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, "http://test.contoso.com/")
 	if err != nil {
 		t.Fatal(err)
 	}
 	req.Raw().Header.Add("inval d", "header")
-	p := exported.NewPipeline(nil)
+	p := pipeline.New(nil)
 	resp, err := p.Do(req)
 	if err == nil {
 		t.Fatal("unexpected nil error")
@@ -249,7 +250,7 @@ func TestRequestValidFail(t *testing.T) {
 }
 
 func TestSetMultipartFormData(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
 	require.NoError(t, err)
 	err = SetMultipartFormData(req, map[string]any{
 		"json":   []byte(`{"id":123}`),
@@ -323,7 +324,7 @@ func TestSetMultipartFormData(t *testing.T) {
 }
 
 func TestSetMultipartContent(t *testing.T) {
-	req, err := NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, "https://contoso.com")
 	require.NoError(t, err)
 	err = SetMultipartFormData(req, map[string]any{
 		"default": streaming.MultipartContent{

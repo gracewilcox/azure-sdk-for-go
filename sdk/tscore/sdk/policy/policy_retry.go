@@ -20,6 +20,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 const (
@@ -91,7 +92,7 @@ func calcDelay(o policy.RetryOptions, try int32) time.Duration { // try is >=1; 
 
 // NewRetryPolicy creates a policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
-func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {
+func NewRetryPolicy(o *policy.RetryOptions) pipeline.Policy {
 	if o == nil {
 		o = &policy.RetryOptions{}
 	}
@@ -103,7 +104,7 @@ type retryPolicy struct {
 	options policy.RetryOptions
 }
 
-func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
+func (p *retryPolicy) Do(req *pipeline.Request) (resp *http.Response, err error) {
 	options := p.options
 	// check if the retry options have been overridden for this call
 	if override := req.Raw().Context().Value(shared.CtxWithRetryOptionsKey{}); override != nil {
@@ -182,7 +183,7 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 				log.Write(log.EventRetryPolicy, "exit due to ShouldRetry")
 				return
 			}
-		} else if err == nil && !HasStatusCode(resp, options.StatusCodes...) {
+		} else if err == nil && !exported.HasStatusCode(resp, options.StatusCodes...) {
 			// if there is no error and the response code isn't in the list of retry codes then we're done.
 			log.Write(log.EventRetryPolicy, "exit due to non-retriable status code")
 			return
@@ -205,7 +206,7 @@ func (p *retryPolicy) Do(req *policy.Request) (resp *http.Response, err error) {
 		}
 
 		// drain before retrying so nothing is leaked
-		Drain(resp)
+		exported.Drain(resp)
 
 		log.Writef(log.EventRetryPolicy, "End Try #%d, Delay=%v", try, delay)
 		select {

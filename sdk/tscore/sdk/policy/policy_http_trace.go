@@ -14,9 +14,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
 
@@ -31,24 +31,27 @@ const (
 
 // newHTTPTracePolicy creates a new instance of the httpTracePolicy.
 //   - allowedQueryParams contains the user-specified query parameters that don't need to be redacted from the trace
-func newHTTPTracePolicy(allowedQueryParams []string, op *TracingOptions) exported.Policy {
-	if op == nil {
-		op = &TracingOptions{}
+func NewHTTPTracePolicy(options *policy.HTTPTraceOptions) pipeline.Policy {
+	if options == nil {
+		options = &policy.HTTPTraceOptions{}
 	}
 	return &httpTracePolicy{
-		allowedQP: getAllowedQueryParams(allowedQueryParams),
-		options:   *op,
+		allowedQP:          getAllowedQueryParams(options.AllowedQueryParams),
+		requestAttributes:  options.RequestAttributes,
+		responseAttributes: options.ResponseAttributes,
 	}
 }
 
 // httpTracePolicy is a policy that creates a trace for the HTTP request and its response
 type httpTracePolicy struct {
 	allowedQP map[string]struct{}
-	options   TracingOptions
+	// TODO reexamine
+	requestAttributes  map[string]string
+	responseAttributes map[string]string
 }
 
 // Do implements the pipeline.Policy interfaces for the httpTracePolicy type.
-func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err error) {
+func (h *httpTracePolicy) Do(req *pipeline.Request) (resp *http.Response, err error) {
 	rawTracer := req.Raw().Context().Value(shared.CtxWithTracingTracer{})
 	if tracer, ok := rawTracer.(tracing.Tracer); ok && tracer.Enabled() {
 		attributes := []tracing.Attribute{
@@ -60,7 +63,7 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 		if ua := req.Raw().Header.Get(shared.HeaderUserAgent); ua != "" {
 			attributes = append(attributes, tracing.Attribute{Key: attrHTTPUserAgent, Value: ua})
 		}
-		for header, key := range h.options.RequestAttributes {
+		for header, key := range h.requestAttributes {
 			if value := req.Raw().Header.Get(header); value != "" {
 				attributes = append(attributes, tracing.Attribute{Key: key, Value: value})
 			}
@@ -78,7 +81,7 @@ func (h *httpTracePolicy) Do(req *policy.Request) (resp *http.Response, err erro
 				if resp.StatusCode > 399 {
 					span.SetStatus(tracing.SpanStatusError, resp.Status)
 				}
-				for header, key := range h.options.ResponseAttributes {
+				for header, key := range h.responseAttributes {
 					if value := resp.Header.Get(header); value != "" {
 						attributes = append(attributes, tracing.Attribute{Key: key, Value: value})
 					}

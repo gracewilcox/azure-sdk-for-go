@@ -8,14 +8,12 @@ package runtime
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"net/textproto"
 	"net/url"
 	"path"
@@ -24,7 +22,8 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/uuid"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 )
 
@@ -39,17 +38,6 @@ const (
 	// Base64URLFormat uses base64.RawURLEncoding for encoding and decoding payloads.
 	Base64URLFormat Base64Encoding = exported.Base64URLFormat
 )
-
-// NewRequest creates a new policy.Request with the specified input.
-// The endpoint MUST be properly encoded before calling this function.
-func NewRequest(ctx context.Context, httpMethod string, endpoint string) (*policy.Request, error) {
-	return exported.NewRequest(ctx, httpMethod, endpoint)
-}
-
-// NewRequestFromRequest creates a new policy.Request with an existing *http.Request
-func NewRequestFromRequest(req *http.Request) (*policy.Request, error) {
-	return exported.NewRequestFromRequest(req)
-}
 
 // EncodeQueryParams will parse and encode any query parameters in the specified URL.
 // Any semicolons will automatically be escaped.
@@ -111,25 +99,25 @@ func EncodeByteArray(v []byte, format Base64Encoding) string {
 
 // MarshalAsByteArray will base-64 encode the byte slice v, then calls SetBody.
 // The encoded value is treated as a JSON string.
-func MarshalAsByteArray(req *policy.Request, v []byte, format Base64Encoding) error {
+func MarshalAsByteArray(req *pipeline.Request, v []byte, format Base64Encoding) error {
 	// send as a JSON string
 	encode := fmt.Sprintf("\"%s\"", EncodeByteArray(v, format))
 	// tsp generated code can set Content-Type so we must prefer that
-	return exported.SetBody(req, exported.NopCloser(strings.NewReader(encode)), shared.ContentTypeAppJSON, false)
+	return pipeline.SetBody(req, exported.NopCloser(strings.NewReader(encode)), shared.ContentTypeAppJSON, false)
 }
 
 // MarshalAsJSON calls json.Marshal() to get the JSON encoding of v then calls SetBody.
-func MarshalAsJSON(req *policy.Request, v any) error {
+func MarshalAsJSON(req *pipeline.Request, v any) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return fmt.Errorf("error marshalling type %T: %s", v, err)
 	}
 	// tsp generated code can set Content-Type so we must prefer that
-	return exported.SetBody(req, exported.NopCloser(bytes.NewReader(b)), shared.ContentTypeAppJSON, false)
+	return pipeline.SetBody(req, exported.NopCloser(bytes.NewReader(b)), shared.ContentTypeAppJSON, false)
 }
 
 // MarshalAsXML calls xml.Marshal() to get the XML encoding of v then calls SetBody.
-func MarshalAsXML(req *policy.Request, v any) error {
+func MarshalAsXML(req *pipeline.Request, v any) error {
 	b, err := xml.Marshal(v)
 	if err != nil {
 		return fmt.Errorf("error marshalling type %T: %s", v, err)
@@ -142,7 +130,7 @@ func MarshalAsXML(req *policy.Request, v any) error {
 // SetMultipartFormData writes the specified keys/values as multi-part form fields with the specified value.
 // File content must be specified as an [io.ReadSeekCloser] or [streaming.MultipartContent].
 // Byte slices will be treated as JSON. All other values are treated as string values.
-func SetMultipartFormData(req *policy.Request, formData map[string]any) error {
+func SetMultipartFormData(req *pipeline.Request, formData map[string]any) error {
 	body := bytes.Buffer{}
 	writer := multipart.NewWriter(&body)
 
@@ -264,8 +252,8 @@ func SetMultipartFormData(req *policy.Request, formData map[string]any) error {
 }
 
 // SkipBodyDownload will disable automatic downloading of the response body.
-func SkipBodyDownload(req *policy.Request) {
-	req.SetOperationValue(bodyDownloadPolicyOpValues{Skip: true})
+func SkipBodyDownload(req *pipeline.Request) {
+	req.SetOperationValue(policy.BodyDownloadPolicyOpValues{Skip: true})
 }
 
 // CtxAPINameKey is used as a context key for adding/retrieving the API name.

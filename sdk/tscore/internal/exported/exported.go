@@ -72,3 +72,11 @@ func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
 		return fmt.Errorf("unrecognized byte array format: %d", format)
 	}
 }
+
+// Drain reads the response body to completion then closes it.  The bytes read are discarded.
+func Drain(resp *http.Response) {
+	if resp != nil && resp.Body != nil {
+		_, _ = io.Copy(io.Discard, resp.Body)
+		resp.Body.Close()
+	}
+}

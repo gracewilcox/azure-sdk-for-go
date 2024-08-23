@@ -7,18 +7,8 @@
 package tscore
 
 import (
-	"context"
-	"net/http"
 	"reflect"
 	"testing"
-
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
-	"github.com/stretchr/testify/require"
 )
 
 func TestNullValue(t *testing.T) {
@@ -110,100 +100,4 @@ func TestIsNullValueMapSlice(t *testing.T) {
 	if !IsNullValue(nf.Slice) {
 		t.Fatal("expected null slice")
 	}
-}
-
-func TestNewClient(t *testing.T) {
-	client, err := NewClient("package.Client", "v1.0.0", runtime.PipelineOptions{}, nil)
-	require.NoError(t, err)
-	require.NotNil(t, client)
-	require.NotZero(t, client.Pipeline())
-	require.Zero(t, client.Tracer())
-
-	client, err = NewClient("package.Client", "", runtime.PipelineOptions{}, &policy.ClientOptions{})
-	require.NoError(t, err)
-	require.NotNil(t, client)
-}
-
-func TestNewClientTracingEnabled(t *testing.T) {
-	srv, close := mock.NewServer()
-	defer close()
-
-	var attrString string
-	client, err := NewClient("package.Client", "v1.0.0", runtime.PipelineOptions{
-		Tracing: runtime.TracingOptions{
-			Namespace: "Widget.Factory",
-		},
-	}, &policy.ClientOptions{
-		TracingProvider: tracing.NewProvider(func(name, version string) tracing.Tracer {
-			return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
-				require.NotNil(t, options)
-				for _, attr := range options.Attributes {
-					if attr.Key == shared.TracingNamespaceAttrName {
-						v, ok := attr.Value.(string)
-						require.True(t, ok)
-						attrString = attr.Key + ":" + v
-					}
-				}
-				return ctx, tracing.Span{}
-			}, nil)
-		}, nil),
-		Transport: srv,
-	})
-	require.NoError(t, err)
-	require.NotNil(t, client)
-	require.NotZero(t, client.Pipeline())
-	require.NotZero(t, client.Tracer())
-
-	const requestEndpoint = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/fakeResourceGroupo/providers/Microsoft.Storage/storageAccounts/fakeAccountName"
-	req, err := exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, client.Tracer()), http.MethodGet, srv.URL()+requestEndpoint)
-	require.NoError(t, err)
-	srv.AppendResponse()
-	_, err = client.Pipeline().Do(req)
-	require.NoError(t, err)
-	require.EqualValues(t, "namespace:Widget.Factory", attrString)
-}
-
-func TestClientWithClientName(t *testing.T) {
-	srv, close := mock.NewServer()
-	defer close()
-
-	var clientName string
-	var modVersion string
-	var attrString string
-	client, err := NewClient("module", "v1.0.0", runtime.PipelineOptions{
-		Tracing: runtime.TracingOptions{
-			Namespace: "Widget.Factory",
-		},
-	}, &policy.ClientOptions{
-		TracingProvider: tracing.NewProvider(func(name, version string) tracing.Tracer {
-			clientName = name
-			modVersion = version
-			return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
-				require.NotNil(t, options)
-				for _, attr := range options.Attributes {
-					if attr.Key == shared.TracingNamespaceAttrName {
-						v, ok := attr.Value.(string)
-						require.True(t, ok)
-						attrString = attr.Key + ":" + v
-					}
-				}
-				return ctx, tracing.Span{}
-			}, nil)
-		}, nil),
-		Transport: srv,
-	})
-	require.NoError(t, err)
-	require.NotNil(t, client)
-	require.NotZero(t, client.Pipeline())
-	require.NotZero(t, client.Tracer())
-	require.EqualValues(t, "module", clientName)
-	require.EqualValues(t, "v1.0.0", modVersion)
-
-	const requestEndpoint = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/fakeResourceGroupo/providers/Microsoft.Storage/storageAccounts/fakeAccountName"
-	req, err := exported.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, client.Tracer()), http.MethodGet, srv.URL()+requestEndpoint)
-	require.NoError(t, err)
-	srv.SetResponse()
-	_, err = client.Pipeline().Do(req)
-	require.NoError(t, err)
-	require.EqualValues(t, "namespace:Widget.Factory", attrString)
 }

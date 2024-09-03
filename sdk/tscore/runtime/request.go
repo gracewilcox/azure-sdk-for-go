@@ -23,7 +23,6 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/uuid"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 )
 
@@ -249,11 +248,6 @@ func SetMultipartFormData(req *pipeline.Request, formData map[string]any) error 
 		return err
 	}
 	return req.SetBody(exported.NopCloser(bytes.NewReader(body.Bytes())), writer.FormDataContentType())
-}
-
-// SkipBodyDownload will disable automatic downloading of the response body.
-func SkipBodyDownload(req *pipeline.Request) {
-	req.SetOperationValue(policy.BodyDownloadPolicyOpValues{Skip: true})
 }
 
 // CtxAPINameKey is used as a context key for adding/retrieving the API name.

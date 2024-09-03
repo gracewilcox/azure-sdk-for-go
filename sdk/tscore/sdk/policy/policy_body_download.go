@@ -27,7 +27,7 @@ func bodyDownloadPolicy(req *pipeline.Request) (*http.Response, error) {
 	if err != nil {
 		return resp, err
 	}
-	var opValues BodyDownloadPolicyOpValues
+	var opValues bodyDownloadPolicyOpValues
 	// don't skip downloading error response bodies
 	if req.OperationValue(&opValues); opValues.Skip && resp.StatusCode < 400 {
 		return resp, err
@@ -42,8 +42,13 @@ func bodyDownloadPolicy(req *pipeline.Request) (*http.Response, error) {
 }
 
 // bodyDownloadPolicyOpValues is the struct containing the per-operation values
-type BodyDownloadPolicyOpValues struct {
+type bodyDownloadPolicyOpValues struct {
 	Skip bool
+}
+
+// SkipBodyDownload will disable automatic downloading of the response body.
+func SkipBodyDownload(req *pipeline.Request) {
+	req.SetOperationValue(bodyDownloadPolicyOpValues{Skip: true})
 }
 
 type bodyDownloadError struct {

@@ -17,6 +17,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 	"github.com/stretchr/testify/require"
 )
@@ -184,7 +185,7 @@ func TestStartSpansDontNest(t *testing.T) {
 	srv.SetResponse() // always return http.StatusOK
 	defer close()
 
-	pl := exported.NewPipeline(srv, newHTTPTracePolicy(nil, nil))
+	pl := pipeline.New(srv, NewHTTPTracePolicy(nil))
 
 	apiSpanCount := 0
 	httpSpanCount := 0
@@ -206,7 +207,7 @@ func TestStartSpansDontNest(t *testing.T) {
 	barMethod := func(ctx context.Context) {
 		ourCtx, endSpan := StartSpan(ctx, "BarMethod", tr, nil)
 		defer endSpan(nil)
-		req, err := exported.NewRequest(ourCtx, http.MethodGet, srv.URL()+"/bar")
+		req, err := pipeline.NewRequest(ourCtx, http.MethodGet, srv.URL()+"/bar")
 		require.NoError(t, err)
 		_, err = pl.Do(req)
 		require.NoError(t, err)
@@ -216,7 +217,7 @@ func TestStartSpansDontNest(t *testing.T) {
 		ctx, endSpan := StartSpan(ctx, "FooMethod", tr, nil)
 		defer endSpan(nil)
 		barMethod(ctx)
-		req, err := exported.NewRequest(ctx, http.MethodGet, srv.URL()+"/foo")
+		req, err := pipeline.NewRequest(ctx, http.MethodGet, srv.URL()+"/foo")
 		require.NoError(t, err)
 		_, err = pl.Do(req)
 		require.NoError(t, err)

@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
@@ -25,7 +26,7 @@ func TestDownloadBody(t *testing.T) {
 	defer close()
 	srv.SetResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
 	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -34,7 +35,7 @@ func TestDownloadBody(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -52,8 +53,8 @@ func TestSkipBodyDownload(t *testing.T) {
 	defer close()
 	srv.SetResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -62,7 +63,7 @@ func TestSkipBodyDownload(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -76,13 +77,13 @@ func TestDownloadBodyFail(t *testing.T) {
 	defer close()
 	srv.SetResponse(mock.WithBodyReadError())
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{
+	pl := newTestPipeline(&testPipelineOptions{
 		Transport: srv,
 		Retry: policy.RetryOptions{
 			RetryDelay: 10 * time.Millisecond,
 		},
 	})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -90,7 +91,7 @@ func TestDownloadBodyFail(t *testing.T) {
 	if err == nil {
 		t.Fatal("unexpected nil error")
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err == nil {
 		t.Fatalf("expected an error")
 	}
@@ -107,8 +108,8 @@ func TestDownloadBodyWithRetryGet(t *testing.T) {
 	srv.AppendResponse(mock.WithBodyReadError())
 	srv.AppendResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Retry: *testRetryOptions(), Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Retry: *testRetryOptions(), Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -116,7 +117,7 @@ func TestDownloadBodyWithRetryGet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -139,8 +140,8 @@ func TestDownloadBodyWithRetryDelete(t *testing.T) {
 	srv.AppendResponse(mock.WithBodyReadError())
 	srv.AppendResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Retry: *testRetryOptions(), Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodDelete, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Retry: *testRetryOptions(), Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodDelete, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -148,7 +149,7 @@ func TestDownloadBodyWithRetryDelete(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -171,8 +172,8 @@ func TestDownloadBodyWithRetryPut(t *testing.T) {
 	srv.AppendResponse(mock.WithBodyReadError())
 	srv.AppendResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Retry: *testRetryOptions(), Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodPut, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Retry: *testRetryOptions(), Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPut, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -180,7 +181,7 @@ func TestDownloadBodyWithRetryPut(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -203,8 +204,8 @@ func TestDownloadBodyWithRetryPatch(t *testing.T) {
 	srv.AppendResponse(mock.WithBodyReadError())
 	srv.AppendResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Retry: *testRetryOptions(), Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodPatch, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Retry: *testRetryOptions(), Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPatch, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -215,7 +216,7 @@ func TestDownloadBodyWithRetryPatch(t *testing.T) {
 	if _, ok := err.(*bodyDownloadError); !ok {
 		t.Fatal("expected *bodyDownloadError type")
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err == nil {
 		t.Fatalf("expected an error")
 	}
@@ -236,8 +237,8 @@ func TestDownloadBodyWithRetryPost(t *testing.T) {
 	srv.AppendResponse(mock.WithBodyReadError())
 	srv.AppendResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Retry: *testRetryOptions(), Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodPost, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Retry: *testRetryOptions(), Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodPost, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -248,7 +249,7 @@ func TestDownloadBodyWithRetryPost(t *testing.T) {
 	if s := err.Error(); s != "body download policy: mock read failure" {
 		t.Fatalf("unexpected error message: %s", s)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err == nil {
 		t.Fatalf("expected an error")
 	}
@@ -267,8 +268,8 @@ func TestSkipBodyDownloadWith400(t *testing.T) {
 	defer close()
 	srv.SetResponse(mock.WithStatusCode(http.StatusBadRequest), mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -277,7 +278,7 @@ func TestSkipBodyDownloadWith400(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -296,8 +297,8 @@ func TestReadBodyAfterSeek(t *testing.T) {
 	srv.AppendResponse(mock.WithBody([]byte(message)))
 	srv.AppendResponse(mock.WithBody([]byte(message)))
 	// download policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Retry: *testRetryOptions(), Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Retry: *testRetryOptions(), Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -305,7 +306,7 @@ func TestReadBodyAfterSeek(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	payload, err := Payload(resp)
+	payload, err := exported.Payload(resp, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

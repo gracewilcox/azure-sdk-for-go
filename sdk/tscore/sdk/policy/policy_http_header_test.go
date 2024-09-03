@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -14,11 +11,8 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
-
-func newTestPipeline(opts *policy.ClientOptions) Pipeline {
-	return NewPipeline(PipelineOptions{}, opts)
-}
 
 func TestWithHTTPHeader(t *testing.T) {
 	const (
@@ -54,8 +48,8 @@ func TestAddCustomHTTPHeaderSuccess(t *testing.T) {
 	}), mock.WithStatusCode(http.StatusOK))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest))
 	// HTTP header policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
-	req, err := NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
+	req, err := pipeline.NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
 		customHeader: []string{customValue},
 	}), http.MethodGet, srv.URL())
 	if err != nil {
@@ -81,8 +75,8 @@ func TestAddCustomHTTPHeaderFail(t *testing.T) {
 	}), mock.WithStatusCode(http.StatusOK))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest))
 	// HTTP header policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -105,9 +99,9 @@ func TestAddCustomHTTPHeaderOverwrite(t *testing.T) {
 	}), mock.WithStatusCode(http.StatusOK))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest))
 	// HTTP header policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
 	// overwrite the request ID with our own value
-	req, err := NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
+	req, err := pipeline.NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
 		customHeader: []string{customValue},
 	}), http.MethodGet, srv.URL())
 	if err != nil {
@@ -134,9 +128,9 @@ func TestAddCustomHTTPHeaderMultipleValues(t *testing.T) {
 	}), mock.WithStatusCode(http.StatusOK))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest))
 	// HTTP header policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
 	// overwrite the request ID with our own value
-	req, err := NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
+	req, err := pipeline.NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
 		customHeader: []string{customValue1, customValue2},
 	}), http.MethodGet, srv.URL())
 	if err != nil {

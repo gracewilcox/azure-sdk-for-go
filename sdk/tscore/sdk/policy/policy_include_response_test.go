@@ -34,7 +34,7 @@ func TestIncludeResponsePolicy(t *testing.T) {
 	// add a generic HTTP 200 response
 	srv.SetResponse()
 	// include response policy is automatically added during pipeline construction
-	pl := newTestPipeline(&policy.ClientOptions{Transport: srv})
+	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
 	var respFromCtx *http.Response
 	ctxWithResp := policy.WithCaptureResponse(context.Background(), &respFromCtx)
 	req, err := pipeline.NewRequest(ctxWithResp, http.MethodGet, srv.URL())

@@ -29,12 +29,6 @@ type Policy interface {
 	Do(req *Request) (*http.Response, error)
 }
 
-// Pipeline represents a primitive for sending HTTP requests and receiving responses.
-// Its behavior can be extended by specifying policies during construction.
-type Pipeline struct {
-	policies []Policy
-}
-
 // Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
 // Exported as policy.Transporter.
 type Transporter interface {
@@ -62,8 +56,13 @@ func (tp transportPolicy) Do(req *Request) (*http.Response, error) {
 	return resp, nil
 }
 
+// Pipeline represents a primitive for sending HTTP requests and receiving responses.
+// Its behavior can be extended by specifying policies during construction.
+type Pipeline struct {
+	policies []Policy
+}
+
 // New creates a new Pipeline object from the specified Policies.
-// Not directly exported, but used as part of runtime.NewPipeline().
 func New(transport Transporter, policies ...Policy) Pipeline {
 	// transport policy must always be the last in the slice
 	policies = append(policies, transportPolicy{trans: transport})

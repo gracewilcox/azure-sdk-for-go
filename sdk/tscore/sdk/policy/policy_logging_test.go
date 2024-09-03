@@ -20,6 +20,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -31,8 +32,8 @@ func TestPolicyLoggingSuccess(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse()
-	pl := exported.NewPipeline(srv, NewLogPolicy(nil))
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := pipeline.New(srv, NewLogPolicy(nil))
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -87,8 +88,8 @@ func TestPolicyLoggingError(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetError(errors.New("bogus error"))
-	pl := exported.NewPipeline(srv, NewLogPolicy(nil))
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	pl := pipeline.New(srv, NewLogPolicy(nil))
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -176,18 +177,15 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 	defer close()
 	srv.AppendResponse(mock.WithHeader(plAllowedHeader, "received1"), mock.WithHeader(clAllowedHeader, "received2"), mock.WithHeader(redactedHeader, "cantseeme"))
 
-	pl := NewPipeline(PipelineOptions{
-		AllowedHeaders:         []string{plAllowedHeader},
-		AllowedQueryParameters: []string{plAllowedQP},
-	}, &policy.ClientOptions{
+	pl := newTestPipeline(&testPipelineOptions{
 		Logging: policy.LogOptions{
-			AllowedHeaders:     []string{clAllowedHeader},
-			AllowedQueryParams: []string{clAllowedQP},
+			AllowedHeaders:     []string{clAllowedHeader, plAllowedHeader},
+			AllowedQueryParams: []string{clAllowedQP, plAllowedQP},
 		},
 		Transport: srv,
 	})
 
-	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	// don't use Header.Set() as it canonicalizes the headers (our SDKs don't either)
 	req.Raw().Header[plAllowedHeader] = []string{"sent1"}
@@ -210,7 +208,7 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 }
 
 func TestSkipWriteReqBody(t *testing.T) {
-	req, err := exported.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
 	require.NoError(t, err)
 
 	buf := bytes.Buffer{}
@@ -224,7 +222,7 @@ func TestSkipWriteReqBody(t *testing.T) {
 }
 
 func TestWriteReqBody(t *testing.T) {
-	req, err := exported.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
 	require.NoError(t, err)
 	require.NoError(t, req.SetBody(exported.NopCloser(strings.NewReader(`{"foo":"bar"}`)), shared.ContentTypeAppJSON))
 
@@ -254,7 +252,7 @@ func (r *readSeekerFailer) Seek(int64, int) (int64, error) {
 }
 
 func TestWriteReqBodyReadError(t *testing.T) {
-	req, err := exported.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
+	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
 	require.NoError(t, err)
 	rsf := &readSeekerFailer{}
 	require.NoError(t, req.SetBody(exported.NopCloser(rsf), shared.ContentTypeAppJSON))

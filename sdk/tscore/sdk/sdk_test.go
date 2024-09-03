@@ -13,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
@@ -59,14 +58,12 @@ func TestNewPipelineCustomPolicies(t *testing.T) {
 		require.GreaterOrEqual(t, defaultPerRetryPolicy.count, 1)
 	}
 
-	pl := NewPipeline(PipelineOptions{PerCall: []pipeline.Policy{defaultPerCallPolicy}, PerRetry: []pipeline.Policy{defaultPerRetryPolicy}},
-		&policy.ClientOptions{
-			Transport:        srv,
-			Retry:            policy.RetryOptions{RetryDelay: time.Microsecond, MaxRetries: 1},
-			PerCallPolicies:  []policy.Policy{customPerCallPolicy},
-			PerRetryPolicies: []policy.Policy{customPerRetryPolicy},
-		},
-	)
+	pl := NewPipeline(&PipelineOptions{
+		PerCall:   []pipeline.Policy{defaultPerCallPolicy, customPerCallPolicy},
+		PerRetry:  []pipeline.Policy{defaultPerRetryPolicy, customPerRetryPolicy},
+		Transport: srv,
+		Retry:     policy.RetryOptions{RetryDelay: time.Microsecond, MaxRetries: 1},
+	})
 	_, err = pl.Do(req)
 	require.NoError(t, err)
 	require.Equal(t, 1, defaultPerCallPolicy.count)
@@ -80,7 +77,7 @@ func TestPipelineDoConcurrent(t *testing.T) {
 	defer close()
 	srv.SetResponse()
 
-	pl := NewPipeline(PipelineOptions{}, nil)
+	pl := NewPipeline(nil)
 
 	plErr := make(chan error, 1)
 	wg := &sync.WaitGroup{}
@@ -115,13 +112,14 @@ func TestPipelineDoConcurrent(t *testing.T) {
 }
 
 func TestNewClient(t *testing.T) {
-	client, err := NewClient("package.Client", "v1.0.0", runtime.PipelineOptions{}, nil)
+	pl := NewPipeline(nil)
+	client, err := NewClient(pl, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 	require.NotZero(t, client.Pipeline())
 	require.Zero(t, client.Tracer())
 
-	client, err = NewClient("package.Client", "", runtime.PipelineOptions{}, &policy.ClientOptions{})
+	client, err = NewClient(pl, &ClientOptions{Tracing: policy.TracingOptions{ModuleName: "package.Client", ModuleVersion: "v1.0.0"}})
 	require.NoError(t, err)
 	require.NotNil(t, client)
 }
@@ -130,26 +128,28 @@ func TestNewClientTracingEnabled(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 
+	pl := NewPipeline(&PipelineOptions{Transport: srv})
+
 	var attrString string
-	client, err := NewClient("package.Client", "v1.0.0", runtime.PipelineOptions{
-		Tracing: runtime.TracingOptions{
-			Namespace: "Widget.Factory",
-		},
-	}, &policy.ClientOptions{
-		TracingProvider: tracing.NewProvider(func(name, version string) tracing.Tracer {
-			return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
-				require.NotNil(t, options)
-				for _, attr := range options.Attributes {
-					if attr.Key == shared.TracingNamespaceAttrName {
-						v, ok := attr.Value.(string)
-						require.True(t, ok)
-						attrString = attr.Key + ":" + v
+	client, err := NewClient(pl, &ClientOptions{
+		Tracing: policy.TracingOptions{
+			Namespace:     "Widget.Factory",
+			ModuleName:    "package.Client",
+			ModuleVersion: "v1.0.0",
+			Provider: tracing.NewProvider(func(name, version string) tracing.Tracer {
+				return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
+					require.NotNil(t, options)
+					for _, attr := range options.Attributes {
+						if attr.Key == shared.TracingNamespaceAttrName {
+							v, ok := attr.Value.(string)
+							require.True(t, ok)
+							attrString = attr.Key + ":" + v
+						}
 					}
-				}
-				return ctx, tracing.Span{}
-			}, nil)
-		}, nil),
-		Transport: srv,
+					return ctx, tracing.Span{}
+				}, nil)
+			}, nil),
+		},
 	})
 	require.NoError(t, err)
 	require.NotNil(t, client)
@@ -169,30 +169,32 @@ func TestClientWithClientName(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 
+	pl := NewPipeline(&PipelineOptions{Transport: srv})
+
 	var clientName string
 	var modVersion string
 	var attrString string
-	client, err := NewClient("module", "v1.0.0", runtime.PipelineOptions{
-		Tracing: runtime.TracingOptions{
-			Namespace: "Widget.Factory",
-		},
-	}, &policy.ClientOptions{
-		TracingProvider: tracing.NewProvider(func(name, version string) tracing.Tracer {
-			clientName = name
-			modVersion = version
-			return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
-				require.NotNil(t, options)
-				for _, attr := range options.Attributes {
-					if attr.Key == shared.TracingNamespaceAttrName {
-						v, ok := attr.Value.(string)
-						require.True(t, ok)
-						attrString = attr.Key + ":" + v
+	client, err := NewClient(pl, &ClientOptions{
+		Tracing: policy.TracingOptions{
+			Namespace:     "Widget.Factory",
+			ModuleName:    "module",
+			ModuleVersion: "v1.0.0",
+			Provider: tracing.NewProvider(func(name, version string) tracing.Tracer {
+				clientName = name
+				modVersion = version
+				return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
+					require.NotNil(t, options)
+					for _, attr := range options.Attributes {
+						if attr.Key == shared.TracingNamespaceAttrName {
+							v, ok := attr.Value.(string)
+							require.True(t, ok)
+							attrString = attr.Key + ":" + v
+						}
 					}
-				}
-				return ctx, tracing.Span{}
-			}, nil)
-		}, nil),
-		Transport: srv,
+					return ctx, tracing.Span{}
+				}, nil)
+			}, nil),
+		},
 	})
 	require.NoError(t, err)
 	require.NotNil(t, client)

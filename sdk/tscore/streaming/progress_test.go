@@ -15,8 +15,8 @@ import (
 	"testing"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 )
 
@@ -35,7 +35,7 @@ func TestProgressReporting(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	runtime.SkipBodyDownload(req)
+	policy.SkipBodyDownload(req)
 	var bytesSent int64
 	reqRpt := streaming.NewRequestProgress(streaming.NopCloser(body), func(bytesTransferred int64) {
 		bytesSent = bytesTransferred
@@ -84,7 +84,7 @@ func TestProgressReportingSeek(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	runtime.SkipBodyDownload(req)
+	policy.SkipBodyDownload(req)
 	var bytesSent int64
 	reqRpt := streaming.NewRequestProgress(streaming.NopCloser(body), func(bytesTransferred int64) {
 		bytesSent = bytesTransferred

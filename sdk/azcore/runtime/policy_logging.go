@@ -8,7 +8,7 @@ package runtime
 
 import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 )
 
 // NewLogPolicy creates a request/response logging policy object configured using the specified options.
@@ -20,7 +20,7 @@ func NewLogPolicy(o *policy.LogOptions) policy.Policy {
 	}
 
 	options = addAzureToLogging(options)
-	return runtime.NewLogPolicy(&options)
+	return sdkpolicy.NewLogPolicy(&options)
 }
 
 // adding azure specific headers to LogOptions.AllowedHeaders

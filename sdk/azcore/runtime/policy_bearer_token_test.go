@@ -16,6 +16,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -255,7 +256,7 @@ func TestCheckHTTPSForAuth(t *testing.T) {
 
 func TestBearerTokenPolicy_NilCredential(t *testing.T) {
 	policy := NewBearerTokenPolicy(nil, nil, nil)
-	pl := exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	pl := pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		require.Zero(t, req.Header.Get(shared.HeaderAuthorization))
 		return &http.Response{}, nil
 	}), policy)

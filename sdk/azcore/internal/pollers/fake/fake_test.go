@@ -17,6 +17,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -54,29 +55,29 @@ func TestCanResume(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	fp, err := New[struct{}](runtime.Pipeline{}, nil)
+	fp, err := New[struct{}](pipeline.Pipeline{}, nil)
 	require.NoError(t, err)
 	require.Empty(t, fp.FakeStatus)
 
-	fp, err = New[struct{}](runtime.Pipeline{}, &http.Response{Header: http.Header{}})
+	fp, err = New[struct{}](pipeline.Pipeline{}, &http.Response{Header: http.Header{}})
 	require.Error(t, err)
 	require.Nil(t, fp)
 
 	resp := initialResponse(context.Background(), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
-	fp, err = New[struct{}](runtime.Pipeline{}, resp)
+	fp, err = New[struct{}](pipeline.Pipeline{}, resp)
 	require.Error(t, err)
 	require.Nil(t, fp)
 
 	resp = initialResponse(context.WithValue(context.Background(), runtime.CtxAPINameKey{}, 123), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
-	fp, err = New[struct{}](runtime.Pipeline{}, resp)
+	fp, err = New[struct{}](pipeline.Pipeline{}, resp)
 	require.Error(t, err)
 	require.Nil(t, fp)
 
 	resp = initialResponse(context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
-	fp, err = New[struct{}](runtime.Pipeline{}, resp)
+	fp, err = New[struct{}](pipeline.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.NotNil(t, fp)
 	require.False(t, fp.Done())
@@ -86,7 +87,7 @@ func TestSynchronousCompletion(t *testing.T) {
 	resp := initialResponse(context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
 	resp.StatusCode = http.StatusNoContent
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusSucceeded)
-	fp, err := New[struct{}](runtime.Pipeline{}, resp)
+	fp, err := New[struct{}](pipeline.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, poller.StatusSucceeded, fp.FakeStatus)
 	require.True(t, fp.Done())
@@ -101,7 +102,7 @@ func TestPollSucceeded(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Header:     http.Header{shared.HeaderFakePollerStatus: []string{"Succeeded"}},
@@ -127,7 +128,7 @@ func TestPollError(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Header:     http.Header{shared.HeaderFakePollerStatus: []string{poller.StatusFailed}},
@@ -152,7 +153,7 @@ func TestPollFailed(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Header:     http.Header{shared.HeaderFakePollerStatus: []string{poller.StatusFailed}},
@@ -176,7 +177,7 @@ func TestPollErrorNoHeader(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Body:       io.NopCloser(strings.NewReader(`{ "error": { "code": "NotFound", "message": "the item doesn't exist" } }`)),

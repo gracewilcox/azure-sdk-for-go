@@ -14,18 +14,19 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 // Policy represents an extensibility point for the Pipeline that can mutate the specified
 // Request and react to the received Response.
-type Policy = policy.Policy
+type Policy = pipeline.Policy
 
 // Transporter represents an HTTP pipeline transport used to send HTTP requests and receive responses.
-type Transporter = policy.Transporter
+type Transporter = pipeline.Transporter
 
 // Request is an abstraction over the creation of an HTTP request as it passes through the pipeline.
 // Don't use this type directly, use runtime.NewRequest() instead.
-type Request = policy.Request
+type Request = pipeline.Request
 
 // ClientOptions contains optional settings for a client's pipeline.
 // Instances can be shared across calls to SDK client constructors when uniform configuration is desired.

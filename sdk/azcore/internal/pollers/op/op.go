@@ -17,8 +17,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 // Applicable returns true if the LRO is using Operation-Location.
@@ -34,7 +33,7 @@ func CanResume(token map[string]any) bool {
 
 // Poller is an LRO poller that uses the Operation-Location pattern.
 type Poller[T any] struct {
-	pl   runtime.Pipeline
+	pl   pipeline.Pipeline
 	resp *http.Response
 
 	OpLocURL   string                `json:"oplocURL"`
@@ -47,7 +46,7 @@ type Poller[T any] struct {
 
 // New creates a new Poller from the provided initial response.
 // Pass nil for response to create an empty Poller for rehydration.
-func New[T any](pl runtime.Pipeline, resp *http.Response, finalState pollers.FinalStateVia) (*Poller[T], error) {
+func New[T any](pl pipeline.Pipeline, resp *http.Response, finalState pollers.FinalStateVia) (*Poller[T], error) {
 	if resp == nil {
 		log.Write(log.EventLRO, "Resuming Operation-Location poller.")
 		return &Poller[T]{pl: pl}, nil
@@ -115,7 +114,7 @@ func (p *Poller[T]) Poll(ctx context.Context) (*http.Response, error) {
 }
 
 func (p *Poller[T]) Result(ctx context.Context, out *T) error {
-	var req *policy.Request
+	var req *pipeline.Request
 	var err error
 
 	// when the payload is included with the status monitor on
@@ -123,15 +122,15 @@ func (p *Poller[T]) Result(ctx context.Context, out *T) error {
 	payloadPath := "result"
 
 	if p.FinalState == pollers.FinalStateViaLocation && p.LocURL != "" {
-		req, err = runtime.NewRequest(ctx, http.MethodGet, p.LocURL)
+		req, err = pipeline.NewRequest(ctx, http.MethodGet, p.LocURL)
 	} else if rl, rlErr := poller.GetResourceLocation(p.resp); rlErr != nil && !errors.Is(rlErr, poller.ErrNoBody) {
 		return rlErr
 	} else if rl != "" {
-		req, err = runtime.NewRequest(ctx, http.MethodGet, rl)
+		req, err = pipeline.NewRequest(ctx, http.MethodGet, rl)
 	} else if p.Method == http.MethodPatch || p.Method == http.MethodPut {
-		req, err = runtime.NewRequest(ctx, http.MethodGet, p.OrigURL)
+		req, err = pipeline.NewRequest(ctx, http.MethodGet, p.OrigURL)
 	} else if p.Method == http.MethodPost && p.LocURL != "" {
-		req, err = runtime.NewRequest(ctx, http.MethodGet, p.LocURL)
+		req, err = pipeline.NewRequest(ctx, http.MethodGet, p.LocURL)
 	}
 	if err != nil {
 		return err

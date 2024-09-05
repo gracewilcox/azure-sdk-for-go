@@ -16,7 +16,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -109,13 +109,13 @@ func TestNopPoller(t *testing.T) {
 
 func TestPollHelper(t *testing.T) {
 	const fakeEndpoint = "https://fake.polling/endpoint"
-	err := PollHelper(context.Background(), "invalid endpoint", runtime.Pipeline{}, func(*http.Response) (string, error) {
+	err := PollHelper(context.Background(), "invalid endpoint", pipeline.Pipeline{}, func(*http.Response) (string, error) {
 		t.Fatal("shouldn't have been called")
 		return "", nil
 	})
 	require.Error(t, err)
 
-	pl := exported.NewPipeline(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
+	pl := pipeline.New(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
 		return nil, errors.New("failed")
 	}))
 	err = PollHelper(context.Background(), fakeEndpoint, pl, func(*http.Response) (string, error) {
@@ -125,7 +125,7 @@ func TestPollHelper(t *testing.T) {
 	require.Error(t, err)
 
 	require.Error(t, err)
-	pl = exported.NewPipeline(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
+	pl = pipeline.New(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Body:       http.NoBody,
@@ -137,7 +137,7 @@ func TestPollHelper(t *testing.T) {
 	require.Error(t, err)
 
 	require.Error(t, err)
-	pl = exported.NewPipeline(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
+	pl = pipeline.New(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Body:       http.NoBody,

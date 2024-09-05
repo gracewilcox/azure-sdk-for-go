@@ -20,8 +20,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/streaming"
 	"github.com/stretchr/testify/require"
 )
@@ -228,7 +228,7 @@ func TestRequestValidFail(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.Raw().Header.Add("inval d", "header")
-	p := exported.NewPipeline(nil)
+	p := pipeline.New(nil)
 	resp, err := p.Do(req)
 	if err == nil {
 		t.Fatal("unexpected nil error")

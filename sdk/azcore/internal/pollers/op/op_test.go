@@ -18,7 +18,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -58,30 +58,30 @@ func TestCanResume(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	poller, err := New[struct{}](runtime.Pipeline{}, nil, "")
+	poller, err := New[struct{}](pipeline.Pipeline{}, nil, "")
 	require.NoError(t, err)
 	require.Empty(t, poller.CurState)
 
-	poller, err = New[struct{}](runtime.Pipeline{}, &http.Response{Header: http.Header{}}, "")
+	poller, err = New[struct{}](pipeline.Pipeline{}, &http.Response{Header: http.Header{}}, "")
 	require.Error(t, err)
 	require.Nil(t, poller)
 
 	resp := initialResponse(http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderOperationLocation, "this is an invalid polling URL")
-	poller, err = New[struct{}](runtime.Pipeline{}, resp, "")
+	poller, err = New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.Error(t, err)
 	require.Nil(t, poller)
 
 	resp = initialResponse(http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
 	resp.Header.Set(shared.HeaderLocation, "this is an invalid polling URL")
-	poller, err = New[struct{}](runtime.Pipeline{}, resp, "")
+	poller, err = New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.Error(t, err)
 	require.Nil(t, poller)
 
 	resp = initialResponse(http.MethodPut, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err = New[struct{}](runtime.Pipeline{}, resp, "")
+	poller, err = New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.NoError(t, err)
 	require.Equal(t, "Updating", poller.CurState)
 	require.False(t, poller.Done())
@@ -95,7 +95,7 @@ func TestFinalStateViaLocation(t *testing.T) {
 	resp := initialResponse(http.MethodPut, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakePollingURL {
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -125,7 +125,7 @@ func TestFinalStateViaLocation(t *testing.T) {
 func TestFinalStateViaOperationLocationWithPost(t *testing.T) {
 	resp := initialResponse(http.MethodPost, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Body:       io.NopCloser(strings.NewReader(`{ "status": "succeeded", "result": { "shape": "rhombus" } }`)),
@@ -146,7 +146,7 @@ func TestFinalStateViaOperationLocationWithPost(t *testing.T) {
 func TestFinalStateViaResourceLocation(t *testing.T) {
 	resp := initialResponse(http.MethodPut, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakePollingURL {
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -176,7 +176,7 @@ func TestFinalStateViaResourceLocation(t *testing.T) {
 func TestResultForPatch(t *testing.T) {
 	resp := initialResponse(http.MethodPatch, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakePollingURL {
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -207,7 +207,7 @@ func TestPostWithLocation(t *testing.T) {
 	resp := initialResponse(http.MethodPost, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakePollingURL {
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -237,7 +237,7 @@ func TestPostWithLocation(t *testing.T) {
 func TestOperationFailed(t *testing.T) {
 	resp := initialResponse(http.MethodPut, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Body:       io.NopCloser(strings.NewReader(`{ "status": "Failed", "error": { "code": "InvalidSomething" } }`)),
@@ -260,7 +260,7 @@ func TestOperationFailed(t *testing.T) {
 func TestPollFailed(t *testing.T) {
 	resp := initialResponse(http.MethodPut, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return nil, errors.New("failed")
 	})), resp, pollers.FinalStateViaLocation)
 	require.NoError(t, err)
@@ -274,7 +274,7 @@ func TestPollFailed(t *testing.T) {
 func TestPollError(t *testing.T) {
 	resp := initialResponse(http.MethodPut, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Header:     http.Header{},
@@ -295,7 +295,7 @@ func TestPollError(t *testing.T) {
 func TestMissingStatus(t *testing.T) {
 	resp := initialResponse(http.MethodPatch, strings.NewReader(`{ "status": "Updating" }`))
 	resp.Header.Set(shared.HeaderOperationLocation, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Body:       io.NopCloser(strings.NewReader(`{ "shape": "square" }`)),

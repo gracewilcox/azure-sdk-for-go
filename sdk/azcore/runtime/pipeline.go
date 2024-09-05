@@ -9,7 +9,8 @@ package runtime
 import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	tspolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
+	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 )
 
 // PipelineOptions contains Pipeline options for SDK developers
@@ -40,12 +41,13 @@ type PipelineOptions struct {
 }
 
 // TracingOptions contains tracing options for SDK developers.
-type TracingOptions = runtime.TracingOptions
+type TracingOptions = tspolicy.TracingOptions
 
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
-type Pipeline = runtime.Pipeline
+type Pipeline = pipeline.Pipeline
 
+// TODO- they dont call eachother!!
 // NewPipeline creates a pipeline from connection options, with any additional policies as specified.
 // Policies from ClientOptions are placed after policies from PipelineOptions.
 // The module and version parameters are used by the telemetry policy, when enabled.
@@ -54,34 +56,39 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	if options != nil {
 		cp = *options
 	}
-
-	// adding azure specific policies to PerCallPolicies
-	var azPolicies []policy.Policy
+	if len(plOpts.AllowedHeaders) > 0 {
+		headers := make([]string, len(plOpts.AllowedHeaders)+len(cp.Logging.AllowedHeaders))
+		copy(headers, plOpts.AllowedHeaders)
+		headers = append(headers, cp.Logging.AllowedHeaders...)
+		cp.Logging.AllowedHeaders = headers
+	}
+	if len(plOpts.AllowedQueryParameters) > 0 {
+		qp := make([]string, len(plOpts.AllowedQueryParameters)+len(cp.Logging.AllowedQueryParams))
+		copy(qp, plOpts.AllowedQueryParameters)
+		qp = append(qp, cp.Logging.AllowedQueryParams...)
+		cp.Logging.AllowedQueryParams = qp
+	}
+	// we put the includeResponsePolicy at the very beginning so that the raw response
+	// is populated with the final response (some policies might mutate the response)
+	policies := []policy.Policy{sdkpolicy.NewIncludeResponsePolicy(nil)}
 	if cp.APIVersion != "" {
-		azPolicies = append(azPolicies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
+		policies = append(policies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
 	}
 	if !cp.Telemetry.Disabled {
-		azPolicies = append(azPolicies, NewTelemetryPolicy(module, version, &cp.Telemetry))
+		policies = append(policies, NewTelemetryPolicy(module, version, &cp.Telemetry))
 	}
-
-	// converting azcore options to tscore options
-	// some processing occurs, including adding azure specific options
-	// so they're correctly passed down to tscore
-	tsPlOpts := runtime.PipelineOptions{
-		AllowedHeaders:         plOpts.AllowedHeaders,
-		AllowedQueryParameters: plOpts.AllowedQueryParameters,
-		PerCall:                plOpts.PerCall,
-		PerRetry:               plOpts.PerRetry,
-		Tracing:                addAzureToTracing(plOpts.Tracing),
+	policies = append(policies, plOpts.PerCall...)
+	policies = append(policies, cp.PerCallPolicies...)
+	policies = append(policies, NewRetryPolicy(&cp.Retry))
+	policies = append(policies, plOpts.PerRetry...)
+	policies = append(policies, cp.PerRetryPolicies...)
+	policies = append(policies, sdkpolicy.NewHTTPHeaderPolicy(nil))
+	policies = append(policies, sdkpolicy.NewHTTPTracePolicy(&tspolicy.HTTPTraceOptions{AllowedQueryParams: cp.Logging.AllowedQueryParams}))
+	policies = append(policies, NewLogPolicy(&cp.Logging))
+	policies = append(policies, sdkpolicy.NewBodyDownloadPolicy(nil))
+	transport := cp.Transport
+	if transport == nil {
+		transport = defaultHTTPClient
 	}
-	tsClOpts := &tspolicy.ClientOptions{
-		Logging:          addAzureToLogging(cp.Logging),
-		Retry:            addAzureToRetry(cp.Retry),
-		TracingProvider:  cp.TracingProvider,
-		Transport:        cp.Transport,
-		PerCallPolicies:  append(azPolicies, cp.PerCallPolicies...),
-		PerRetryPolicies: cp.PerRetryPolicies,
-	}
-
-	return runtime.NewPipeline(tsPlOpts, tsClOpts)
+	return pipeline.New(transport, policies...)
 }

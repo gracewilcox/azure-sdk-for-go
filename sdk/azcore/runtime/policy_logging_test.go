@@ -13,10 +13,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/log"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,7 +28,7 @@ func TestPolicyLoggingSuccess(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse()
-	pl := exported.NewPipeline(srv, NewLogPolicy(nil))
+	pl := pipeline.New(srv, NewLogPolicy(nil))
 	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -84,7 +84,7 @@ func TestPolicyLoggingError(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetError(errors.New("bogus error"))
-	pl := exported.NewPipeline(srv, NewLogPolicy(nil))
+	pl := pipeline.New(srv, NewLogPolicy(nil))
 	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

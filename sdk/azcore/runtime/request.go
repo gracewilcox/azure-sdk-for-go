@@ -12,6 +12,8 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
+	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 )
 
 // Base64Encoding is usesd to specify which base-64 encoder/decoder to use when
@@ -29,12 +31,12 @@ const (
 // NewRequest creates a new policy.Request with the specified input.
 // The endpoint MUST be properly encoded before calling this function.
 func NewRequest(ctx context.Context, httpMethod string, endpoint string) (*policy.Request, error) {
-	return runtime.NewRequest(ctx, httpMethod, endpoint)
+	return pipeline.NewRequest(ctx, httpMethod, endpoint)
 }
 
 // NewRequestFromRequest creates a new policy.Request with an existing *http.Request
 func NewRequestFromRequest(req *http.Request) (*policy.Request, error) {
-	return runtime.NewRequestFromRequest(req)
+	return pipeline.NewRequestFromRequest(req)
 }
 
 // EncodeQueryParams will parse and encode any query parameters in the specified URL.
@@ -80,7 +82,7 @@ func SetMultipartFormData(req *policy.Request, formData map[string]any) error {
 
 // SkipBodyDownload will disable automatic downloading of the response body.
 func SkipBodyDownload(req *policy.Request) {
-	runtime.SkipBodyDownload(req)
+	sdkpolicy.SkipBodyDownload(req)
 }
 
 // CtxAPINameKey is used as a context key for adding/retrieving the API name.

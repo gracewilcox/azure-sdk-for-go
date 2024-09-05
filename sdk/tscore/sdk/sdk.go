@@ -21,8 +21,6 @@ type PipelineOptions struct {
 	// Transport sets the transport for HTTP requests.
 	Transport pipeline.Transporter
 
-	Tracing policy.TracingOptions
-
 	// PerCall contains custom policies to inject into the pipeline.
 	// Each policy is executed once per request.
 	PerCall []pipeline.Policy
@@ -75,7 +73,6 @@ func NewClient(pipeline pipeline.Pipeline, options *ClientOptions) (*Client, err
 		options = &ClientOptions{}
 	}
 
-	// REEXAMINE WHEN TRACING is turned on or not, is it when moduleName and moduleVersion are empty strings??
 	tr := options.Tracing.Provider.NewTracer(options.Tracing.ModuleName, options.Tracing.ModuleVersion)
 	if tr.Enabled() && options.Tracing.Namespace != "" {
 		tr.SetAttributes(tracing.Attribute{Key: shared.TracingNamespaceAttrName, Value: options.Tracing.Namespace})

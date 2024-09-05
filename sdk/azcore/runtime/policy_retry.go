@@ -11,7 +11,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 )
 
 const (
@@ -27,7 +27,7 @@ func NewRetryPolicy(o *policy.RetryOptions) policy.Policy {
 	}
 
 	options = addAzureToRetry(options)
-	return runtime.NewRetryPolicy(&options)
+	return sdkpolicy.NewRetryPolicy(&options)
 }
 
 func addAzureToRetry(o policy.RetryOptions) policy.RetryOptions {

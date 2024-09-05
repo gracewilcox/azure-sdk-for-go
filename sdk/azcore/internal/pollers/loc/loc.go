@@ -16,7 +16,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 // Kind is the identifier of this type in a resume token.
@@ -42,7 +42,7 @@ func CanResume(token map[string]any) bool {
 
 // Poller is an LRO poller that uses the Location pattern.
 type Poller[T any] struct {
-	pl   runtime.Pipeline
+	pl   pipeline.Pipeline
 	resp *http.Response
 
 	Type     string `json:"type"`
@@ -52,7 +52,7 @@ type Poller[T any] struct {
 
 // New creates a new Poller from the provided initial response.
 // Pass nil for response to create an empty Poller for rehydration.
-func New[T any](pl runtime.Pipeline, resp *http.Response) (*Poller[T], error) {
+func New[T any](pl pipeline.Pipeline, resp *http.Response) (*Poller[T], error) {
 	if resp == nil {
 		log.Write(log.EventLRO, "Resuming Location poller.")
 		return &Poller[T]{pl: pl}, nil

@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -9,9 +6,8 @@ package runtime
 import (
 	"context"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 )
 
 const (
@@ -19,15 +15,8 @@ const (
 	attrAZServiceReqID = "az.service_request_id"
 )
 
-func addAzureToTracing(o TracingOptions) TracingOptions {
-	o.RequestAttributes = map[string]string{shared.HeaderXMSClientRequestID: attrAZClientReqID}
-	o.ResponseAttributes = map[string]string{shared.HeaderXMSRequestID: attrAZServiceReqID}
-
-	return o
-}
-
 // StartSpanOptions contains the optional values for StartSpan.
-type StartSpanOptions = runtime.StartSpanOptions
+type StartSpanOptions = sdkpolicy.StartSpanOptions
 
 // StartSpan starts a new tracing span.
 // You must call the returned func to terminate the span. Pass the applicable error
@@ -37,5 +26,5 @@ type StartSpanOptions = runtime.StartSpanOptions
 //   - tracer is the client's Tracer for creating spans
 //   - options contains optional values. pass nil to accept any default values
 func StartSpan(ctx context.Context, name string, tracer tracing.Tracer, options *StartSpanOptions) (context.Context, func(error)) {
-	return runtime.StartSpan(ctx, name, tracer, options)
+	return sdkpolicy.StartSpan(ctx, name, tracer, options)
 }

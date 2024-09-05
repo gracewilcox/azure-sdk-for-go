@@ -14,10 +14,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/streaming"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 func TestProgressReporting(t *testing.T) {
@@ -30,7 +30,7 @@ func TestProgressReporting(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse(mock.WithBody(content))
-	pl := exported.NewPipeline(srv)
+	pl := pipeline.New(srv)
 	req, err := runtime.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -79,7 +79,7 @@ func TestProgressReportingSeek(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse()
-	pl := exported.NewPipeline(srv)
+	pl := pipeline.New(srv)
 	req, err := runtime.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

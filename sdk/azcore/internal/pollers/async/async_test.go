@@ -19,7 +19,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -57,24 +57,24 @@ func TestCanResume(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	ap, err := New[struct{}](runtime.Pipeline{}, nil, "")
+	ap, err := New[struct{}](pipeline.Pipeline{}, nil, "")
 	require.NoError(t, err)
 	require.Empty(t, ap.CurState)
 
-	ap, err = New[struct{}](runtime.Pipeline{}, &http.Response{Header: http.Header{}}, "")
+	ap, err = New[struct{}](pipeline.Pipeline{}, &http.Response{Header: http.Header{}}, "")
 	require.Error(t, err)
 	require.Nil(t, ap)
 
 	resp := initialResponse(http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, "this is an invalid polling URL")
-	ap, err = New[struct{}](runtime.Pipeline{}, resp, "")
+	ap, err = New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.Error(t, err)
 	require.Nil(t, ap)
 
 	resp = initialResponse(http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
 	resp.Header.Set(shared.HeaderLocation, fakeResourceURL)
-	ap, err = New[struct{}](runtime.Pipeline{}, resp, "")
+	ap, err = New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.NoError(t, err)
 	require.Equal(t, fakePollingURL, ap.AsyncURL)
 	require.Equal(t, fakeResourceURL, ap.LocURL)
@@ -85,7 +85,7 @@ func TestNew(t *testing.T) {
 func TestNewDeleteNoProvState(t *testing.T) {
 	resp := initialResponse(http.MethodDelete, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[struct{}](runtime.Pipeline{}, resp, "")
+	poller, err := New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.NoError(t, err)
 	require.False(t, poller.Done())
 }
@@ -95,7 +95,7 @@ func TestNewPutNoProvState(t *testing.T) {
 	// NOTE: ARM RPC forbids this but we allow it for back-compat
 	resp := initialResponse(http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[struct{}](runtime.Pipeline{}, resp, "")
+	poller, err := New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.NoError(t, err)
 	require.False(t, poller.Done())
 }
@@ -111,7 +111,7 @@ func TestFinalGetLocation(t *testing.T) {
 	resp := initialResponse(http.MethodPost, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
 	resp.Header.Set(shared.HeaderLocation, locURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakePollingURL {
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -141,7 +141,7 @@ func TestFinalGetLocation(t *testing.T) {
 func TestFinalGetOrigin(t *testing.T) {
 	resp := initialResponse(http.MethodPost, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakePollingURL {
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -171,7 +171,7 @@ func TestFinalGetOrigin(t *testing.T) {
 func TestNoFinalGet(t *testing.T) {
 	resp := initialResponse(http.MethodPost, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Body:       io.NopCloser(strings.NewReader(`{ "status": "succeeded", "shape": "circle" }`)),
@@ -192,7 +192,7 @@ func TestNoFinalGet(t *testing.T) {
 func TestPatchNoFinalGet(t *testing.T) {
 	resp := initialResponse(http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Body:       io.NopCloser(strings.NewReader(`{ "status": "succeeded", "shape": "circle" }`)),
@@ -213,7 +213,7 @@ func TestPatchNoFinalGet(t *testing.T) {
 func TestPollFailed(t *testing.T) {
 	resp := initialResponse(http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Header:     http.Header{},
@@ -236,7 +236,7 @@ func TestPollFailed(t *testing.T) {
 func TestPollError(t *testing.T) {
 	resp := initialResponse(http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Header:     http.Header{},
@@ -261,7 +261,7 @@ func TestPollError(t *testing.T) {
 func TestPollFailedError(t *testing.T) {
 	resp := initialResponse(http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return nil, errors.New("failed")
 	})), resp, "")
 	require.NoError(t, err)
@@ -275,7 +275,7 @@ func TestSynchronousCompletion(t *testing.T) {
 	resp := initialResponse(http.MethodPut, io.NopCloser(strings.NewReader(`{ "properties": { "provisioningState": "Succeeded" } }`)))
 	resp.Header.Set(shared.HeaderAzureAsync, fakePollingURL)
 	resp.Header.Set(shared.HeaderLocation, fakeResourceURL)
-	ap, err := New[struct{}](runtime.Pipeline{}, resp, "")
+	ap, err := New[struct{}](pipeline.Pipeline{}, resp, "")
 	require.NoError(t, err)
 	require.Equal(t, fakePollingURL, ap.AsyncURL)
 	require.Equal(t, fakeResourceURL, ap.LocURL)

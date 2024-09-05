@@ -10,6 +10,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,7 +22,7 @@ func TestSASCredentialPolicy(t *testing.T) {
 	policy := NewSASCredentialPolicy(cred, headerName, nil)
 	require.NotNil(t, policy)
 
-	pl := exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	pl := pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		require.EqualValues(t, key, req.Header.Get(headerName))
 		return &http.Response{}, nil
 	}), policy)
@@ -39,7 +40,7 @@ func TestSASCredentialPolicy_RequiresHTTPS(t *testing.T) {
 	policy := NewSASCredentialPolicy(cred, "fake-auth", nil)
 	require.NotNil(t, policy)
 
-	pl := exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	pl := pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{}, nil
 	}), policy)
 
@@ -58,7 +59,7 @@ func TestSASCredentialPolicy_AllowHTTP(t *testing.T) {
 	})
 	require.NotNil(t, policy)
 
-	pl := exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	pl := pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{}, nil
 	}), policy)
 
@@ -74,7 +75,7 @@ func TestSASCredentialPolicy_NilCredential(t *testing.T) {
 	policy := NewSASCredentialPolicy(nil, headerName, nil)
 	require.NotNil(t, policy)
 
-	pl := exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	pl := pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		require.Zero(t, req.Header.Get(headerName))
 		return &http.Response{}, nil
 	}), policy)

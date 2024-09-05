@@ -18,7 +18,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
@@ -56,23 +56,23 @@ func TestCanResume(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	poller, err := New[struct{}](runtime.Pipeline{}, nil)
+	poller, err := New[struct{}](pipeline.Pipeline{}, nil)
 	require.NoError(t, err)
 	require.Empty(t, poller.CurState)
 
-	poller, err = New[struct{}](runtime.Pipeline{}, initialResponse())
+	poller, err = New[struct{}](pipeline.Pipeline{}, initialResponse())
 	require.Error(t, err)
 	require.Nil(t, poller)
 
 	resp := initialResponse()
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	poller, err = New[struct{}](runtime.Pipeline{}, resp)
+	poller, err = New[struct{}](pipeline.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.NotNil(t, poller)
 
 	resp = initialResponse()
 	resp.Header.Set(shared.HeaderLocation, "this is a bad polling URL")
-	poller, err = New[struct{}](runtime.Pipeline{}, resp)
+	poller, err = New[struct{}](pipeline.Pipeline{}, resp)
 	require.Error(t, err)
 	require.Nil(t, poller)
 }
@@ -80,7 +80,7 @@ func TestNew(t *testing.T) {
 func TestUpdateSucceeded(t *testing.T) {
 	resp := initialResponse()
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	poller, err := New[struct{}](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[struct{}](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNoContent,
 			Body:       http.NoBody,
@@ -98,7 +98,7 @@ func TestUpdateSucceeded(t *testing.T) {
 func TestUpdateFailed(t *testing.T) {
 	resp := initialResponse()
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	poller, err := New[struct{}](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[struct{}](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakeLocationURL {
 			resp := &http.Response{
 				StatusCode: http.StatusAccepted,
@@ -132,7 +132,7 @@ func TestUpdateFailed(t *testing.T) {
 func TestUpdateFailedWithProvisioningState(t *testing.T) {
 	resp := initialResponse()
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	poller, err := New[struct{}](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[struct{}](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		if surl := req.URL.String(); surl == fakeLocationURL {
 			resp := &http.Response{
 				StatusCode: http.StatusAccepted,
@@ -169,7 +169,7 @@ func TestSynchronousCompletion(t *testing.T) {
 	resp := initialResponse()
 	resp.Body = io.NopCloser(strings.NewReader(`{ "properties": { "provisioningState": "Succeeded" } }`))
 	resp.Header.Set(shared.HeaderLocation, fakeLocationURL)
-	lp, err := New[struct{}](runtime.Pipeline{}, resp)
+	lp, err := New[struct{}](pipeline.Pipeline{}, resp)
 	require.NoError(t, err)
 	require.Equal(t, fakeLocationURL, lp.PollURL)
 	require.Equal(t, poller.StatusSucceeded, lp.CurState)
@@ -185,7 +185,7 @@ func TestWithThrottling(t *testing.T) {
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK))
 	resp := initialResponse()
 	resp.Header.Set(shared.HeaderLocation, srv.URL())
-	lp, err := New[struct{}](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	lp, err := New[struct{}](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return srv.Do(req)
 	})), resp)
 	require.NoError(t, err)
@@ -208,7 +208,7 @@ func TestWithTimeout(t *testing.T) {
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK))
 	resp := initialResponse()
 	resp.Header.Set(shared.HeaderLocation, srv.URL())
-	lp, err := New[struct{}](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	lp, err := New[struct{}](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return srv.Do(req)
 	})), resp)
 	require.NoError(t, err)

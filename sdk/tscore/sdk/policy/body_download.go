@@ -13,11 +13,14 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
-func NewBodyDownloadPolicy(options *policy.BodyDownloadOptions) pipeline.Policy {
+type BodyDownloadPolicyOptions struct {
+	// placeholder for future options
+}
+
+func NewBodyDownloadPolicy(options *BodyDownloadPolicyOptions) pipeline.Policy {
 	return policyFunc(bodyDownloadPolicy)
 }
 

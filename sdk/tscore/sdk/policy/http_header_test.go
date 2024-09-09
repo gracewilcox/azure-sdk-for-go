@@ -10,7 +10,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
@@ -21,7 +21,7 @@ func TestWithHTTPHeader(t *testing.T) {
 	)
 	input := http.Header{}
 	input.Set(key, val)
-	ctx := policy.WithHTTPHeader(context.Background(), input)
+	ctx := options.WithHTTPHeader(context.Background(), input)
 	if ctx == nil {
 		t.Fatal("nil context")
 	}
@@ -49,7 +49,7 @@ func TestAddCustomHTTPHeaderSuccess(t *testing.T) {
 	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest))
 	// HTTP header policy is automatically added during pipeline construction
 	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
-	req, err := pipeline.NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
+	req, err := pipeline.NewRequest(options.WithHTTPHeader(context.Background(), http.Header{
 		customHeader: []string{customValue},
 	}), http.MethodGet, srv.URL())
 	if err != nil {
@@ -101,7 +101,7 @@ func TestAddCustomHTTPHeaderOverwrite(t *testing.T) {
 	// HTTP header policy is automatically added during pipeline construction
 	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
 	// overwrite the request ID with our own value
-	req, err := pipeline.NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
+	req, err := pipeline.NewRequest(options.WithHTTPHeader(context.Background(), http.Header{
 		customHeader: []string{customValue},
 	}), http.MethodGet, srv.URL())
 	if err != nil {
@@ -130,7 +130,7 @@ func TestAddCustomHTTPHeaderMultipleValues(t *testing.T) {
 	// HTTP header policy is automatically added during pipeline construction
 	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
 	// overwrite the request ID with our own value
-	req, err := pipeline.NewRequest(policy.WithHTTPHeader(context.Background(), http.Header{
+	req, err := pipeline.NewRequest(options.WithHTTPHeader(context.Background(), http.Header{
 		customHeader: []string{customValue1, customValue2},
 	}), http.MethodGet, srv.URL())
 	if err != nil {

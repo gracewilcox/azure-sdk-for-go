@@ -20,7 +20,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
@@ -30,11 +30,11 @@ type logPolicy struct {
 	allowedQP      map[string]struct{}
 }
 
-// NewLogPolicy creates a request/response logging policy object configured using the specified options.
+// NewLogPolicy creates a request/response logging policy object optionsured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
-func NewLogPolicy(o *policy.LogOptions) pipeline.Policy {
+func NewLogPolicy(o *options.LogOptions) pipeline.Policy {
 	if o == nil {
-		o = &policy.LogOptions{}
+		o = &options.LogOptions{}
 	}
 	// construct default hash set of allowed headers
 	allowedHeaders := map[string]struct{}{

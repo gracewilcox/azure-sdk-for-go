@@ -10,11 +10,14 @@ import (
 	"net/http"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
-func NewIncludeResponsePolicy(options *policy.IncludeResponseOptions) pipeline.Policy {
+type IncludeResponsePolicyOptions struct {
+	// placeholder for future options
+}
+
+func NewIncludeResponsePolicy(options *IncludeResponsePolicyOptions) pipeline.Policy {
 	return policyFunc(includeResponsePolicy)
 }
 

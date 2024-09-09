@@ -19,7 +19,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
@@ -178,7 +178,7 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 	srv.AppendResponse(mock.WithHeader(plAllowedHeader, "received1"), mock.WithHeader(clAllowedHeader, "received2"), mock.WithHeader(redactedHeader, "cantseeme"))
 
 	pl := newTestPipeline(&testPipelineOptions{
-		Logging: policy.LogOptions{
+		Logging: options.LogOptions{
 			AllowedHeaders:     []string{clAllowedHeader, plAllowedHeader},
 			AllowedQueryParams: []string{clAllowedQP, plAllowedQP},
 		},

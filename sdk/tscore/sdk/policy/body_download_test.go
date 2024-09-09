@@ -16,7 +16,7 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
@@ -79,7 +79,7 @@ func TestDownloadBodyFail(t *testing.T) {
 	// download policy is automatically added during pipeline construction
 	pl := newTestPipeline(&testPipelineOptions{
 		Transport: srv,
-		Retry: policy.RetryOptions{
+		Retry: options.RetryOptions{
 			RetryDelay: 10 * time.Millisecond,
 		},
 	})

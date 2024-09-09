@@ -7,4 +7,4 @@
 
 // Package policy contains the definitions needed for configuring in-box pipeline policies
 // and creating custom policies.
-package policy
+package options

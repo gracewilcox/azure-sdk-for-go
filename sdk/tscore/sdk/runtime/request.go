@@ -250,6 +250,7 @@ func SetMultipartFormData(req *pipeline.Request, formData map[string]any) error 
 	return req.SetBody(exported.NopCloser(bytes.NewReader(body.Bytes())), writer.FormDataContentType())
 }
 
+// TODO figure out how to remove, not necessary
 // CtxAPINameKey is used as a context key for adding/retrieving the API name.
 type CtxAPINameKey = shared.CtxAPINameKey
 

@@ -7,21 +7,19 @@
 package policy
 
 import (
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
 type testPipelineOptions struct {
 	// Logging configures the built-in logging policy.
-	Logging policy.LogOptions
+	Logging options.LogOptions
 
 	// Retry configures the built-in retry policy.
-	Retry policy.RetryOptions
+	Retry options.RetryOptions
 
 	// Transport sets the transport for HTTP requests.
 	Transport pipeline.Transporter
-
-	Tracing policy.TracingOptions
 
 	// PerCall contains custom policies to inject into the pipeline.
 	// Each policy is executed once per request.
@@ -46,7 +44,6 @@ func newTestPipeline(options *testPipelineOptions) pipeline.Pipeline {
 	policies = append(policies, NewRetryPolicy(&options.Retry))
 	policies = append(policies, options.PerRetry...)
 	policies = append(policies, NewHTTPHeaderPolicy(nil))
-	policies = append(policies, NewHTTPTracePolicy(&policy.HTTPTraceOptions{AllowedQueryParams: options.Logging.AllowedQueryParams}))
 	policies = append(policies, NewLogPolicy(&options.Logging))
 	policies = append(policies, NewBodyDownloadPolicy(nil))
 	transport := options.Transport

@@ -20,7 +20,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/errorinfo"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
@@ -39,8 +39,8 @@ func (p *countingPolicy) Do(req *pipeline.Request) (*http.Response, error) {
 	return req.Next()
 }
 
-func testRetryOptions() *policy.RetryOptions {
-	return &policy.RetryOptions{
+func testRetryOptions() *options.RetryOptions {
+	return &options.RetryOptions{
 		RetryDelay: time.Millisecond,
 	}
 }
@@ -229,7 +229,7 @@ func TestRetryPolicyNoRetries(t *testing.T) {
 	srv.AppendResponse(mock.WithStatusCode(http.StatusRequestTimeout))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusInternalServerError))
 	srv.AppendResponse()
-	pl := pipeline.New(srv, NewRetryPolicy(&policy.RetryOptions{MaxRetries: -1}))
+	pl := pipeline.New(srv, NewRetryPolicy(&options.RetryOptions{MaxRetries: -1}))
 	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -312,7 +312,7 @@ func TestRetryPolicySuccessWithRetryComplex(t *testing.T) {
 	srv.AppendResponse(mock.WithStatusCode(http.StatusAccepted))
 	pl := pipeline.New(srv, policyFunc(includeResponsePolicy), NewRetryPolicy(testRetryOptions()))
 	var respFromCtx *http.Response
-	ctxWithResp := policy.WithCaptureResponse(context.Background(), &respFromCtx)
+	ctxWithResp := options.WithCaptureResponse(context.Background(), &respFromCtx)
 	req, err := pipeline.NewRequest(ctxWithResp, http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -410,14 +410,14 @@ func TestRetryPolicyIsNotRetriable(t *testing.T) {
 }
 
 func TestWithRetryOptions(t *testing.T) {
-	ctx := policy.WithRetryOptions(context.Background(), policy.RetryOptions{
+	ctx := options.WithRetryOptions(context.Background(), options.RetryOptions{
 		MaxRetries: math.MaxInt32,
 	})
 	if ctx == nil {
 		t.Fatal("nil context")
 	}
 	raw := ctx.Value(shared.CtxWithRetryOptionsKey{})
-	opts, ok := raw.(policy.RetryOptions)
+	opts, ok := raw.(options.RetryOptions)
 	if !ok {
 		t.Fatalf("unexpected type %T", raw)
 	}
@@ -436,7 +436,7 @@ func TestWithRetryOptionsE2E(t *testing.T) {
 	customOptions := *defaultOptions
 	customOptions.MaxRetries = 10
 	customOptions.MaxRetryDelay = 200 * time.Millisecond
-	retryCtx := policy.WithRetryOptions(context.Background(), customOptions)
+	retryCtx := options.WithRetryOptions(context.Background(), customOptions)
 	req, err := pipeline.NewRequest(retryCtx, http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -691,7 +691,7 @@ func TestRetryPolicyWithShouldRetryNoRetry(t *testing.T) {
 	defer close()
 	srv.AppendResponse(mock.WithStatusCode(http.StatusRequestTimeout))
 
-	pl := pipeline.New(srv, NewRetryPolicy(&policy.RetryOptions{
+	pl := pipeline.New(srv, NewRetryPolicy(&options.RetryOptions{
 		RetryDelay: time.Millisecond,
 		ShouldRetry: func(r *http.Response, err error) bool {
 			return r.StatusCode != http.StatusRequestTimeout
@@ -712,7 +712,7 @@ func TestRetryPolicyWithShouldRetryRetry(t *testing.T) {
 	srv.AppendResponse()
 
 	shouldRetryCalled := false
-	pl := pipeline.New(srv, NewRetryPolicy(&policy.RetryOptions{
+	pl := pipeline.New(srv, NewRetryPolicy(&options.RetryOptions{
 		RetryDelay: time.Millisecond,
 		ShouldRetry: func(r *http.Response, err error) bool {
 			shouldRetryCalled = true

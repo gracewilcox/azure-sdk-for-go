@@ -14,10 +14,8 @@ import (
 	"time"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 	"github.com/stretchr/testify/require"
 )
 
@@ -62,7 +60,7 @@ func TestNewPipelineCustomPolicies(t *testing.T) {
 		PerCall:   []pipeline.Policy{defaultPerCallPolicy, customPerCallPolicy},
 		PerRetry:  []pipeline.Policy{defaultPerRetryPolicy, customPerRetryPolicy},
 		Transport: srv,
-		Retry:     policy.RetryOptions{RetryDelay: time.Microsecond, MaxRetries: 1},
+		Retry:     options.RetryOptions{RetryDelay: time.Microsecond, MaxRetries: 1},
 	})
 	_, err = pl.Do(req)
 	require.NoError(t, err)
@@ -117,97 +115,8 @@ func TestNewClient(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, client)
 	require.NotZero(t, client.Pipeline())
-	require.Zero(t, client.Tracer())
 
-	client, err = NewClient(pl, &ClientOptions{Tracing: policy.TracingOptions{ModuleName: "package.Client", ModuleVersion: "v1.0.0"}})
+	client, err = NewClient(pl, nil)
 	require.NoError(t, err)
 	require.NotNil(t, client)
-}
-
-func TestNewClientTracingEnabled(t *testing.T) {
-	srv, close := mock.NewServer()
-	defer close()
-
-	pl := NewPipeline(&PipelineOptions{Transport: srv})
-
-	var attrString string
-	client, err := NewClient(pl, &ClientOptions{
-		Tracing: policy.TracingOptions{
-			Namespace:     "Widget.Factory",
-			ModuleName:    "package.Client",
-			ModuleVersion: "v1.0.0",
-			Provider: tracing.NewProvider(func(name, version string) tracing.Tracer {
-				return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
-					require.NotNil(t, options)
-					for _, attr := range options.Attributes {
-						if attr.Key == shared.TracingNamespaceAttrName {
-							v, ok := attr.Value.(string)
-							require.True(t, ok)
-							attrString = attr.Key + ":" + v
-						}
-					}
-					return ctx, tracing.Span{}
-				}, nil)
-			}, nil),
-		},
-	})
-	require.NoError(t, err)
-	require.NotNil(t, client)
-	require.NotZero(t, client.Pipeline())
-	require.NotZero(t, client.Tracer())
-
-	const requestEndpoint = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/fakeResourceGroupo/providers/Microsoft.Storage/storageAccounts/fakeAccountName"
-	req, err := pipeline.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, client.Tracer()), http.MethodGet, srv.URL()+requestEndpoint)
-	require.NoError(t, err)
-	srv.AppendResponse()
-	_, err = client.Pipeline().Do(req)
-	require.NoError(t, err)
-	require.EqualValues(t, "namespace:Widget.Factory", attrString)
-}
-
-func TestClientWithClientName(t *testing.T) {
-	srv, close := mock.NewServer()
-	defer close()
-
-	pl := NewPipeline(&PipelineOptions{Transport: srv})
-
-	var clientName string
-	var modVersion string
-	var attrString string
-	client, err := NewClient(pl, &ClientOptions{
-		Tracing: policy.TracingOptions{
-			Namespace:     "Widget.Factory",
-			ModuleName:    "module",
-			ModuleVersion: "v1.0.0",
-			Provider: tracing.NewProvider(func(name, version string) tracing.Tracer {
-				clientName = name
-				modVersion = version
-				return tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
-					require.NotNil(t, options)
-					for _, attr := range options.Attributes {
-						if attr.Key == shared.TracingNamespaceAttrName {
-							v, ok := attr.Value.(string)
-							require.True(t, ok)
-							attrString = attr.Key + ":" + v
-						}
-					}
-					return ctx, tracing.Span{}
-				}, nil)
-			}, nil),
-		},
-	})
-	require.NoError(t, err)
-	require.NotNil(t, client)
-	require.NotZero(t, client.Pipeline())
-	require.NotZero(t, client.Tracer())
-	require.EqualValues(t, "module", clientName)
-	require.EqualValues(t, "v1.0.0", modVersion)
-
-	const requestEndpoint = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/fakeResourceGroupo/providers/Microsoft.Storage/storageAccounts/fakeAccountName"
-	req, err := pipeline.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, client.Tracer()), http.MethodGet, srv.URL()+requestEndpoint)
-	require.NoError(t, err)
-	srv.SetResponse()
-	_, err = client.Pipeline().Do(req)
-	require.NoError(t, err)
-	require.EqualValues(t, "namespace:Widget.Factory", attrString)
 }

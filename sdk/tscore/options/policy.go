@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package policy
+package options
 
 import (
 	"context"
@@ -12,39 +12,7 @@ import (
 	"time"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
 )
-
-type BodyDownloadOptions struct {
-	// placeholder for future options
-}
-
-type IncludeResponseOptions struct {
-	// placeholder for future options
-}
-
-type HTTPHeaderOptions struct {
-	// placeholder for future options
-}
-
-type HTTPTraceOptions struct {
-	AllowedQueryParams []string
-
-	// TODO reexamine
-	RequestAttributes  map[string]string
-	ResponseAttributes map[string]string
-}
-
-// TracingOptions contains tracing options for SDK developers.
-type TracingOptions struct {
-	// Namespace contains the value to use for the namespace span attribute.
-	Namespace string
-	// Provider configures the tracing provider.
-	// It defaults to a no-op tracer
-	Provider      tracing.Provider
-	ModuleName    string
-	ModuleVersion string
-}
 
 // LogOptions configures the logging policy's behavior.
 type LogOptions struct {
@@ -109,11 +77,10 @@ type RetryOptions struct {
 	// A return value of true means the retry policy should retry.
 	ShouldRetry func(*http.Response, error) bool
 
-	// TODO add description
-	RetryData []RetryData
+	RetryAfterOptions []RetryAfterOptions
 }
 
-type RetryData = shared.RetryData
+type RetryAfterOptions = shared.RetryAfterOptions
 
 // WithCaptureResponse applies the HTTP response retrieval annotation to the parent context.
 // The resp parameter will contain the HTTP response after the request has completed.

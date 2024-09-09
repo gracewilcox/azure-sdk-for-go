@@ -4,19 +4,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-package policy_test
+package options_test
 
 import (
 	"context"
 	"net/http"
 
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 )
 
 func ExampleWithCaptureResponse() {
-	// policy.WithCaptureResponse provides a mechanism for obtaining an API's underlying *http.Response
+	// options.WithCaptureResponse provides a mechanism for obtaining an API's underlying *http.Response
 	var respFromCtx *http.Response
-	ctx := policy.WithCaptureResponse(context.TODO(), &respFromCtx)
+	ctx := options.WithCaptureResponse(context.TODO(), &respFromCtx)
 	// make some client method call using the updated context
 	// resp, err := client.SomeMethod(ctx, ...)
 	// *respFromCtx contains the raw *http.Response returned during the client method call.
@@ -25,10 +25,10 @@ func ExampleWithCaptureResponse() {
 }
 
 func ExampleWithHTTPHeader() {
-	// policy.WithHTTPHeader allows callers to augment API calls with custom headers
+	// options.WithHTTPHeader allows callers to augment API calls with custom headers
 	customHeaders := http.Header{}
 	customHeaders.Add("key", "value")
-	ctx := policy.WithHTTPHeader(context.TODO(), customHeaders)
+	ctx := options.WithHTTPHeader(context.TODO(), customHeaders)
 	// make some client method call using the updated context
 	// resp, err := client.SomeMethod(ctx, ...)
 	// the underlying HTTP request will include the values in customHeaders
@@ -36,9 +36,9 @@ func ExampleWithHTTPHeader() {
 }
 
 func ExampleWithRetryOptions() {
-	// policy.WithRetryOptions contains a [policy.RetryOptions] that can be used to customize the retry policy on a per-API call basis
-	customRetryOptions := policy.RetryOptions{ /* populate with custom values */ }
-	ctx := policy.WithRetryOptions(context.TODO(), customRetryOptions)
+	// options.WithRetryOptions contains a [options.RetryOptions] that can be used to customize the retry policy on a per-API call basis
+	customRetryOptions := options.RetryOptions{ /* populate with custom values */ }
+	ctx := options.WithRetryOptions(context.TODO(), customRetryOptions)
 	// make some client method call using the updated context
 	// resp, err := client.SomeMethod(ctx, ...)
 	// the behavior of the retry policy will correspond to the values provided in customRetryPolicy

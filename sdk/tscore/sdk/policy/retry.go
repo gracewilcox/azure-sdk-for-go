@@ -19,7 +19,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/log"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	tsoptions "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
@@ -27,7 +27,7 @@ const (
 	defaultMaxRetries = 3
 )
 
-func setDefaults(o *policy.RetryOptions) {
+func setDefaults(o *tsoptions.RetryOptions) {
 	if o.MaxRetries == 0 {
 		o.MaxRetries = defaultMaxRetries
 	} else if o.MaxRetries < 0 {
@@ -59,8 +59,8 @@ func setDefaults(o *policy.RetryOptions) {
 	}
 
 	// set retryData default
-	if o.RetryData == nil {
-		o.RetryData = []policy.RetryData{
+	if o.RetryAfterOptions == nil {
+		o.RetryAfterOptions = []tsoptions.RetryAfterOptions{
 			{
 				Header: shared.HeaderRetryAfter,
 				Units:  time.Second,
@@ -79,7 +79,7 @@ func setDefaults(o *policy.RetryOptions) {
 	}
 }
 
-func calcDelay(o policy.RetryOptions, try int32) time.Duration { // try is >=1; never 0
+func calcDelay(o tsoptions.RetryOptions, try int32) time.Duration { // try is >=1; never 0
 	delay := time.Duration((1<<try)-1) * o.RetryDelay
 
 	// Introduce some jitter:  [0.0, 1.0) / 2 = [0.0, 0.5) + 0.8 = [0.8, 1.3)
@@ -92,23 +92,23 @@ func calcDelay(o policy.RetryOptions, try int32) time.Duration { // try is >=1; 
 
 // NewRetryPolicy creates a policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
-func NewRetryPolicy(o *policy.RetryOptions) pipeline.Policy {
+func NewRetryPolicy(o *tsoptions.RetryOptions) pipeline.Policy {
 	if o == nil {
-		o = &policy.RetryOptions{}
+		o = &tsoptions.RetryOptions{}
 	}
 	p := &retryPolicy{options: *o}
 	return p
 }
 
 type retryPolicy struct {
-	options policy.RetryOptions
+	options tsoptions.RetryOptions
 }
 
 func (p *retryPolicy) Do(req *pipeline.Request) (resp *http.Response, err error) {
 	options := p.options
 	// check if the retry options have been overridden for this call
 	if override := req.Raw().Context().Value(shared.CtxWithRetryOptionsKey{}); override != nil {
-		options = override.(policy.RetryOptions)
+		options = override.(tsoptions.RetryOptions)
 	}
 	setDefaults(&options)
 	// Exponential retry algorithm: ((2 ^ attempt) - 1) * delay * random(0.8, 1.2)
@@ -196,7 +196,7 @@ func (p *retryPolicy) Do(req *pipeline.Request) (resp *http.Response, err error)
 		}
 
 		// use the delay from retry-after if available
-		delay := shared.RetryAfter(resp, options.RetryData)
+		delay := shared.RetryAfter(resp, options.RetryAfterOptions)
 		if delay <= 0 {
 			delay = calcDelay(options, try)
 		} else if delay > options.MaxRetryDelay {

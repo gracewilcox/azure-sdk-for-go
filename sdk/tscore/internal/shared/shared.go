@@ -42,7 +42,7 @@ func Delay(ctx context.Context, delay time.Duration) error {
 	}
 }
 
-type RetryData struct {
+type RetryAfterOptions struct {
 	Header string
 	Units  time.Duration
 
@@ -53,7 +53,7 @@ type RetryData struct {
 
 // RetryAfter returns non-zero if the response contains one of the headers with a "retry after" value.
 // Headers are checked in the following order: retry-after
-func RetryAfter(resp *http.Response, retryData []RetryData) time.Duration {
+func RetryAfter(resp *http.Response, retryData []RetryAfterOptions) time.Duration {
 	if resp == nil {
 		return 0
 	}
@@ -97,15 +97,32 @@ func (pf TransportFunc) Do(req *http.Request) (*http.Response, error) {
 // requests which can have unintended side-effects.
 type ContextWithDeniedValues struct {
 	context.Context
+
+	deniedValues []any
+}
+
+func NewContextWithDeniedValues(ctx context.Context, deniedValues []any) ContextWithDeniedValues {
+	defaults := []any{CtxWithCaptureResponse{}, CtxWithHTTPHeaderKey{}, CtxWithRetryOptionsKey{}}
+	return ContextWithDeniedValues{
+		Context:      ctx,
+		deniedValues: append(defaults, deniedValues...),
+	}
 }
 
 // Value implements part of the [context.Context] interface.
 // It acts as a deny-list for certain context keys.
-func (c *ContextWithDeniedValues) Value(key any) any {
-	switch key.(type) {
-	case CtxAPINameKey, CtxWithCaptureResponse, CtxWithHTTPHeaderKey, CtxWithRetryOptionsKey, CtxWithTracingTracer:
-		return nil
-	default:
-		return c.Context.Value(key)
+func (c ContextWithDeniedValues) Value(key any) any {
+	for _, dv := range c.deniedValues {
+		switch t1 := dv.(type) {
+		default:
+			switch t2 := key.(type) {
+			default:
+				// TODO: is this really better than reflect.TypeOf?
+				if t1 == t2 {
+					return nil
+				}
+			}
+		}
 	}
+	return c.Context.Value(key)
 }

@@ -10,11 +10,14 @@ import (
 	"net/http"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
-func NewHTTPHeaderPolicy(options *policy.HTTPHeaderOptions) pipeline.Policy {
+type HTTPHeaderPolicyOptions struct {
+	// placeholder for future options
+}
+
+func NewHTTPHeaderPolicy(options *HTTPHeaderPolicyOptions) pipeline.Policy {
 	return policyFunc(httpHeaderPolicy)
 }
 

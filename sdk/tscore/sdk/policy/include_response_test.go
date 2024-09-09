@@ -13,14 +13,14 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
 
 func TestIncludeResponse(t *testing.T) {
 	var respFromCtx *http.Response
-	ctx := policy.WithCaptureResponse(context.Background(), &respFromCtx)
+	ctx := options.WithCaptureResponse(context.Background(), &respFromCtx)
 	require.NotNil(t, ctx)
 	raw := ctx.Value(shared.CtxWithCaptureResponse{})
 	_, ok := raw.(**http.Response)
@@ -36,7 +36,7 @@ func TestIncludeResponsePolicy(t *testing.T) {
 	// include response policy is automatically added during pipeline construction
 	pl := newTestPipeline(&testPipelineOptions{Transport: srv})
 	var respFromCtx *http.Response
-	ctxWithResp := policy.WithCaptureResponse(context.Background(), &respFromCtx)
+	ctxWithResp := options.WithCaptureResponse(context.Background(), &respFromCtx)
 	req, err := pipeline.NewRequest(ctxWithResp, http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	resp, err := pl.Do(req)

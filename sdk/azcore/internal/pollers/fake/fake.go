@@ -18,7 +18,6 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
@@ -66,7 +65,7 @@ func New[T any](pl pipeline.Pipeline, resp *http.Response) (*Poller[T], error) {
 		return nil, errors.New("response is missing Fake-Poller-Status header")
 	}
 
-	ctxVal := resp.Request.Context().Value(runtime.CtxAPINameKey{})
+	ctxVal := resp.Request.Context().Value(shared.CtxAPINameKey{})
 	if ctxVal == nil {
 		return nil, errors.New("missing value for CtxAPINameKey")
 	}
@@ -99,7 +98,7 @@ func (p *Poller[T]) Done() bool {
 
 // Poll retrieves the current state of the LRO.
 func (p *Poller[T]) Poll(ctx context.Context) (*http.Response, error) {
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, p.APIName)
+	ctx = context.WithValue(ctx, shared.CtxAPINameKey{}, p.APIName)
 	err := pollers.PollHelper(ctx, p.FakeURL, p.pl, func(resp *http.Response) (string, error) {
 		if !poller.StatusCodeValid(resp) {
 			p.resp = resp

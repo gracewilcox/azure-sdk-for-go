@@ -19,7 +19,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/errorinfo"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/runtime"
 	"github.com/stretchr/testify/require"
 )
 

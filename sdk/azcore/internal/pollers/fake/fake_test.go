@@ -16,7 +16,6 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/poller"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	"github.com/stretchr/testify/require"
 )
@@ -69,13 +68,13 @@ func TestNew(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, fp)
 
-	resp = initialResponse(context.WithValue(context.Background(), runtime.CtxAPINameKey{}, 123), http.MethodPut, http.NoBody)
+	resp = initialResponse(context.WithValue(context.Background(), shared.CtxAPINameKey{}, 123), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
 	fp, err = New[struct{}](pipeline.Pipeline{}, resp)
 	require.Error(t, err)
 	require.Nil(t, fp)
 
-	resp = initialResponse(context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
+	resp = initialResponse(context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, "faking")
 	fp, err = New[struct{}](pipeline.Pipeline{}, resp)
 	require.NoError(t, err)
@@ -84,7 +83,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestSynchronousCompletion(t *testing.T) {
-	resp := initialResponse(context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
+	resp := initialResponse(context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI"), http.MethodPut, http.NoBody)
 	resp.StatusCode = http.StatusNoContent
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusSucceeded)
 	fp, err := New[struct{}](pipeline.Pipeline{}, resp)
@@ -99,7 +98,7 @@ type widget struct {
 }
 
 func TestPollSucceeded(t *testing.T) {
-	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
+	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
 	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
@@ -125,7 +124,7 @@ func TestPollSucceeded(t *testing.T) {
 }
 
 func TestPollError(t *testing.T) {
-	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
+	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
 	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
@@ -150,7 +149,7 @@ func TestPollError(t *testing.T) {
 }
 
 func TestPollFailed(t *testing.T) {
-	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
+	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
 	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
@@ -174,7 +173,7 @@ func TestPollFailed(t *testing.T) {
 }
 
 func TestPollErrorNoHeader(t *testing.T) {
-	pollCtx := context.WithValue(context.Background(), runtime.CtxAPINameKey{}, "FakeAPI")
+	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
 	poller, err := New[widget](pipeline.New(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {

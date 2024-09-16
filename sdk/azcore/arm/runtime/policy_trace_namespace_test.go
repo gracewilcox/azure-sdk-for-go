@@ -12,10 +12,10 @@ import (
 	"testing"
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
-	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,7 +33,7 @@ func TestHTTPTraceNamespacePolicy(t *testing.T) {
 	require.NoError(t, err)
 
 	// wrong tracer type
-	req, err = pipeline.NewRequest(context.WithValue(context.Background(), sdkpolicy.CtxWithTracingTracer{}, 0), http.MethodGet, srv.URL())
+	req, err = pipeline.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, 0), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendResponse()
 	_, err = pl.Do(req)
@@ -43,7 +43,7 @@ func TestHTTPTraceNamespacePolicy(t *testing.T) {
 	tr := tracing.NewTracer(func(ctx context.Context, spanName string, options *tracing.SpanOptions) (context.Context, tracing.Span) {
 		return ctx, tracing.Span{}
 	}, nil)
-	req, err = pipeline.NewRequest(context.WithValue(context.Background(), sdkpolicy.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
+	req, err = pipeline.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendResponse()
 	_, err = pl.Do(req)
@@ -66,7 +66,7 @@ func TestHTTPTraceNamespacePolicy(t *testing.T) {
 			return tracing.NewSpan(spanImpl)
 		},
 	})
-	req, err = pipeline.NewRequest(context.WithValue(context.Background(), sdkpolicy.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
+	req, err = pipeline.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL())
 	require.NoError(t, err)
 	srv.AppendResponse()
 	_, err = pl.Do(req)
@@ -89,7 +89,7 @@ func TestHTTPTraceNamespacePolicy(t *testing.T) {
 			return tracing.NewSpan(spanImpl)
 		},
 	})
-	req, err = pipeline.NewRequest(context.WithValue(context.Background(), sdkpolicy.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL()+requestEndpoint)
+	req, err = pipeline.NewRequest(context.WithValue(context.Background(), shared.CtxWithTracingTracer{}, tr), http.MethodGet, srv.URL()+requestEndpoint)
 	require.NoError(t, err)
 	srv.AppendResponse()
 	_, err = pl.Do(req)

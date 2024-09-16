@@ -12,8 +12,10 @@ import (
 
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/exported"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/tracing"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
+	tsoptions "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
@@ -70,14 +72,12 @@ type ClientOptions struct {
 }
 
 // LogOptions configures the logging policy's behavior.
-type LogOptions = policy.LogOptions
+type LogOptions = options.LogOptions
 
 // RetryOptions configures the retry policy's behavior.
 // Zero-value fields will have their specified default values applied during use.
 // This allows for modification of a subset of fields.
-type RetryOptions = policy.RetryOptions
-
-type RetryData = policy.RetryData
+type RetryOptions = shared.RetryOptions
 
 // TelemetryOptions configures the telemetry policy's behavior.
 type TelemetryOptions struct {
@@ -127,18 +127,19 @@ type AuthorizationHandler struct {
 // WithCaptureResponse applies the HTTP response retrieval annotation to the parent context.
 // The resp parameter will contain the HTTP response after the request has completed.
 func WithCaptureResponse(parent context.Context, resp **http.Response) context.Context {
-	return policy.WithCaptureResponse(parent, resp)
+	return tsoptions.WithCaptureResponse(parent, resp)
 }
 
 // WithHTTPHeader adds the specified http.Header to the parent context.
 // Use this to specify custom HTTP headers at the API-call level.
 // Any overlapping headers will have their values replaced with the values specified here.
 func WithHTTPHeader(parent context.Context, header http.Header) context.Context {
-	return policy.WithHTTPHeader(parent, header)
+	return tsoptions.WithHTTPHeader(parent, header)
 }
 
 // WithRetryOptions adds the specified RetryOptions to the parent context.
 // Use this to specify custom RetryOptions at the API-call level.
 func WithRetryOptions(parent context.Context, options RetryOptions) context.Context {
-	return policy.WithRetryOptions(parent, options)
+	o := shared.ConvertRetryOptions(options)
+	return tsoptions.WithRetryOptions(parent, o.RetryOptions)
 }

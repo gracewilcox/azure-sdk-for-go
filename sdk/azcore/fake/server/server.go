@@ -19,7 +19,7 @@ import (
 	fakepoller "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/pollers/fake"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/internal/shared"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/errorinfo"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/runtime"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/runtime"
 )
 
 // ResponseContent is used when building the *http.Response.

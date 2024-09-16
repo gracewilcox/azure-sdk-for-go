@@ -6,10 +6,8 @@
 
 package tracing
 
-import "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/tracing"
-
 // SpanKind represents the role of a Span inside a Trace. Often, this defines how a Span will be processed and visualized by various backends.
-type SpanKind = tracing.SpanKind
+type SpanKind int
 
 const (
 	// SpanKindInternal indicates the span represents an internal operation within an application.
@@ -29,15 +27,15 @@ const (
 )
 
 // SpanStatus represents the status of a span.
-type SpanStatus = tracing.SpanStatus
+type SpanStatus int
 
 const (
 	// SpanStatusUnset is the default status code.
-	SpanStatusUnset = tracing.SpanStatusUnset
+	SpanStatusUnset SpanStatus = 0
 
 	// SpanStatusError indicates the operation contains an error.
-	SpanStatusError = tracing.SpanStatusError
+	SpanStatusError SpanStatus = 1
 
 	// SpanStatusOK indicates the operation completed successfully.
-	SpanStatusOK = tracing.SpanStatusOK
+	SpanStatusOK SpanStatus = 2
 )

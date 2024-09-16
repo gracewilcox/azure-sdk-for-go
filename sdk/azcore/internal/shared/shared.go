@@ -14,7 +14,27 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+
+	tspolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 )
+
+// NOTE: when adding a new context key type, it likely needs to be
+// added to the deny-list of key types in ContextWithDeniedValues
+
+// CtxWithTracingTracer is used as a context key for adding/retrieving tracing.Tracer.
+type CtxWithTracingTracer struct{}
+
+// CtxAPINameKey is used as a context key for adding/retrieving the API name.
+type CtxAPINameKey struct{}
+
+// TODO connect with tscore
+func NewContextWithDeniedValues(ctx context.Context) {
+	// defaults := []any{CtxWithCaptureResponse{}, CtxWithHTTPHeaderKey{}, CtxWithRetryOptionsKey{}}
+	// return &ContextWithDeniedValues{
+	// 	Context:      ctx,
+	// 	deniedValues: append(defaults, deniedValues...),
+	// }
+}
 
 // Delay waits for the duration to elapse or the context to be cancelled.
 func Delay(ctx context.Context, delay time.Duration) error {
@@ -85,6 +105,97 @@ func RetryAfter(resp *http.Response) time.Duration {
 	}
 
 	return 0
+}
+
+// RetryOptions configures the retry policy's behavior.
+// Zero-value fields will have their specified default values applied during use.
+// This allows for modification of a subset of fields.
+type RetryOptions struct {
+	// MaxRetries specifies the maximum number of attempts a failed operation will be retried
+	// before producing an error.
+	// The default value is three.  A value less than zero means one try and no retries.
+	MaxRetries int32
+
+	// TryTimeout indicates the maximum time allowed for any single try of an HTTP request.
+	// This is disabled by default.  Specify a value greater than zero to enable.
+	// NOTE: Setting this to a small value might cause premature HTTP request time-outs.
+	TryTimeout time.Duration
+
+	// RetryDelay specifies the initial amount of delay to use before retrying an operation.
+	// The value is used only if the HTTP response does not contain a Retry-After header.
+	// The delay increases exponentially with each retry up to the maximum specified by MaxRetryDelay.
+	// The default value is four seconds.  A value less than zero means no delay between retries.
+	RetryDelay time.Duration
+
+	// MaxRetryDelay specifies the maximum delay allowed before retrying an operation.
+	// Typically the value is greater than or equal to the value specified in RetryDelay.
+	// The default Value is 60 seconds.  A value less than zero means there is no cap.
+	MaxRetryDelay time.Duration
+
+	// StatusCodes specifies the HTTP status codes that indicate the operation should be retried.
+	// A nil slice will use the following values.
+	//   http.StatusRequestTimeout      408
+	//   http.StatusTooManyRequests     429
+	//   http.StatusInternalServerError 500
+	//   http.StatusBadGateway          502
+	//   http.StatusServiceUnavailable  503
+	//   http.StatusGatewayTimeout      504
+	// Specifying values will replace the default values.
+	// Specifying an empty slice will disable retries for HTTP status codes.
+	StatusCodes []int
+
+	// ShouldRetry evaluates if the retry policy should retry the request.
+	// When specified, the function overrides comparison against the list of
+	// HTTP status codes and error checking within the retry policy. Context
+	// and NonRetriable errors remain evaluated before calling ShouldRetry.
+	// The *http.Response and error parameters are mutually exclusive, i.e.
+	// if one is nil, the other is not nil.
+	// A return value of true means the retry policy should retry.
+	ShouldRetry func(*http.Response, error) bool
+}
+
+func ConvertRetryOptions(o RetryOptions) tspolicy.RetryPolicyOptions {
+	var options tspolicy.RetryPolicyOptions
+
+	// setting default retries for Azure
+	// tscore has its own defaults, this overrides them to be Azure specific
+	nop := func(string) time.Duration { return 0 }
+	options.RetryAfterOptions = []tspolicy.RetryAfterOptions{
+		{
+			Header: HeaderRetryAfterMS,
+			Units:  time.Millisecond,
+			Custom: nop,
+		},
+		{
+			Header: HeaderXMSRetryAfterMS,
+			Units:  time.Millisecond,
+			Custom: nop,
+		},
+		{
+			Header: HeaderRetryAfter,
+			Units:  time.Second,
+
+			// retry-after values are expressed in either number of
+			// seconds or an HTTP-date indicating when to try again
+			Custom: func(ra string) time.Duration {
+				t, err := time.Parse(time.RFC1123, ra)
+				if err != nil {
+					return 0
+				}
+				return time.Until(t)
+			},
+		},
+	}
+
+	// converting azcore options to tscore options
+	options.ShouldRetry = o.ShouldRetry
+	options.MaxRetries = o.MaxRetries
+	options.TryTimeout = o.TryTimeout
+	options.RetryDelay = o.RetryDelay
+	options.MaxRetryDelay = o.MaxRetryDelay
+	options.StatusCodes = o.StatusCodes
+
+	return options
 }
 
 // TypeOfT returns the type of the generic type param.

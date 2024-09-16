@@ -8,7 +8,6 @@ package runtime
 
 import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
-	tspolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 )
@@ -41,7 +40,10 @@ type PipelineOptions struct {
 }
 
 // TracingOptions contains tracing options for SDK developers.
-type TracingOptions = tspolicy.TracingOptions
+type TracingOptions struct {
+	// Namespace contains the value to use for the az.namespace span attribute.
+	Namespace string
+}
 
 // Pipeline represents a primitive for sending HTTP requests and receiving responses.
 // Its behavior can be extended by specifying policies during construction.
@@ -68,9 +70,9 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 		qp = append(qp, cp.Logging.AllowedQueryParams...)
 		cp.Logging.AllowedQueryParams = qp
 	}
-	// we put the includeResponsePolicy at the very beginning so that the raw response
+	// we put the captureResponsePolicy at the very beginning so that the raw response
 	// is populated with the final response (some policies might mutate the response)
-	policies := []policy.Policy{sdkpolicy.NewIncludeResponsePolicy(nil)}
+	policies := []policy.Policy{sdkpolicy.NewCaptureResponsePolicy(nil)}
 	if cp.APIVersion != "" {
 		policies = append(policies, newAPIVersionPolicy(cp.APIVersion, &plOpts.APIVersion))
 	}
@@ -83,7 +85,7 @@ func NewPipeline(module, version string, plOpts PipelineOptions, options *policy
 	policies = append(policies, plOpts.PerRetry...)
 	policies = append(policies, cp.PerRetryPolicies...)
 	policies = append(policies, sdkpolicy.NewHTTPHeaderPolicy(nil))
-	policies = append(policies, sdkpolicy.NewHTTPTracePolicy(&tspolicy.HTTPTraceOptions{AllowedQueryParams: cp.Logging.AllowedQueryParams}))
+	policies = append(policies, newHTTPTracePolicy(cp.Logging.AllowedQueryParams))
 	policies = append(policies, NewLogPolicy(&cp.Logging))
 	policies = append(policies, sdkpolicy.NewBodyDownloadPolicy(nil))
 	transport := cp.Transport

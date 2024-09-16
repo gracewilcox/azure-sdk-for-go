@@ -7,6 +7,10 @@ github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240805205919-2c4fc6d
 github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240805205919-2c4fc6db1367/go.mod h1:oXvwhTLKHXwGb8POEltrI0OM6d1OuCoAG+24UXq/KBo=
 github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240903205748-b998c7f9f3dc h1:cO4sj0O+n0W0kiOGi5m+K2Oxcptcp/10VGPWgZKU5bA=
 github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240903205748-b998c7f9f3dc/go.mod h1:oXvwhTLKHXwGb8POEltrI0OM6d1OuCoAG+24UXq/KBo=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240916185651-ac3d7527eba0 h1:XAQ7dLhjOMyZ7FfUEfr8IE+JU/X6FMkHD4ktD6pcq6Y=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240916185651-ac3d7527eba0/go.mod h1:oXvwhTLKHXwGb8POEltrI0OM6d1OuCoAG+24UXq/KBo=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240916233037-d0bcfedd80ae h1:uxemFLXe5fSZesN2JK3LurWstYXmiZBdzLP6Jz3JIR4=
+github.com/gracewilcox/azure-sdk-for-go/sdk/tscore v0.0.0-20240916233037-d0bcfedd80ae/go.mod h1:oXvwhTLKHXwGb8POEltrI0OM6d1OuCoAG+24UXq/KBo=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/kr/text v0.2.0/go.mod h1:eLer722TekiGuMkidMxC/pM04lWEeraHUUmBw8l2grE=

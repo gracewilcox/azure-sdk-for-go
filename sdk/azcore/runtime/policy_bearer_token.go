@@ -14,7 +14,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/errorinfo"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/temporal"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk"
+	tsruntime "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/runtime"
 )
 
 // BearerTokenPolicy authorizes requests with bearer tokens acquired from a TokenCredential.
@@ -37,7 +37,7 @@ type acquiringResourceState struct {
 // acquire acquires or updates the resource; only one
 // thread/goroutine at a time ever calls this function
 func acquire(state acquiringResourceState) (newResource exported.AccessToken, newExpiration time.Time, err error) {
-	tk, err := state.p.cred.GetToken(&sdk.ContextWithDeniedValues{Context: state.req.Raw().Context()}, state.tro)
+	tk, err := state.p.cred.GetToken((tsruntime.NewContextWithDeniedValues(state.req.Raw().Context(), []any{shared.CtxAPINameKey{}, shared.CtxWithTracingTracer{}})), state.tro)
 	if err != nil {
 		return exported.AccessToken{}, time.Time{}, err
 	}

@@ -22,7 +22,7 @@ import (
 	azpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/internal/log"
-	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk"
+	tsruntime "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/runtime"
 )
 
 const (
@@ -125,13 +125,13 @@ func (r *rpRegistrationPolicy) Do(req *azpolicy.Request) (*http.Response, error)
 			u:     r.endpoint,
 			subID: res.SubscriptionID,
 		}
-		if _, err = rpOps.Register(&sdk.ContextWithDeniedValues{Context: req.Raw().Context()}, rp); err != nil {
+		if _, err = rpOps.Register((tsruntime.NewContextWithDeniedValues(req.Raw().Context(), []any{shared.CtxAPINameKey{}, shared.CtxWithTracingTracer{}})), rp); err != nil {
 			logRegistrationExit(err)
 			return resp, err
 		}
 
 		// RP was registered, however we need to wait for the registration to complete
-		pollCtx, pollCancel := context.WithTimeout(&sdk.ContextWithDeniedValues{Context: req.Raw().Context()}, r.options.PollingDuration)
+		pollCtx, pollCancel := context.WithTimeout((tsruntime.NewContextWithDeniedValues(req.Raw().Context(), []any{shared.CtxAPINameKey{}, shared.CtxWithTracingTracer{}})), r.options.PollingDuration)
 		var lastRegState string
 		for {
 			// get the current registration state

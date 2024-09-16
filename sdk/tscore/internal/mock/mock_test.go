@@ -12,8 +12,6 @@ import (
 	"net/http"
 	"testing"
 	"time"
-
-	"golang.org/x/net/http2"
 )
 
 func TestStaticResponse(t *testing.T) {
@@ -199,78 +197,6 @@ func TestRepeatedError(t *testing.T) {
 
 func TestComplexResponse(t *testing.T) {
 	srv, close := NewServer()
-	defer close()
-	const body = "this is the response body"
-	srv.AppendResponse(
-		WithStatusCode(http.StatusOK),
-		WithBody([]byte(body)),
-		WithHeader("some", "value"),
-		WithSlowResponse(2*time.Second),
-	)
-	req, err := http.NewRequest(http.MethodGet, srv.URL(), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp, err := srv.Do(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected status code %d", resp.StatusCode)
-	}
-	if h := resp.Header.Get("some"); h != "value" {
-		t.Fatalf("unexpected header value %s", h)
-	}
-	r, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp.Body.Close()
-	if string(r) != body {
-		t.Fatalf("unexpected response body %s", string(r))
-	}
-}
-
-func TestComplexResponseTLS(t *testing.T) {
-	srv, close := NewTLSServer()
-	defer close()
-	const body = "this is the response body"
-	srv.AppendResponse(
-		WithStatusCode(http.StatusOK),
-		WithBody([]byte(body)),
-		WithHeader("some", "value"),
-		WithSlowResponse(2*time.Second),
-	)
-	req, err := http.NewRequest(http.MethodGet, srv.URL(), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp, err := srv.Do(req)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("unexpected status code %d", resp.StatusCode)
-	}
-	if h := resp.Header.Get("some"); h != "value" {
-		t.Fatalf("unexpected header value %s", h)
-	}
-	r, err := io.ReadAll(resp.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp.Body.Close()
-	if string(r) != body {
-		t.Fatalf("unexpected response body %s", string(r))
-	}
-}
-
-func TestTLSServerConfig(t *testing.T) {
-	cfg := &http.Server{}
-	if err := http2.ConfigureServer(cfg, new(http2.Server)); err != nil {
-		t.Fatal(err)
-	}
-	srv, close := NewTLSServer(WithTLSConfig(cfg.TLSConfig))
 	defer close()
 	const body = "this is the response body"
 	srv.AppendResponse(

@@ -26,12 +26,6 @@ type CtxWithRetryOptionsKey struct{}
 // CtxWithCaptureResponse is used as a context key for retrieving the raw response.
 type CtxWithCaptureResponse struct{}
 
-// CtxWithTracingTracer is used as a context key for adding/retrieving tracing.Tracer.
-type CtxWithTracingTracer struct{}
-
-// CtxAPINameKey is used as a context key for adding/retrieving the API name.
-type CtxAPINameKey struct{}
-
 // Delay waits for the duration to elapse or the context to be cancelled.
 func Delay(ctx context.Context, delay time.Duration) error {
 	select {
@@ -101,9 +95,9 @@ type ContextWithDeniedValues struct {
 	deniedValues []any
 }
 
-func NewContextWithDeniedValues(ctx context.Context, deniedValues []any) ContextWithDeniedValues {
+func NewContextWithDeniedValues(ctx context.Context, deniedValues []any) *ContextWithDeniedValues {
 	defaults := []any{CtxWithCaptureResponse{}, CtxWithHTTPHeaderKey{}, CtxWithRetryOptionsKey{}}
-	return ContextWithDeniedValues{
+	return &ContextWithDeniedValues{
 		Context:      ctx,
 		deniedValues: append(defaults, deniedValues...),
 	}

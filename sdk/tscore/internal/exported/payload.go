@@ -13,7 +13,7 @@ import (
 )
 
 // PayloadOptions contains the optional values for the Payload func.
-// NOT exported but used by azcore.
+// NOT exported but used by tscore.
 type PayloadOptions struct {
 	// BytesModifier receives the downloaded byte slice and returns an updated byte slice.
 	// Use this to modify the downloaded bytes in a payload (e.g. removing a BOM).
@@ -55,7 +55,7 @@ func Payload(resp *http.Response, opts *PayloadOptions) ([]byte, error) {
 
 // PayloadDownloaded returns true if the response body has already been downloaded.
 // This implies that the Payload() func above has been previously called.
-// NOT exported but used by azcore.
+// NOT exported but used by tsore.
 func PayloadDownloaded(resp *http.Response) bool {
 	_, ok := resp.Body.(*nopClosingBytesReader)
 	return ok

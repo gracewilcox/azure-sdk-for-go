@@ -13,16 +13,16 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 )
 
-type IncludeResponsePolicyOptions struct {
+type CaptureResponsePolicyOptions struct {
 	// placeholder for future options
 }
 
-func NewIncludeResponsePolicy(options *IncludeResponsePolicyOptions) pipeline.Policy {
-	return policyFunc(includeResponsePolicy)
+func NewCaptureResponsePolicy(options *CaptureResponsePolicyOptions) pipeline.Policy {
+	return policyFunc(captureResponsePolicy)
 }
 
 // includeResponsePolicy creates a policy that retrieves the raw HTTP response upon request
-func includeResponsePolicy(req *pipeline.Request) (*http.Response, error) {
+func captureResponsePolicy(req *pipeline.Request) (*http.Response, error) {
 	resp, err := req.Next()
 	if resp == nil {
 		return resp, err

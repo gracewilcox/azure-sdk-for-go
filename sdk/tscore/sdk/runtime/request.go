@@ -102,7 +102,7 @@ func MarshalAsByteArray(req *pipeline.Request, v []byte, format Base64Encoding) 
 	// send as a JSON string
 	encode := fmt.Sprintf("\"%s\"", EncodeByteArray(v, format))
 	// tsp generated code can set Content-Type so we must prefer that
-	return pipeline.SetBody(req, exported.NopCloser(strings.NewReader(encode)), shared.ContentTypeAppJSON, false)
+	return exported.SetBody(req, exported.NopCloser(strings.NewReader(encode)), shared.ContentTypeAppJSON, false)
 }
 
 // MarshalAsJSON calls json.Marshal() to get the JSON encoding of v then calls SetBody.
@@ -112,7 +112,7 @@ func MarshalAsJSON(req *pipeline.Request, v any) error {
 		return fmt.Errorf("error marshalling type %T: %s", v, err)
 	}
 	// tsp generated code can set Content-Type so we must prefer that
-	return pipeline.SetBody(req, exported.NopCloser(bytes.NewReader(b)), shared.ContentTypeAppJSON, false)
+	return exported.SetBody(req, exported.NopCloser(bytes.NewReader(b)), shared.ContentTypeAppJSON, false)
 }
 
 // MarshalAsXML calls xml.Marshal() to get the XML encoding of v then calls SetBody.
@@ -249,10 +249,6 @@ func SetMultipartFormData(req *pipeline.Request, formData map[string]any) error 
 	}
 	return req.SetBody(exported.NopCloser(bytes.NewReader(body.Bytes())), writer.FormDataContentType())
 }
-
-// TODO figure out how to remove, not necessary
-// CtxAPINameKey is used as a context key for adding/retrieving the API name.
-type CtxAPINameKey = shared.CtxAPINameKey
 
 // NewUUID returns a new UUID using the RFC4122 algorithm.
 func NewUUID() (string, error) {

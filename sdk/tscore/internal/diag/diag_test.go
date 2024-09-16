@@ -7,32 +7,9 @@
 package diag
 
 import (
-	"regexp"
 	"strings"
 	"testing"
 )
-
-func TestCallerBasic(t *testing.T) {
-	c := Caller(0)
-	matched, err := regexp.MatchString(`/diag_test.go:\d+$`, c)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !matched {
-		t.Fatalf("got %s", c)
-	}
-}
-
-func TestCallerSkipFrame(t *testing.T) {
-	c := Caller(1)
-	matched, err := regexp.MatchString(`/testing.go:\d+$`, c)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !matched {
-		t.Fatalf("got %s", c)
-	}
-}
 
 func TestStackTraceBasic(t *testing.T) {
 	trace := StackTrace(0, 1)

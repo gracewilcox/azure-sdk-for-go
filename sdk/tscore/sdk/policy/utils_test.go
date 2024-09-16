@@ -16,7 +16,7 @@ type testPipelineOptions struct {
 	Logging options.LogOptions
 
 	// Retry configures the built-in retry policy.
-	Retry options.RetryOptions
+	Retry RetryPolicyOptions
 
 	// Transport sets the transport for HTTP requests.
 	Transport pipeline.Transporter
@@ -37,9 +37,9 @@ func newTestPipeline(options *testPipelineOptions) pipeline.Pipeline {
 		options = &testPipelineOptions{}
 	}
 
-	// we put the includeResponsePolicy at the very beginning so that the raw response
+	// we put the captureResponsePolicy at the very beginning so that the raw response
 	// is populated with the final response (some policies might mutate the response)
-	policies := []pipeline.Policy{NewIncludeResponsePolicy(nil)}
+	policies := []pipeline.Policy{NewCaptureResponsePolicy(nil)}
 	policies = append(policies, options.PerCall...)
 	policies = append(policies, NewRetryPolicy(&options.Retry))
 	policies = append(policies, options.PerRetry...)

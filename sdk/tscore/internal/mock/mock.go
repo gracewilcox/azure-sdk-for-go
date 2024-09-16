@@ -7,7 +7,6 @@
 package mock
 
 import (
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -62,21 +61,6 @@ func NewServer(cfg ...ServerOption) (*Server, func()) {
 	return s, func() { s.srv.Close() }
 }
 
-// NewTLSServer creates a new Server object and applies any additional ServerOption
-// configurations provided on the Server.
-// The returned close func must be called when the server is no longer needed.
-// It will return nil for both the server and close func if it encountered an error
-// when configuring HTTP2 for the new TLS server.
-func NewTLSServer(cfg ...ServerOption) (*Server, func()) {
-	s := newServer()
-	s.srv = httptest.NewUnstartedServer(http.HandlerFunc(s.serveHTTP))
-	for _, c := range cfg {
-		c.apply(s)
-	}
-	s.srv.StartTLS()
-	return s, func() { s.srv.Close() }
-}
-
 // ServerConfig returns the server config. Please note this should not be
 // modified since Start or StartTLS has already been called on the server.
 func (s *Server) ServerConfig() *http.Server {
@@ -119,7 +103,7 @@ func (s *Server) URL() string {
 	return s.srv.URL
 }
 
-// Do implements the azcore.Transport interface on Server.
+// Do implements the tscore.Transport interface on Server.
 // Calling this when the response queue is empty and no static
 // response has been set will cause a panic.
 func (s *Server) Do(req *http.Request) (*http.Response, error) {
@@ -241,32 +225,6 @@ func (s *Server) SetResponse(opts ...ResponseOption) {
 // ServerOption is an abstraction for configuring a mock Server.
 type ServerOption interface {
 	apply(s *Server)
-}
-
-type fnSrvOpt func(*Server)
-
-func (fn fnSrvOpt) apply(s *Server) {
-	fn(s)
-}
-
-func WithTransformAllRequestsToTestServerUrl() ServerOption {
-	return fnSrvOpt(func(s *Server) {
-		s.routeAllRequestsToMockServer = true
-	})
-}
-
-// WithTLSConfig sets the given TLS config on server.
-func WithTLSConfig(cfg *tls.Config) ServerOption {
-	return fnSrvOpt(func(s *Server) {
-		s.srv.TLS = cfg
-	})
-}
-
-// WithHTTP2Enabled sets the HTTP2Enabled field on the testserver to the boolean value provided.
-func WithHTTP2Enabled(enabled bool) ServerOption {
-	return fnSrvOpt(func(s *Server) {
-		s.srv.EnableHTTP2 = enabled
-	})
 }
 
 // ResponseOption is an abstraction for configuring a mock HTTP response.

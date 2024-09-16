@@ -7,8 +7,6 @@
 package exported
 
 import (
-	"encoding/base64"
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -39,38 +37,6 @@ func HasStatusCode(resp *http.Response, statusCodes ...int) bool {
 		}
 	}
 	return false
-}
-
-// DecodeByteArray will base-64 decode the provided string into v.
-// Exported as runtime.DecodeByteArray()
-func DecodeByteArray(s string, v *[]byte, format Base64Encoding) error {
-	if len(s) == 0 {
-		return nil
-	}
-	payload := string(s)
-	if payload[0] == '"' {
-		// remove surrounding quotes
-		payload = payload[1 : len(payload)-1]
-	}
-	switch format {
-	case Base64StdFormat:
-		decoded, err := base64.StdEncoding.DecodeString(payload)
-		if err == nil {
-			*v = decoded
-			return nil
-		}
-		return err
-	case Base64URLFormat:
-		// use raw encoding as URL format should not contain any '=' characters
-		decoded, err := base64.RawURLEncoding.DecodeString(payload)
-		if err == nil {
-			*v = decoded
-			return nil
-		}
-		return err
-	default:
-		return fmt.Errorf("unrecognized byte array format: %d", format)
-	}
 }
 
 // Drain reads the response body to completion then closes it.  The bytes read are discarded.

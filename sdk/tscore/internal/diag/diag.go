@@ -12,19 +12,6 @@ import (
 	"strings"
 )
 
-// Caller returns the file and line number of a frame on the caller's stack.
-// If the funtion fails an empty string is returned.
-// skipFrames - the number of frames to skip when determining the caller.
-// Passing a value of 0 will return the immediate caller of this function.
-func Caller(skipFrames int) string {
-	if pc, file, line, ok := runtime.Caller(skipFrames + 1); ok {
-		// the skipFrames + 1 is to skip ourselves
-		frame := runtime.FuncForPC(pc)
-		return fmt.Sprintf("%s()\n\t%s:%d", frame.Name(), file, line)
-	}
-	return ""
-}
-
 // StackTrace returns a formatted stack trace string.
 // If the funtion fails an empty string is returned.
 // skipFrames - the number of stack frames to skip before composing the trace string.

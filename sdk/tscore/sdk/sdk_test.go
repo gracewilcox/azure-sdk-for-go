@@ -16,6 +16,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/mock"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/options"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
+	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,7 +61,7 @@ func TestNewPipelineCustomPolicies(t *testing.T) {
 		PerCall:   []pipeline.Policy{defaultPerCallPolicy, customPerCallPolicy},
 		PerRetry:  []pipeline.Policy{defaultPerRetryPolicy, customPerRetryPolicy},
 		Transport: srv,
-		Retry:     options.RetryOptions{RetryDelay: time.Microsecond, MaxRetries: 1},
+		Retry:     policy.RetryPolicyOptions{RetryOptions: options.RetryOptions{RetryDelay: time.Microsecond, MaxRetries: 1}},
 	})
 	_, err = pl.Do(req)
 	require.NoError(t, err)

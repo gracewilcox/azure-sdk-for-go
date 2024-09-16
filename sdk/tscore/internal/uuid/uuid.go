@@ -8,9 +8,7 @@ package uuid
 
 import (
 	"crypto/rand"
-	"errors"
 	"fmt"
-	"strconv"
 )
 
 // The UUID reserved variants.
@@ -40,37 +38,4 @@ func New() (UUID, error) {
 // String returns the UUID in "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" format.
 func (u UUID) String() string {
 	return fmt.Sprintf("%x-%x-%x-%x-%x", u[0:4], u[4:6], u[6:8], u[8:10], u[10:])
-}
-
-// Parse parses a string formatted as "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-// or "{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}" into a UUID.
-func Parse(s string) (UUID, error) {
-	var uuid UUID
-	// ensure format
-	switch len(s) {
-	case 36:
-		// xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-	case 38:
-		// {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
-		s = s[1:37]
-	default:
-		return uuid, errors.New("invalid UUID format")
-	}
-	if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
-		return uuid, errors.New("invalid UUID format")
-	}
-	// parse chunks
-	for i, x := range [16]int{
-		0, 2, 4, 6,
-		9, 11,
-		14, 16,
-		19, 21,
-		24, 26, 28, 30, 32, 34} {
-		b, err := strconv.ParseUint(s[x:x+2], 16, 8)
-		if err != nil {
-			return uuid, fmt.Errorf("invalid UUID format: %s", err)
-		}
-		uuid[i] = byte(b)
-	}
-	return uuid, nil
 }

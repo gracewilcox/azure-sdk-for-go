@@ -7,12 +7,9 @@
 package exported
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestNopCloser(t *testing.T) {
@@ -35,22 +32,4 @@ func TestHasStatusCode(t *testing.T) {
 	if !HasStatusCode(&http.Response{StatusCode: http.StatusOK}, http.StatusAccepted, http.StatusOK, http.StatusNoContent) {
 		t.Fatal("unexpected failure")
 	}
-}
-
-func TestDecodeByteArray(t *testing.T) {
-	out := []byte{}
-	require.NoError(t, DecodeByteArray("", &out, Base64StdFormat))
-	require.Empty(t, out)
-	const (
-		stdEncoding = "VGVzdERlY29kZUJ5dGVBcnJheQ=="
-		urlEncoding = "VGVzdERlY29kZUJ5dGVBcnJheQ"
-		decoded     = "TestDecodeByteArray"
-	)
-	require.NoError(t, DecodeByteArray(stdEncoding, &out, Base64StdFormat))
-	require.EqualValues(t, decoded, string(out))
-	require.NoError(t, DecodeByteArray(urlEncoding, &out, Base64URLFormat))
-	require.EqualValues(t, decoded, string(out))
-	require.NoError(t, DecodeByteArray(fmt.Sprintf("\"%s\"", stdEncoding), &out, Base64StdFormat))
-	require.EqualValues(t, decoded, string(out))
-	require.Error(t, DecodeByteArray(stdEncoding, &out, 123))
 }

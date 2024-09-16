@@ -79,8 +79,10 @@ func TestDownloadBodyFail(t *testing.T) {
 	// download policy is automatically added during pipeline construction
 	pl := newTestPipeline(&testPipelineOptions{
 		Transport: srv,
-		Retry: options.RetryOptions{
-			RetryDelay: 10 * time.Millisecond,
+		Retry: RetryPolicyOptions{
+			RetryOptions: options.RetryOptions{
+				RetryDelay: 10 * time.Millisecond,
+			},
 		},
 	})
 	req, err := pipeline.NewRequest(context.Background(), http.MethodGet, srv.URL())

@@ -27,7 +27,7 @@ const (
 	defaultMaxRetries = 3
 )
 
-func setDefaults(o *tsoptions.RetryOptions) {
+func setDefaults(o *RetryPolicyOptions) {
 	if o.MaxRetries == 0 {
 		o.MaxRetries = defaultMaxRetries
 	} else if o.MaxRetries < 0 {
@@ -79,7 +79,7 @@ func setDefaults(o *tsoptions.RetryOptions) {
 	}
 }
 
-func calcDelay(o tsoptions.RetryOptions, try int32) time.Duration { // try is >=1; never 0
+func calcDelay(o RetryPolicyOptions, try int32) time.Duration { // try is >=1; never 0
 	delay := time.Duration((1<<try)-1) * o.RetryDelay
 
 	// Introduce some jitter:  [0.0, 1.0) / 2 = [0.0, 0.5) + 0.8 = [0.8, 1.3)
@@ -90,25 +90,43 @@ func calcDelay(o tsoptions.RetryOptions, try int32) time.Duration { // try is >=
 	return delay
 }
 
+type RetryPolicyOptions struct {
+	// ShouldRetry evaluates if the retry policy should retry the request.
+	// When specified, the function overrides comparison against the list of
+	// HTTP status codes and error checking within the retry policy. Context
+	// and NonRetriable errors remain evaluated before calling ShouldRetry.
+	// The *http.Response and error parameters are mutually exclusive, i.e.
+	// if one is nil, the other is not nil.
+	// A return value of true means the retry policy should retry.
+	ShouldRetry func(*http.Response, error) bool
+
+	RetryAfterOptions []RetryAfterOptions
+
+	tsoptions.RetryOptions
+}
+
+type RetryAfterOptions = shared.RetryAfterOptions
+
 // NewRetryPolicy creates a policy object configured using the specified options.
 // Pass nil to accept the default values; this is the same as passing a zero-value options.
-func NewRetryPolicy(o *tsoptions.RetryOptions) pipeline.Policy {
+func NewRetryPolicy(o *RetryPolicyOptions) pipeline.Policy {
 	if o == nil {
-		o = &tsoptions.RetryOptions{}
+		o = &RetryPolicyOptions{}
 	}
 	p := &retryPolicy{options: *o}
 	return p
 }
 
 type retryPolicy struct {
-	options tsoptions.RetryOptions
+	options RetryPolicyOptions
 }
 
 func (p *retryPolicy) Do(req *pipeline.Request) (resp *http.Response, err error) {
 	options := p.options
 	// check if the retry options have been overridden for this call
 	if override := req.Raw().Context().Value(shared.CtxWithRetryOptionsKey{}); override != nil {
-		options = override.(tsoptions.RetryOptions)
+		retryOptions := override.(tsoptions.RetryOptions)
+		options.RetryOptions = retryOptions
 	}
 	setDefaults(&options)
 	// Exponential retry algorithm: ((2 ^ attempt) - 1) * delay * random(0.8, 1.2)

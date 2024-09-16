@@ -8,6 +8,7 @@ package runtime
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk"
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/pipeline"
 	sdkpolicy "github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/sdk/policy"
+	"github.com/stretchr/testify/require"
 )
 
 func TestResponseUnmarshalXML(t *testing.T) {
@@ -202,4 +204,22 @@ func TestResponseUnmarshalAsByteArrayStdFormat(t *testing.T) {
 	if string(ba) != "a string that gets encoded with base64url" {
 		t.Fatalf("bad payload, got %s", string(ba))
 	}
+}
+
+func TestDecodeByteArray(t *testing.T) {
+	out := []byte{}
+	require.NoError(t, DecodeByteArray("", &out, Base64StdFormat))
+	require.Empty(t, out)
+	const (
+		stdEncoding = "VGVzdERlY29kZUJ5dGVBcnJheQ=="
+		urlEncoding = "VGVzdERlY29kZUJ5dGVBcnJheQ"
+		decoded     = "TestDecodeByteArray"
+	)
+	require.NoError(t, DecodeByteArray(stdEncoding, &out, Base64StdFormat))
+	require.EqualValues(t, decoded, string(out))
+	require.NoError(t, DecodeByteArray(urlEncoding, &out, Base64URLFormat))
+	require.EqualValues(t, decoded, string(out))
+	require.NoError(t, DecodeByteArray(fmt.Sprintf("\"%s\"", stdEncoding), &out, Base64StdFormat))
+	require.EqualValues(t, decoded, string(out))
+	require.Error(t, DecodeByteArray(stdEncoding, &out, 123))
 }

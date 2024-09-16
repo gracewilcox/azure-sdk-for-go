@@ -9,6 +9,6 @@ import (
 	"github.com/gracewilcox/azure-sdk-for-go/sdk/tscore/internal/shared"
 )
 
-func NewContextWithDeniedValues(ctx context.Context, deniedValues []any) {
-	shared.NewContextWithDeniedValues(ctx, deniedValues)
+func NewContextWithDeniedValues(ctx context.Context, deniedValues []any) *shared.ContextWithDeniedValues {
+	return shared.NewContextWithDeniedValues(ctx, deniedValues)
 }

@@ -1,4 +1,4 @@
-//go:generate tsp-client update --output-dir ./settings
+//go:generate tsp-client update --output-dir ./settings --local-spec-repo /home/grace/code/azure-rest-api-specs/specification/keyvault/Security.KeyVault.Settings
 //go:generate tsp-client update --output-dir ./rbac
 //go:generate tsp-client update --output-dir ./backup
 //go:generate go run ./internal/generate/transforms.go

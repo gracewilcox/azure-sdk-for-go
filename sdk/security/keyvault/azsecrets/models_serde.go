@@ -283,7 +283,9 @@ func (s SecretAttributes) MarshalJSON() ([]byte, error) {
 	populateTimeUnix(objectMap, "exp", s.Expires)
 	populateTimeUnix(objectMap, "nbf", s.NotBefore)
 	populate(objectMap, "recoverableDays", s.RecoverableDays)
-	populate(objectMap, "recoveryLevel", s.RecoveryLevel)
+	if s.RecoveryLevel != nil {
+		objectMap["recoveryLevel"] = "string"
+	}
 	populateTimeUnix(objectMap, "updated", s.Updated)
 	return json.Marshal(objectMap)
 }

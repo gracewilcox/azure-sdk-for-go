@@ -138,6 +138,7 @@ type SecretAttributes struct {
 	// READ-ONLY; Reflects the deletion recovery level currently in effect for secrets in the current vault. If it contains 'Purgeable',
 	// the secret can be permanently deleted by a privileged user; otherwise, only the system can purge the secret, at the end
 	// of the retention interval.
+	// Field has constant value "string", any specified value is ignored.
 	RecoveryLevel *string
 
 	// READ-ONLY; Last updated time in UTC.

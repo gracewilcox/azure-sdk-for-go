@@ -264,38 +264,28 @@ func (client *FileSystemClient) getPropertiesHandleResponse(resp *http.Response)
 	return result, nil
 }
 
-// NewListBlobHierarchySegmentPager - The List Blobs operation returns a list of the blobs under the specified container.
+// ListBlobHierarchySegment - The List Blobs operation returns a list of the blobs under the specified container.
+// If the operation fails it returns an *azcore.ResponseError type.
 //
 // Generated from API version 2026-06-06
-//   - options - FileSystemClientListBlobHierarchySegmentOptions contains the optional parameters for the FileSystemClient.NewListBlobHierarchySegmentPager
+//   - options - FileSystemClientListBlobHierarchySegmentOptions contains the optional parameters for the FileSystemClient.ListBlobHierarchySegment
 //     method.
-func (client *FileSystemClient) NewListBlobHierarchySegmentPager(options *FileSystemClientListBlobHierarchySegmentOptions) *runtime.Pager[FileSystemClientListBlobHierarchySegmentResponse] {
-	return runtime.NewPager(runtime.PagingHandler[FileSystemClientListBlobHierarchySegmentResponse]{
-		More: func(page FileSystemClientListBlobHierarchySegmentResponse) bool {
-			return page.NextMarker != nil && len(*page.NextMarker) > 0
-		},
-		Fetcher: func(ctx context.Context, page *FileSystemClientListBlobHierarchySegmentResponse) (FileSystemClientListBlobHierarchySegmentResponse, error) {
-			nextOpts := FileSystemClientListBlobHierarchySegmentOptions{}
-			if options != nil {
-				nextOpts = *options
-			}
-			if page != nil {
-				nextOpts.Marker = page.NextMarker
-			}
-			req, err := client.listBlobHierarchySegmentCreateRequest(ctx, &nextOpts)
-			if err != nil {
-				return FileSystemClientListBlobHierarchySegmentResponse{}, err
-			}
-			resp, err := client.internal.Pipeline().Do(req)
-			if err != nil {
-				return FileSystemClientListBlobHierarchySegmentResponse{}, err
-			}
-			if !runtime.HasStatusCode(resp, http.StatusOK) {
-				return FileSystemClientListBlobHierarchySegmentResponse{}, runtime.NewResponseError(resp)
-			}
-			return client.listBlobHierarchySegmentHandleResponse(resp)
-		},
-	})
+func (client *FileSystemClient) ListBlobHierarchySegment(ctx context.Context, options *FileSystemClientListBlobHierarchySegmentOptions) (FileSystemClientListPathHierarchySegmentResponse, error) {
+	var err error
+	req, err := client.listBlobHierarchySegmentCreateRequest(ctx, options)
+	if err != nil {
+		return FileSystemClientListPathHierarchySegmentResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return FileSystemClientListPathHierarchySegmentResponse{}, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
+		err = runtime.NewResponseError(httpResp)
+		return FileSystemClientListPathHierarchySegmentResponse{}, err
+	}
+	resp, err := client.listBlobHierarchySegmentHandleResponse(httpResp)
+	return resp, err
 }
 
 // listBlobHierarchySegmentCreateRequest creates the ListBlobHierarchySegment request.
@@ -337,8 +327,8 @@ func (client *FileSystemClient) listBlobHierarchySegmentCreateRequest(ctx contex
 }
 
 // listBlobHierarchySegmentHandleResponse handles the ListBlobHierarchySegment response.
-func (client *FileSystemClient) listBlobHierarchySegmentHandleResponse(resp *http.Response) (FileSystemClientListBlobHierarchySegmentResponse, error) {
-	result := FileSystemClientListBlobHierarchySegmentResponse{}
+func (client *FileSystemClient) listBlobHierarchySegmentHandleResponse(resp *http.Response) (FileSystemClientListPathHierarchySegmentResponse, error) {
+	result := FileSystemClientListPathHierarchySegmentResponse{}
 	if val := resp.Header.Get("x-ms-client-request-id"); val != "" {
 		result.ClientRequestID = &val
 	}
@@ -348,7 +338,7 @@ func (client *FileSystemClient) listBlobHierarchySegmentHandleResponse(resp *htt
 	if val := resp.Header.Get("Date"); val != "" {
 		date, err := time.Parse(time.RFC1123, val)
 		if err != nil {
-			return FileSystemClientListBlobHierarchySegmentResponse{}, err
+			return FileSystemClientListPathHierarchySegmentResponse{}, err
 		}
 		result.Date = &date
 	}
@@ -358,8 +348,8 @@ func (client *FileSystemClient) listBlobHierarchySegmentHandleResponse(resp *htt
 	if val := resp.Header.Get("x-ms-version"); val != "" {
 		result.Version = &val
 	}
-	if err := runtime.UnmarshalAsXML(resp, &result.ListBlobsHierarchySegmentResponse); err != nil {
-		return FileSystemClientListBlobHierarchySegmentResponse{}, err
+	if err := runtime.UnmarshalAsXML(resp, &result.ListPathsHierarchySegmentResponse); err != nil {
+		return FileSystemClientListPathHierarchySegmentResponse{}, err
 	}
 	return result, nil
 }

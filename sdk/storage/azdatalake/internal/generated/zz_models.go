@@ -21,17 +21,101 @@ type ACLFailedEntry struct {
 	Type *string
 }
 
-// BlobHierarchyListSegment - A segment of blob hierarchy items.
-type BlobHierarchyListSegment struct {
-	// REQUIRED; The blob items.
-	BlobItems []*BlobItem `xml:"Blob"`
+// FileSystemItem - Represents a filesystem.
+type FileSystemItem struct {
+	// The entity tag.
+	ETag *azcore.ETag
 
-	// The blob prefixes.
-	BlobPrefixes []*BlobPrefix `xml:"BlobPrefix"`
+	// The last modified time.
+	LastModified *string
+
+	// The filesystem name.
+	Name *string
 }
 
-// BlobItem - An Azure Storage blob.
-type BlobItem struct {
+// FileSystemList - A list of filesystems.
+type FileSystemList struct {
+	// The list of filesystems.
+	Filesystems []*FileSystemItem
+}
+
+// ListPathsHierarchySegmentResponse - An enumeration of blobs.
+type ListPathsHierarchySegmentResponse struct {
+	// REQUIRED; The container name.
+	ContainerName *string `xml:"ContainerName,attr"`
+
+	// REQUIRED; The blob segment.
+	Segment *PathHierarchyListSegment `xml:"Blobs"`
+
+	// REQUIRED; The service endpoint.
+	ServiceEndpoint *string `xml:"ServiceEndpoint,attr"`
+
+	// The delimiter used for hierarchy.
+	Delimiter *string `xml:"Delimiter"`
+
+	// The marker for pagination.
+	Marker *string `xml:"Marker"`
+
+	// The maximum number of results.
+	MaxResults *int32 `xml:"MaxResults"`
+
+	// The next marker for pagination.
+	NextMarker *string `xml:"NextMarker"`
+
+	// The prefix filter.
+	Prefix *string `xml:"Prefix"`
+}
+
+// Path - Represents a path in a filesystem.
+type Path struct {
+	// The content length.
+	ContentLength *int64
+
+	// The creation time.
+	CreationTime *string
+
+	// The entity tag.
+	ETag *azcore.ETag
+
+	// The encryption context.
+	EncryptionContext *string
+
+	// The name of the encryption scope under which the blob is encrypted.
+	EncryptionScope *string
+
+	// The expiry time.
+	ExpiryTime *string
+
+	// The owning group of the path.
+	Group *string
+
+	// Whether the path is a directory.
+	IsDirectory *bool
+
+	// The last modified time.
+	LastModified *string
+
+	// The path name.
+	Name *string
+
+	// The owner of the path.
+	Owner *string
+
+	// The POSIX access permissions.
+	Permissions *string
+}
+
+// PathHierarchyListSegment - A segment of blob hierarchy items.
+type PathHierarchyListSegment struct {
+	// REQUIRED; The blob items.
+	PathItems []*PathItemInternal `xml:"Blob"`
+
+	// The blob prefixes.
+	BlobPrefixes []*PathPrefix `xml:"BlobPrefix"`
+}
+
+// PathItemInternal - An Azure Storage blob.
+type PathItemInternal struct {
 	// REQUIRED; Whether the blob is deleted.
 	Deleted *bool `xml:"Deleted"`
 
@@ -39,7 +123,7 @@ type BlobItem struct {
 	Name *string `xml:"Name"`
 
 	// REQUIRED; The blob properties.
-	Properties *BlobPropertiesInternal `xml:"Properties"`
+	Properties *PathPropertiesInternal `xml:"Properties"`
 
 	// REQUIRED; The snapshot.
 	Snapshot *string `xml:"Snapshot"`
@@ -54,14 +138,20 @@ type BlobItem struct {
 	VersionID *string `xml:"VersionId"`
 }
 
-// BlobPrefix - A blob prefix.
-type BlobPrefix struct {
+// PathList - A list of paths.
+type PathList struct {
+	// The list of paths.
+	Paths []*Path
+}
+
+// PathPrefix - A blob prefix.
+type PathPrefix struct {
 	// REQUIRED; The prefix name.
 	Name *string `xml:"Name"`
 }
 
-// BlobPropertiesInternal - Properties of a blob.
-type BlobPropertiesInternal struct {
+// PathPropertiesInternal - Properties of a blob.
+type PathPropertiesInternal struct {
 	// REQUIRED; The entity tag.
 	Etag *azcore.ETag `xml:"Etag"`
 
@@ -151,96 +241,6 @@ type BlobPropertiesInternal struct {
 
 	// The tag count.
 	TagCount *int32 `xml:"TagCount"`
-}
-
-// FileSystemItem - Represents a filesystem.
-type FileSystemItem struct {
-	// The entity tag.
-	ETag *azcore.ETag
-
-	// The last modified time.
-	LastModified *string
-
-	// The filesystem name.
-	Name *string
-}
-
-// FileSystemList - A list of filesystems.
-type FileSystemList struct {
-	// The list of filesystems.
-	Filesystems []*FileSystemItem
-}
-
-// ListBlobsHierarchySegmentResponse - An enumeration of blobs.
-type ListBlobsHierarchySegmentResponse struct {
-	// REQUIRED; The container name.
-	ContainerName *string `xml:"ContainerName,attr"`
-
-	// REQUIRED; The blob segment.
-	Segment *BlobHierarchyListSegment `xml:"Blobs"`
-
-	// REQUIRED; The service endpoint.
-	ServiceEndpoint *string `xml:"ServiceEndpoint,attr"`
-
-	// The delimiter used for hierarchy.
-	Delimiter *string `xml:"Delimiter"`
-
-	// The marker for pagination.
-	Marker *string `xml:"Marker"`
-
-	// The maximum number of results.
-	MaxResults *int32 `xml:"MaxResults"`
-
-	// The next marker for pagination.
-	NextMarker *string `xml:"NextMarker"`
-
-	// The prefix filter.
-	Prefix *string `xml:"Prefix"`
-}
-
-// PathItem - Represents a path in a filesystem.
-type PathItem struct {
-	// The content length.
-	ContentLength *int64
-
-	// The creation time.
-	CreationTime *string
-
-	// The entity tag.
-	ETag *azcore.ETag
-
-	// The encryption context.
-	EncryptionContext *string
-
-	// The name of the encryption scope under which the blob is encrypted.
-	EncryptionScope *string
-
-	// The expiry time.
-	ExpiryTime *string
-
-	// The owning group of the path.
-	Group *string
-
-	// Whether the path is a directory.
-	IsDirectory *bool
-
-	// The last modified time.
-	LastModified *string
-
-	// The path name.
-	Name *string
-
-	// The owner of the path.
-	Owner *string
-
-	// The POSIX access permissions.
-	Permissions *string
-}
-
-// PathList - A list of paths.
-type PathList struct {
-	// The list of paths.
-	Paths []*PathItem
 }
 
 // SetAccessControlRecursiveResponse - The response for set access control recursive operations.

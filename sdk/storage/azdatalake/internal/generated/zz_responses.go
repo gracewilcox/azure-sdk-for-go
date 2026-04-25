@@ -81,10 +81,10 @@ type FileSystemClientGetPropertiesResponse struct {
 	Version *string
 }
 
-// FileSystemClientListBlobHierarchySegmentResponse contains the response from method FileSystemClient.NewListBlobHierarchySegmentPager.
-type FileSystemClientListBlobHierarchySegmentResponse struct {
+// FileSystemClientListPathHierarchySegmentResponse contains the response from method FileSystemClient.ListBlobHierarchySegment.
+type FileSystemClientListPathHierarchySegmentResponse struct {
 	// An enumeration of blobs.
-	ListBlobsHierarchySegmentResponse
+	ListPathsHierarchySegmentResponse
 
 	// Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage
 	// analytics logging is enabled.

@@ -115,13 +115,15 @@ type ListBlobsShowOnly string
 
 const (
 	// ListBlobsShowOnlyDeleted - Show only deleted blobs.
-	ListBlobsShowOnlyDeleted ListBlobsShowOnly = "deleted"
+	ListBlobsShowOnlyDeleted     ListBlobsShowOnly = "deleted"
+	ListBlobsShowOnlyDirectories ListBlobsShowOnly = "directories"
 )
 
 // PossibleListBlobsShowOnlyValues returns the possible values for the ListBlobsShowOnly const type.
 func PossibleListBlobsShowOnlyValues() []ListBlobsShowOnly {
 	return []ListBlobsShowOnly{
 		ListBlobsShowOnlyDeleted,
+		ListBlobsShowOnlyDirectories,
 	}
 }
 

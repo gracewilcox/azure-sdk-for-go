@@ -55,7 +55,7 @@ type FileSystemClientGetPropertiesOptions struct {
 	Timeout *int32
 }
 
-// FileSystemClientListBlobHierarchySegmentOptions contains the optional parameters for the FileSystemClient.NewListBlobHierarchySegmentPager
+// FileSystemClientListBlobHierarchySegmentOptions contains the optional parameters for the FileSystemClient.ListBlobHierarchySegment
 // method.
 type FileSystemClientListBlobHierarchySegmentOptions struct {
 	// Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage

@@ -50,123 +50,6 @@ func (a *ACLFailedEntry) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalXML implements the xml.Marshaller interface for type BlobHierarchyListSegment.
-func (b BlobHierarchyListSegment) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
-	start.Name.Local = "Blobs"
-	type alias BlobHierarchyListSegment
-	aux := &struct {
-		*alias
-		BlobItems    *[]*BlobItem   `xml:"Blob"`
-		BlobPrefixes *[]*BlobPrefix `xml:"BlobPrefix"`
-	}{
-		alias: (*alias)(&b),
-	}
-	if b.BlobItems != nil {
-		aux.BlobItems = &b.BlobItems
-	}
-	if b.BlobPrefixes != nil {
-		aux.BlobPrefixes = &b.BlobPrefixes
-	}
-	return enc.EncodeElement(aux, start)
-}
-
-// MarshalXML implements the xml.Marshaller interface for type BlobItem.
-func (b BlobItem) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
-	start.Name.Local = "Blob"
-	type alias BlobItem
-	aux := &struct {
-		*alias
-	}{
-		alias: (*alias)(&b),
-	}
-	return enc.EncodeElement(aux, start)
-}
-
-// MarshalXML implements the xml.Marshaller interface for type BlobPropertiesInternal.
-func (b BlobPropertiesInternal) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
-	start.Name.Local = "Properties"
-	type alias BlobPropertiesInternal
-	aux := &struct {
-		*alias
-		AccessTierChangeTime *datetime.RFC1123 `xml:"AccessTierChangeTime"`
-		ContentMD5           *string           `xml:"Content-MD5"`
-		CopyCompletionTime   *datetime.RFC1123 `xml:"CopyCompletionTime"`
-		CreationTime         *datetime.RFC1123 `xml:"Creation-Time"`
-		DeleteTime           *datetime.RFC1123 `xml:"DeleteTime"`
-		DeletedTime          *datetime.RFC1123 `xml:"DeletedTime"`
-		ExpiresOn            *datetime.RFC1123 `xml:"Expiry-Time"`
-		LastAccessedOn       *datetime.RFC1123 `xml:"LastAccessTime"`
-		LastModified         *datetime.RFC1123 `xml:"Last-Modified"`
-	}{
-		alias:                (*alias)(&b),
-		AccessTierChangeTime: (*datetime.RFC1123)(b.AccessTierChangeTime),
-		CopyCompletionTime:   (*datetime.RFC1123)(b.CopyCompletionTime),
-		CreationTime:         (*datetime.RFC1123)(b.CreationTime),
-		DeleteTime:           (*datetime.RFC1123)(b.DeleteTime),
-		DeletedTime:          (*datetime.RFC1123)(b.DeletedTime),
-		ExpiresOn:            (*datetime.RFC1123)(b.ExpiresOn),
-		LastAccessedOn:       (*datetime.RFC1123)(b.LastAccessedOn),
-		LastModified:         (*datetime.RFC1123)(b.LastModified),
-	}
-	if b.ContentMD5 != nil {
-		encodedContentMD5 := runtime.EncodeByteArray(b.ContentMD5, runtime.Base64StdFormat)
-		aux.ContentMD5 = &encodedContentMD5
-	}
-	return enc.EncodeElement(aux, start)
-}
-
-// UnmarshalXML implements the xml.Unmarshaller interface for type BlobPropertiesInternal.
-func (b *BlobPropertiesInternal) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
-	type alias BlobPropertiesInternal
-	aux := &struct {
-		*alias
-		AccessTierChangeTime *datetime.RFC1123 `xml:"AccessTierChangeTime"`
-		ContentMD5           *string           `xml:"Content-MD5"`
-		CopyCompletionTime   *datetime.RFC1123 `xml:"CopyCompletionTime"`
-		CreationTime         *datetime.RFC1123 `xml:"Creation-Time"`
-		DeleteTime           *datetime.RFC1123 `xml:"DeleteTime"`
-		DeletedTime          *datetime.RFC1123 `xml:"DeletedTime"`
-		ExpiresOn            *datetime.RFC1123 `xml:"Expiry-Time"`
-		LastAccessedOn       *datetime.RFC1123 `xml:"LastAccessTime"`
-		LastModified         *datetime.RFC1123 `xml:"Last-Modified"`
-	}{
-		alias: (*alias)(b),
-	}
-	if err := dec.DecodeElement(aux, &start); err != nil {
-		return err
-	}
-	if aux.AccessTierChangeTime != nil && !(*time.Time)(aux.AccessTierChangeTime).IsZero() {
-		b.AccessTierChangeTime = (*time.Time)(aux.AccessTierChangeTime)
-	}
-	if aux.ContentMD5 != nil {
-		if err := runtime.DecodeByteArray(*aux.ContentMD5, &b.ContentMD5, runtime.Base64StdFormat); err != nil {
-			return err
-		}
-	}
-	if aux.CopyCompletionTime != nil && !(*time.Time)(aux.CopyCompletionTime).IsZero() {
-		b.CopyCompletionTime = (*time.Time)(aux.CopyCompletionTime)
-	}
-	if aux.CreationTime != nil && !(*time.Time)(aux.CreationTime).IsZero() {
-		b.CreationTime = (*time.Time)(aux.CreationTime)
-	}
-	if aux.DeleteTime != nil && !(*time.Time)(aux.DeleteTime).IsZero() {
-		b.DeleteTime = (*time.Time)(aux.DeleteTime)
-	}
-	if aux.DeletedTime != nil && !(*time.Time)(aux.DeletedTime).IsZero() {
-		b.DeletedTime = (*time.Time)(aux.DeletedTime)
-	}
-	if aux.ExpiresOn != nil && !(*time.Time)(aux.ExpiresOn).IsZero() {
-		b.ExpiresOn = (*time.Time)(aux.ExpiresOn)
-	}
-	if aux.LastAccessedOn != nil && !(*time.Time)(aux.LastAccessedOn).IsZero() {
-		b.LastAccessedOn = (*time.Time)(aux.LastAccessedOn)
-	}
-	if aux.LastModified != nil && !(*time.Time)(aux.LastModified).IsZero() {
-		b.LastModified = (*time.Time)(aux.LastModified)
-	}
-	return nil
-}
-
 // MarshalJSON implements the json.Marshaller interface for type FileSystemItem.
 func (f FileSystemItem) MarshalJSON() ([]byte, error) {
 	objectMap := make(map[string]any)
@@ -229,10 +112,10 @@ func (f *FileSystemList) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalXML implements the xml.Marshaller interface for type ListBlobsHierarchySegmentResponse.
-func (l ListBlobsHierarchySegmentResponse) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
+// MarshalXML implements the xml.Marshaller interface for type ListPathsHierarchySegmentResponse.
+func (l ListPathsHierarchySegmentResponse) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
 	start.Name.Local = "EnumerationResults"
-	type alias ListBlobsHierarchySegmentResponse
+	type alias ListPathsHierarchySegmentResponse
 	aux := &struct {
 		*alias
 	}{
@@ -241,8 +124,8 @@ func (l ListBlobsHierarchySegmentResponse) MarshalXML(enc *xml.Encoder, start xm
 	return enc.EncodeElement(aux, start)
 }
 
-// MarshalJSON implements the json.Marshaller interface for type PathItem.
-func (p PathItem) MarshalJSON() ([]byte, error) {
+// MarshalJSON implements the json.Marshaller interface for type Path.
+func (p Path) MarshalJSON() ([]byte, error) {
 	objectMap := make(map[string]any)
 	populate(objectMap, "contentLength", p.ContentLength)
 	populate(objectMap, "creationTime", p.CreationTime)
@@ -259,8 +142,8 @@ func (p PathItem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(objectMap)
 }
 
-// UnmarshalJSON implements the json.Unmarshaller interface for type PathItem.
-func (p *PathItem) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON implements the json.Unmarshaller interface for type Path.
+func (p *Path) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
 		return fmt.Errorf("unmarshalling type %T: %v", p, err)
@@ -312,6 +195,38 @@ func (p *PathItem) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalXML implements the xml.Marshaller interface for type PathHierarchyListSegment.
+func (p PathHierarchyListSegment) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
+	start.Name.Local = "Blobs"
+	type alias PathHierarchyListSegment
+	aux := &struct {
+		*alias
+		BlobPrefixes *[]*PathPrefix       `xml:"BlobPrefix"`
+		PathItems    *[]*PathItemInternal `xml:"Blob"`
+	}{
+		alias: (*alias)(&p),
+	}
+	if p.BlobPrefixes != nil {
+		aux.BlobPrefixes = &p.BlobPrefixes
+	}
+	if p.PathItems != nil {
+		aux.PathItems = &p.PathItems
+	}
+	return enc.EncodeElement(aux, start)
+}
+
+// MarshalXML implements the xml.Marshaller interface for type PathItemInternal.
+func (p PathItemInternal) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
+	start.Name.Local = "Blob"
+	type alias PathItemInternal
+	aux := &struct {
+		*alias
+	}{
+		alias: (*alias)(&p),
+	}
+	return enc.EncodeElement(aux, start)
+}
+
 // MarshalJSON implements the json.Marshaller interface for type PathList.
 func (p PathList) MarshalJSON() ([]byte, error) {
 	objectMap := make(map[string]any)
@@ -335,6 +250,103 @@ func (p *PathList) UnmarshalJSON(data []byte) error {
 		if err != nil {
 			return fmt.Errorf("unmarshalling type %T: %v", p, err)
 		}
+	}
+	return nil
+}
+
+// MarshalXML implements the xml.Marshaller interface for type PathPrefix.
+func (p PathPrefix) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
+	start.Name.Local = "BlobPrefix"
+	type alias PathPrefix
+	aux := &struct {
+		*alias
+	}{
+		alias: (*alias)(&p),
+	}
+	return enc.EncodeElement(aux, start)
+}
+
+// MarshalXML implements the xml.Marshaller interface for type PathPropertiesInternal.
+func (p PathPropertiesInternal) MarshalXML(enc *xml.Encoder, start xml.StartElement) error {
+	start.Name.Local = "Properties"
+	type alias PathPropertiesInternal
+	aux := &struct {
+		*alias
+		AccessTierChangeTime *datetime.RFC1123 `xml:"AccessTierChangeTime"`
+		ContentMD5           *string           `xml:"Content-MD5"`
+		CopyCompletionTime   *datetime.RFC1123 `xml:"CopyCompletionTime"`
+		CreationTime         *datetime.RFC1123 `xml:"Creation-Time"`
+		DeleteTime           *datetime.RFC1123 `xml:"DeleteTime"`
+		DeletedTime          *datetime.RFC1123 `xml:"DeletedTime"`
+		ExpiresOn            *datetime.RFC1123 `xml:"Expiry-Time"`
+		LastAccessedOn       *datetime.RFC1123 `xml:"LastAccessTime"`
+		LastModified         *datetime.RFC1123 `xml:"Last-Modified"`
+	}{
+		alias:                (*alias)(&p),
+		AccessTierChangeTime: (*datetime.RFC1123)(p.AccessTierChangeTime),
+		CopyCompletionTime:   (*datetime.RFC1123)(p.CopyCompletionTime),
+		CreationTime:         (*datetime.RFC1123)(p.CreationTime),
+		DeleteTime:           (*datetime.RFC1123)(p.DeleteTime),
+		DeletedTime:          (*datetime.RFC1123)(p.DeletedTime),
+		ExpiresOn:            (*datetime.RFC1123)(p.ExpiresOn),
+		LastAccessedOn:       (*datetime.RFC1123)(p.LastAccessedOn),
+		LastModified:         (*datetime.RFC1123)(p.LastModified),
+	}
+	if p.ContentMD5 != nil {
+		encodedContentMD5 := runtime.EncodeByteArray(p.ContentMD5, runtime.Base64StdFormat)
+		aux.ContentMD5 = &encodedContentMD5
+	}
+	return enc.EncodeElement(aux, start)
+}
+
+// UnmarshalXML implements the xml.Unmarshaller interface for type PathPropertiesInternal.
+func (p *PathPropertiesInternal) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
+	type alias PathPropertiesInternal
+	aux := &struct {
+		*alias
+		AccessTierChangeTime *datetime.RFC1123 `xml:"AccessTierChangeTime"`
+		ContentMD5           *string           `xml:"Content-MD5"`
+		CopyCompletionTime   *datetime.RFC1123 `xml:"CopyCompletionTime"`
+		CreationTime         *datetime.RFC1123 `xml:"Creation-Time"`
+		DeleteTime           *datetime.RFC1123 `xml:"DeleteTime"`
+		DeletedTime          *datetime.RFC1123 `xml:"DeletedTime"`
+		ExpiresOn            *datetime.RFC1123 `xml:"Expiry-Time"`
+		LastAccessedOn       *datetime.RFC1123 `xml:"LastAccessTime"`
+		LastModified         *datetime.RFC1123 `xml:"Last-Modified"`
+	}{
+		alias: (*alias)(p),
+	}
+	if err := dec.DecodeElement(aux, &start); err != nil {
+		return err
+	}
+	if aux.AccessTierChangeTime != nil && !(*time.Time)(aux.AccessTierChangeTime).IsZero() {
+		p.AccessTierChangeTime = (*time.Time)(aux.AccessTierChangeTime)
+	}
+	if aux.ContentMD5 != nil {
+		if err := runtime.DecodeByteArray(*aux.ContentMD5, &p.ContentMD5, runtime.Base64StdFormat); err != nil {
+			return err
+		}
+	}
+	if aux.CopyCompletionTime != nil && !(*time.Time)(aux.CopyCompletionTime).IsZero() {
+		p.CopyCompletionTime = (*time.Time)(aux.CopyCompletionTime)
+	}
+	if aux.CreationTime != nil && !(*time.Time)(aux.CreationTime).IsZero() {
+		p.CreationTime = (*time.Time)(aux.CreationTime)
+	}
+	if aux.DeleteTime != nil && !(*time.Time)(aux.DeleteTime).IsZero() {
+		p.DeleteTime = (*time.Time)(aux.DeleteTime)
+	}
+	if aux.DeletedTime != nil && !(*time.Time)(aux.DeletedTime).IsZero() {
+		p.DeletedTime = (*time.Time)(aux.DeletedTime)
+	}
+	if aux.ExpiresOn != nil && !(*time.Time)(aux.ExpiresOn).IsZero() {
+		p.ExpiresOn = (*time.Time)(aux.ExpiresOn)
+	}
+	if aux.LastAccessedOn != nil && !(*time.Time)(aux.LastAccessedOn).IsZero() {
+		p.LastAccessedOn = (*time.Time)(aux.LastAccessedOn)
+	}
+	if aux.LastModified != nil && !(*time.Time)(aux.LastModified).IsZero() {
+		p.LastModified = (*time.Time)(aux.LastModified)
 	}
 	return nil
 }
